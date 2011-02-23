@@ -1,0 +1,11 @@
+<package type="main">
+  <name>rewrite</name>
+  <author>Nuno Job [nunojobpinto@gmail.com]</author>
+  <description>Dispatch HTTP requests to controllers according to a DSL</description>
+  <repo type="git" tag="0.1">
+    git://github.com/dscape/rewrite.git
+  </repo>
+  <keywords>rewriter, dispatcher, routing, marklogic</keywords>
+  <version>0.1</version>
+  <main>rewrite.xqy</main>
+</package>
