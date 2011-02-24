@@ -1,18 +1,18 @@
 # rewrite
 
-The purpose of the rewrite script is to eliminate the 1-to-1 mapping between files and MarkLogic 
-App Servers by introducing a intermediate layer that recognizes URLs and dispatches them
-to application code.
+The purpose of the rewrite script is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing a intermediate layer that recognizes URLs and dispatches them to application code.
 
-This project also tries to help you to make security part of this process by introducing
-XQuery constraints.
+This project also tries to help you to make security part of this process by introducing XQuery constraints.
 
-rewrite is designed to work with [MarkLogic][2] Server only. However it can easily be ported 
-to another product that understands XQuery and has similar capabilities.
+rewrite is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities.
+
+rewrite is heavily inspired in the [Rails 3.0 routing][4].
 
 ## Usage
 
 Not yet
+
+Routes order matters, if one rules comes before other and both match the first match will be used.
 
 * Install
 * Point app Server to rewrite
@@ -20,6 +20,10 @@ Not yet
 * Done
 
 Check features for a description of what the `routes.xml` file translates to.
+
+## Sample Application
+
+Not yet.
 
 ## Contribute
 
@@ -42,7 +46,7 @@ To run the tests simply point an MarkLogic HTTP AppServer to the root of rewrite
 You can run the tests by accessing:
 (assuming 127.0.0.1 is the host and 8090 is the port)
 
-    http://127.0.0.1:8090/tests
+    http://127.0.0.1:8090/test
 
 Make sure all the tests pass before sending in your pull request!
 
@@ -63,7 +67,17 @@ This is not the actual test that we run (you can see a list of those in test/ind
 
 ## Supported Functionality
 
-Not yet
+In this section we describe the DSL that you can use to define your routes
+and what is generated based on it.
+
+The following sections assume the following configuration for controller paths:
+
+     <notyet/>
+
+####  ✔ root
+     Route         : <root> server#version </root>
+     Dispatches to : 
+
 
 ### Roadmap
 
@@ -77,7 +91,7 @@ on "Contribute" and send in your code
 In this section we have the know limitations excluding the features that are not supported. 
 To better understand what is supported refer to the Supported Features section
 
-* Not yet
+* Special handlers like :id and :database are passed as normal parameters. This means your if your user/form provides an id as well you will have two :ids, one for the request and another for what comes from the post. The first one is always the special :id and the subsequent ones are whatever the user gave you. Need to write this up a little better
 
 ## Meta
 
@@ -91,3 +105,4 @@ To better understand what is supported refer to the Supported Features section
 [1]: http://github.com/dscape/rewrite/issues
 [2]: http://marklogic.com
 [3]: http://caos.di.uminho.pt
+[4]: http://edgeguides.rubyonrails.org/routing.html
