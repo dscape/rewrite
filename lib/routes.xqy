@@ -26,12 +26,12 @@ declare function r:selectedRoute( $routesCfg, $url, $method ) {
  r:selectedRoute( $routesCfg, $url, $method, () ) };
 
 declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
+  let $_        := r:setDefaults( $defaultCfg )
   let $tokens   := fn:tokenize( $url, '\?' )
   let $route    := $tokens [1]
   let $args     := $tokens [2]
   let $req      := fn:string-join( ( $method, $route ), " " )
   let $mappings := r:mappings ( $routesCfg )
-  let $_        := r:setDefaults( $defaultCfg )
   let $selected := $mappings //mapping [ fn:matches( $req, @regexp ) ] [1]
   return
     if ($selected) (: found a match, using the first :)
@@ -66,7 +66,7 @@ declare function r:root( $node ) {
   let $resource   := r:resourceActionPair( $node ) [1]
   let $action     := r:resourceActionPair( $node ) [2]
   return 
-    r:mapping( "GET /", r:resourceActionPath( $resource, $action ) ) } ;
+    r:mapping( "GET /(\?.*)?$", r:resourceActionPath( $resource, $action ) ) } ;
 
 declare function r:resourceActionPair( $node ) {
   fn:tokenize ( fn:normalize-space( $node ), $resourceActionSeparator )  } ;
@@ -92,20 +92,19 @@ declare function r:extractLabels( $node ) {
   fn:analyze-string($node,  $dynamicRouteRegExp) //s:match/s:group/fn:string(.) } ;
 
 declare function r:setDefaults( $defaultCfg ) { 
-  let $resourceDirectoryOverride := $defaultCfg //resourceDirectory [1]
+  let $resourceDirectoryOverride   := $defaultCfg //resourceDirectory   [1]
   let $staticDirectoryOverride     := $defaultCfg //staticDirectory     [1]
   let $xqyExtensionOverride        := $defaultCfg //xqyExtension        [1]
   return 
     ( if ( $resourceDirectoryOverride ) 
-      then xdmp:set( $resourceDirectory, $resourceDirectoryOverride )
+      then xdmp:set( $resourceDirectory, $resourceDirectoryOverride/fn:string() )
       else (),
       if ( $staticDirectoryOverride ) 
-      then xdmp:set( $staticDirectory, $staticDirectoryOverride )
+      then xdmp:set( $staticDirectory, $staticDirectoryOverride/fn:string() )
       else (),
       if ( $xqyExtensionOverride ) 
-      then xdmp:set( $xqyExtension, $xqyExtensionOverride )
-      else ()
-    ) } ;
+      then xdmp:set( $xqyExtension, $xqyExtensionOverride/fn:string() )
+      else () ) } ;
 
 declare function r:resourceDirectory()   { $resourceDirectory } ;
 declare function r:staticDirectory()     { $staticDirectory } ;

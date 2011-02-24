@@ -8,18 +8,44 @@ rewrite is designed to work with [MarkLogic][2] Server only. However it can easi
 
 rewrite is heavily inspired in the [Rails 3.0 routing][4].
 
+## Basics
+
+rewrite is a small DSL to make routing logic simple and easy to maintain. The logic behind is is:
+
+1. Check the routes that match a specific request
+2. Get the first that matched and redirect according to the rule (refer to functionality for a description of these rules)
+3. If none matched redirect to a directory with static files. This way if you can still serve your css and javascript files without having to create special rules for them. Simply place them in the /static/ directory of your application.
+
+Routes order matters, if one rules comes before other and both match the first match will be used. 
+
+Not all routes are born the same and some have dynamic names. For example when in twitter you want to match twitter.com/dscape to the user dscape. This is what we call a dynamic route and you write it like `/:user`. The colon lets the routing algorithm know that it shouldn't be evaluated as a string but rather as a dynamic resource. Neat right?
+
+#### Important Technicality 
+
+We don't want to map each user to a file, just like we do for other requests. It's impractical to keep separate files for each user you have. So you map them  to `user.xqy` and pass the username as a parameter, e.g. `user.xqy?user=dscape`. Please keep this in mind when developing your webapps as other request fields can exist with the same name and your users can even inject other users in the field, e.g. `user.xqy?user=dscape&user=hkstirman`. This framework will always give you what was generated as the first parameter so a safe way of avoiding this is to simply get the first field named user:
+
+    xdmp:get-request-field( 'user' ) [1]
+
+On previous versions of rewrite dynamic routes where prefixed by `_`, so `user` would be `_user`. I choose to make it explicit so people stumble upon it faster and realize they still need to carefully protect themselves against  tricks like this.
+
 ## Usage
 
 Not yet
-
-Routes order matters, if one rules comes before other and both match the first match will be used.
 
 * Install
 * Point app Server to rewrite
 * Makes routes and supporting XQuery
 * Done
 
-Check features for a description of what the `routes.xml` file translates to.
+Check features for a description of what the `routes.xml` file translates to. 
+
+You can also define a `paths.xml` file where you store overrides for the resource path (which defaults to /resource/), xqy extension (which defaults to xqy) and static path (defaults to /static/). Here's an example of what a `paths.xml` might look like:
+
+    <paths>
+      <resourceDirectory>/lib/</resourceDirectory>
+      <xqyExtension>xq</xqyExtension>
+      <staticDirectory>/public/</staticDirectory>
+    </paths>
 
 ## Sample Application
 
@@ -46,7 +72,7 @@ To run the tests simply point an MarkLogic HTTP AppServer to the root of rewrite
 You can run the tests by accessing:
 (assuming 127.0.0.1 is the host and 8090 is the port)
 
-    http://127.0.0.1:8090/test
+    http://127.0.0.1:8090/test/
 
 Make sure all the tests pass before sending in your pull request!
 
@@ -55,13 +81,13 @@ Make sure all the tests pass before sending in your pull request!
 If you want to contribute with a test case please file a [issue][1] and attach 
 the following information:
 
-* Not yet
+* Request Method
+* Request Path
+* routes.xml
+* Request Headers (if relevant)
+* paths.xml (if relevant)
 
 This will help us be faster fixing the problem.
-
-An example for a Hello World test would be:
-
-      Not yet
 
 This is not the actual test that we run (you can see a list of those in test/index.xqy) but it's all the information we need for a bug report.
 
@@ -70,14 +96,27 @@ This is not the actual test that we run (you can see a list of those in test/ind
 In this section we describe the DSL that you can use to define your routes
 and what is generated based on it.
 
-The following sections assume the following configuration for controller paths:
+####  ✔ static (functionality)
+If no match is found rewrite will dispatch your query to a /static/ folder where you should keep all your static files. This way you don't have to create routing rules for static files.
 
-     <notyet/>
+     Request       : GET /css/style.css
+     routes.xml    : <routes> <root> server#version </root> </routes> 
+     Dispatches to : /static/css/style.css
 
-####  ✔ root
-     Route         : <root> server#version </root>
-     Dispatches to : 
+####  ✔ paths (functionality)
+By default the application will look for resources in `/resource/`, static in `/static/` and will use the `.xqy` extension for XQuery files. You can change this by providing a `paths.xml` file:
 
+     Request       : GET /
+     routes.xml    : <routes> <root> server#version </root> </routes> 
+     paths.xml     : <paths> <resourceDirectory>/</resourceDirectory> </paths>
+     Dispatches to : /server.xqy?action=ping
+
+####  ✔ root (route)
+Root in an element for requests against the server root.
+
+     Request       : GET /
+     routes.xml    : <routes> <root> server#version </root> </routes> 
+     Dispatches to : /resource/server.xqy?action=ping
 
 ### Roadmap
 

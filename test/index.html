@@ -12,13 +12,70 @@
     $(document).ready(function(){
       module("root") ;
       asyncTest("simple root", function() {
-        $.ajax({
+        $.ajax( {
           url: rewriteUrl( 'GET', '/', '<root>server#ping</root>', '' )
-        , success:  function(d,t,j) { ok(true, "OK"); }
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/server.xqy?action=ping', "OK" );
+           }
         , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); }
-          }) }) ; }) ;
-          /* next test changing default config for paths */
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("shouldn't match root", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/foo.jpg', '<root>server#ping</root>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/static/foo.jpg', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      module("paths") ;
+      asyncTest("Change resource directory to /controller/", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/', '<root>server#ping</root>', '',
+          '<resourceDirectory>/controller/</resourceDirectory>' )
+        , success:  function(d,t,j) { 
+          equals( d, '/controller/server.xqy?action=ping', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("Change resource directory to /", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/', '<root>server#ping</root>', '',
+          '<resourceDirectory>/</resourceDirectory>' )
+        , success:  function(d,t,j) { 
+          equals( d, '/server.xqy?action=ping', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("Change resource directory to ()", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/', '<root>server#ping</root>', '',
+          '<resourceDirectory/>' )
+        , success:  function(d,t,j) { 
+          equals( d, 'server.xqy?action=ping', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("Change extension to .xq", function() {
+         $.ajax( {
+           url: rewriteUrl( 'GET', '/', '<root>server#ping</root>', '',
+           '<xqyExtension>xq</xqyExtension>' )
+         , success:  function(d,t,j) { 
+           equals( d, '/resource/server.xq?action=ping', "OK" );
+            }
+         , error:    function(j,t,e) { ok(false, "NOK") }
+         , complete: function()      { start(); } }) }) ;
+      asyncTest("Change static to /public/", function() {
+         $.ajax( {
+           url: rewriteUrl( 'GET', '/css/style.css', 
+             '<root>server#ping</root>', '',
+             '<staticDirectory>/public/</staticDirectory>' )
+         , success:  function(d,t,j) { 
+           equals( d, '/public/css/style.css', "OK" );
+            }
+         , error:    function(j,t,e) { ok(false, "NOK") }
+         , complete: function()      { start(); } }) }) ;
+    }) ;
+
     </script>
   </head>
   <body>
