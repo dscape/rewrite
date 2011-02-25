@@ -212,6 +212,93 @@
           equals( d, '/resource/users.xqy?action=notify', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
+      
+      module("resource") ;
+      asyncTest("get", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/about', 
+            '<resource name="about"/>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/about.xqy?action=get', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("put", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/ignition', 
+            '<resource name="ignition"/>', '' )
+        , type: 'PUT' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/ignition.xqy?action=put', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("delete", function() {
+        $.ajax( {
+          url: rewriteUrl( 'DELETE', '/ignition', 
+            '<resource name="ignition"/>', '' )
+        , type: 'DELETE' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/ignition.xqy?action=delete', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("illegal post from webservice", function() {
+        $.ajax( {
+          url: rewriteUrl( 'POST', '/about', 
+            '<resource name="about" webservice="true"/>', '' )
+        , type: 'POST' 
+        , success:  function(d,t,j) { 
+          equals( d, '/static/about', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("post", function() {
+        $.ajax( {
+          url: rewriteUrl( 'POST', '/about', 
+            '<resource name="about"/>', '' )
+        , type: 'POST' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/about.xqy?action=post', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("edit", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/about/edit', 
+            '<resource name="about"/>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/about.xqy?action=edit', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("include", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/car/ignition', 
+            '<resource name="car">'+
+            '<include action="ignition"/></resource>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/car.xqy?action=ignition', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("include with multiple verbs", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/car/ignition', 
+            '<resource name="car">'+
+            '<include action="ignition" for="DELETE,PUT"/>'+
+            '</resource>', '' )
+        , type: 'PUT' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/car.xqy?action=ignition', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("include with multiple verbs but none matches", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/car/ignition', 
+            '<resource name="car">'+
+            '<memberInclude action="ignition" for="DELETE,GET,POST"/>'+
+            '</resource>', '' )
+        , type: 'PUT' 
+        , success:  function(d,t,j) { 
+          notEqual( d, '/resource/car.xqy?action=ignition', 
+            "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
 
       module("dynamic") ;
       asyncTest("dynamic search containing spaces", function() {

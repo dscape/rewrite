@@ -59,14 +59,15 @@ declare function r:mappings( $routesCfg ) {
 
 declare function r:transform( $node ) {
   typeswitch ( $node )
-    case element( root )     return r:root( $node )
+    case element( root )      return r:root( $node )
     case element( resources ) return r:resources( $node )
-    case element( get )      return r:verb( 'GET',    $node )
-    case element( put )      return r:verb( 'PUT',    $node )
-    case element( post )     return r:verb( 'POST',   $node )
-    case element( delete )   return r:verb( 'DELETE', $node )
-    case element( head )     return r:verb( 'HEAD',   $node )
-    default                  return () (: ignored :) } ;
+    case element( resource )  return r:resource( $node )
+    case element( get )       return r:verb( 'GET',    $node )
+    case element( put )       return r:verb( 'PUT',    $node )
+    case element( post )      return r:verb( 'POST',   $node )
+    case element( delete )    return r:verb( 'DELETE', $node )
+    case element( head )      return r:verb( 'HEAD',   $node )
+    default                   return () (: ignored :) } ;
 
 declare function r:root( $node ) { 
   r:mappingForHash( "GET /", $node ) } ;
@@ -101,6 +102,21 @@ declare function r:resources( $node ) {
   let $memberInc  := r:includes( $resource, $node/memberInclude, fn:true() )
   let $setInc     := r:includes( $resource, $node/setInclude, fn:false() )
   return ( $edit, $new, $memberInc, $setInc, $verbs, $post, $index ) };
+
+declare function r:resource( $node ) {
+  let $resource   := $node/@name
+  let $webservice := $node/@webservice
+  let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
+    return r:mapping( fn:concat( $verb, ' /', $resource ), 
+      r:resourceActionPath( $resource, fn:lower-case($verb) ) )
+  let $post       := if ($webservice) then () else
+    r:mapping( fn:concat( 'POST /', $resource ), 
+      r:resourceActionPath( $resource, 'post' ) )
+  let $edit       := if ($webservice) then () else
+    r:mapping( fn:concat( 'GET /', $resource, '/edit' ), 
+      r:resourceActionPath( $resource, 'edit' ) )
+  let $memberInc  := r:includes( $resource, $node/include, fn:false() )
+  return ( $edit, $memberInc, $verbs, $post ) };
 
 declare function r:mappingForRedirect( $req, $node ) { () };
 declare function  r:mappingForDynamicRoute() { () } ;

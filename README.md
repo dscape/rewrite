@@ -27,7 +27,19 @@ This project also tries to help you to make security part of this process by int
 2. Get the first that matched and redirect according to the rule
 3. If none matched redirect to a directory with static files. This way you can still serve your css and javascript files by placing them in the /static/ directory.
 
-Routes order matters, if one rules comes before other and both match the first match will be used.
+Routes are matched in the order they are specified, so if you have a routes like this:
+
+     <routes>
+       <get path="/:user">
+       <get path="/about">
+     </routes>
+
+the get route for the `/:user` will be matched before the get `/about`. To fix this, move the `/about` line above the `:user` so that it is matched first:
+
+     <routes>
+       <get path="/about">
+       <get path="/:user">
+     </routes>
 
 ## Usage
 
@@ -41,13 +53,23 @@ Not yet, hello world app
 Check features for a description of what the `routes.xml` file translates to. 
 
 ## paths.xml
-You can also define a `paths.xml` file where you store overrides for the resource path (which defaults to /resource/), xqy extension (which defaults to xqy) and static path (defaults to /static/). Here's an example of what a `paths.xml` might look like:
+You can use a `paths.xml` file to override the defaults for:
 
-    <paths>
-      <resourceDirectory>/lib/</resourceDirectory>
-      <xqyExtension>xq</xqyExtension>
-      <staticDirectory>/public/</staticDirectory>
-    </paths>
+1. Resource path (which defaults to /resource/), 
+2. xqy extension (which defaults to xqy)
+3. Static path (defaults to /static/). 
+
+To do so you can simply call the `r:selectedRoute\2` function:
+
+     r:selectedRoute( $routesCfg, $defaultCfg )
+
+Here's an example of what a `paths.xml` might look like:
+
+     <paths>
+       <resourceDirectory>/lib/</resourceDirectory>
+       <xqyExtension>xq</xqyExtension>
+       <staticDirectory>/public/</staticDirectory>
+     </paths>
 
 ## Sample Application
 
@@ -166,7 +188,7 @@ The colon in `:user` lets the routing algorithm know that it shouldn't be evalua
 ####  ✔ 1.7. resources
 So far all the features have been for handling a single case. However it's often the case when you want to perform all CRUD (Create, Read, Update, Delete) actions on a single resource, e.g. you want to create, read, update and delete users. RESTful architectures normally map those actions to HTTP verbs such as GET, PUT, POST and DELETE.
 
-When you create a resource in `rewrite` you expose these actions as follows:
+When you create a resource in `rewrite` you expose these actions:
 
 <table>
   <tr>
@@ -271,7 +293,76 @@ We call this a set include and express it as follows:
 
 Member and set includes are not exclusive of each other and you can use as many as you want in your resources as you can see in the above example.
 
-####  ✕ resource
+####  ✔ 1.8. resource
+Some resource only expose a single item, e.g. your about page. While you might want to be able to perform CRUD actions on a about page there is only one about page so using resources would be useful.
+
+When you create a resource in `rewrite` you expose these actions:
+
+<table>
+  <tr>
+    <th>Verb</th>
+    <th>Path</th>
+    <th>Action</th>
+    <th>Used in</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/about</td>
+    <td>get</td>
+    <td>Web-Services, Web-Applications</td>
+    <td>Display about section</td>
+  </tr>
+  <tr>
+    <td>PUT</td>
+    <td>/about</td>
+    <td>put</td>
+    <td>Web-Services, Web-Applications</td>
+    <td>Creates or updates the about section</td>
+  </tr>
+  <tr>
+    <td>DELETE</td>
+    <td>/about</td>
+    <td>delete</td>
+    <td>Web-Services, Web-Applications</td>
+    <td>Deletes the about section</td>
+  </tr>
+  <tr>
+    <td>POST</td>
+    <td>/about</td>
+    <td>post</td>
+    <td>Web-Applications</td>
+    <td>No special meaning</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/about/edit</td>
+    <td>edit</td>
+    <td>Web-Applications</td>
+    <td>Return a form to create/edit the about section</td>
+  </tr>
+</table>
+
+By default post, and edit actions are created. If you are creating a web-service and have no interest in them you can change this behavior by simply passing a `webservice="true"` attribute to the resources specification.
+
+The following example illustrate a resource
+
+     Request       : GET /about
+     routes.xml    : <routes> 
+                       <resource name="about"/> 
+                     </routes>
+     Dispatches to : /resource/about.xqy?action=get
+
+### 1.8.1. include
+For singular resource `include` acts like a `memberInclude` as there is not set to consider:
+
+Request       : PUT /car/ignition
+routes.xml    : <routes> 
+                  <resources name="car">
+                    <include action="ignition" for="PUT,DELETE"/>
+                  </resources>
+                </routes>
+Dispatches to : /resource/users.xqy?action=ignition
 
 ### 2. Extras
 
