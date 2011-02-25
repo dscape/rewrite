@@ -21,19 +21,17 @@ This project also tries to help you to make security part of this process by int
 
 ## Basics
 
-`rewrite` runs as follow:
+`rewrite` algorithm is:
 
 1. Check the routes that match a specific request
 2. Get the first that matched and redirect according to the rule
-3. If none matched redirect to a directory with static files. This way if you can still serve your css and javascript files without having to create special rules for them. Simply place them in the /static/ directory of your application.
+3. If none matched redirect to a directory with static files. This way you can still serve your css and javascript files by placing them in the /static/ directory.
 
-Routes order matters, if one rules comes before other and both match the first match will be used. This is really important: It means that the `<root/>` should always be the last route in your DSL as it will match everything.
-
-Not all routes are born the same and some have dynamic names. For example when in twitter you want to match twitter.com/dscape to the user dscape. This is what we call a dynamic route and you write it like `/:user`. The colon lets the routing algorithm know that it shouldn't be evaluated as a string but rather as a dynamic resource. Neat right?
+Routes order matters, if one rules comes before other and both match the first match will be used.
 
 ## Usage
 
-Not yet
+Not yet, hello world app
 
 * Install
 * Point app Server to rewrite
@@ -42,6 +40,7 @@ Not yet
 
 Check features for a description of what the `routes.xml` file translates to. 
 
+## paths.xml
 You can also define a `paths.xml` file where you store overrides for the resource path (which defaults to /resource/), xqy extension (which defaults to xqy) and static path (defaults to /static/). Here's an example of what a `paths.xml` might look like:
 
     <paths>
@@ -113,8 +112,8 @@ and what is generated based on it.
                      </routes>
      Dispatches to : /resource/article.xqy?action=list
 
-##### 1.2.1. dynamic paths
-Sometimes however you need the url to be flexible. If you think about website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that if no other route matches we need to route all our first levels to something that can display a single user.
+#### 1.2.1. dynamic paths
+If you think about website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that if no other route matches we need to route all our first levels display user information.
 
 `rewrite` exposes that functionality with dynamic paths. For the twitter example we would have something like:
 
@@ -126,7 +125,7 @@ Sometimes however you need the url to be flexible. If you think about website li
                      </routes>
      Dispatches to : /resource/user.xqy?action=get&user=dscape
 
-You can also combine dynamic and static paths:
+The colon in `:user` lets the routing algorithm know that it shouldn't be evaluated as a string but rather as a dynamic resource. You can even combine dynamic and static paths:
 
      Request       : GET /user/dscape
      routes.xml    : <routes> 
@@ -323,7 +322,7 @@ Not yet, need more routes
 If you are interested in any of these (or other) feature and don't want to wait just read the instructions
 on "Contribute" and send in your code
 
-* Not yet.
+* Generating Paths and URLs from code
 
 ### Known Limitations
 
