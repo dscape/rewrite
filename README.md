@@ -432,7 +432,33 @@ If no match is found `rewrite` will dispatch your query to a /static/ folder whe
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /static/css/style.css
 
-####  ✕ content negotiation
+####  ✕ content negotiation and other mvc goodies
+Content negotiations and other MVC goodies are deliberately not bundled in `rewrite`. 
+
+The objective of `rewrite` is only to simplify the mapping between external URLs and internal file paths. If you are curious about content negotiation and other topics you can look at some of my on-going work at the [dxc][5] project.
+
+For example, this is how content negotiation is currently implemented in the [http.xqy][6] library:
+
+     (: uses a default content type, no 406 errors :)
+     declare function local:negotiate-content-type( $accept, 
+       $supported-content-types, $default-content-type ) {
+       let $ordered-accept-types :=
+         for $media-range in fn:tokenize($accept, "\s*,\s*")
+              let $l := fn:tokenize($media-range, "\s*;\s*")
+              let $type   := $l [1]
+              let $params := fn:subsequence($l, 2)
+              let $quality := (for $p in $params
+                              let $q-or-ext := fn:tokenize($p, "\s*=\s*") 
+                              where $q-or-ext [1] = "q"
+                              return fn:number($q-or-ext[2]), 1.0) [1]
+              order by $quality descending
+              return $type
+       return (for $sat in $ordered-accept-types
+                let $match := (for $sct in $supported-content-types
+                where fn:matches($sct, fn:replace($sat, "\*", ".*"))
+                return $sct) [1]
+                return $match, $default-content-type) [1] } ;
+
 ####  ✕ constraints
 You can run constraints against your routes to ensure they:
 
@@ -452,12 +478,10 @@ on "Contribute" and send in your code
 * Make singular resources map to plural controllers
 * Nested Resources
 * Namespaces & Scopes, e.g. /admin/user/1/edit
-* Redirect-to is not supported as it requires a `dispatcher.xqy`. See sample application for an example of a working redirect-to.
 
 ### Known Limitations
 
-In this section we have the know limitations excluding the features that are not supported. 
-To better understand what is supported refer to the Supported Features section
+In this section we have the know limitations excluding the features that are not supported. To better understand what is supported refer to the Supported Features section.
 
 * Special handlers like :id and :database are passed as normal parameters. This means your if your user/form provides an id as well you will have two :ids, one for the request and another for what comes from the post. The first one is always the special :id and the subsequent ones are whatever the user gave you. Need to write this up a little better
 
@@ -483,3 +507,5 @@ On previous versions of `rewrite` dynamic routes where prefixed by `_`, so `user
 [2]: http://marklogic.com
 [3]: http://caos.di.uminho.pt
 [4]: http://edgeguides.rubyonrails.org/routing.html
+[5]: http://github.com/dscape/dxc
+[6]: https://github.com/dscape/dxc/blob/master/http/http.xqy#L27
