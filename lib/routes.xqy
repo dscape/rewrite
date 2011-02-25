@@ -61,6 +61,7 @@ declare function r:transform( $node ) {
   typeswitch ( $node )
     case element( root )     return r:root( $node )
     case element( get )      return r:verb( 'GET', $node )
+    case element( put )      return r:verb( 'PUT', $node )
     default                  return () } ;
 
 declare function r:root( $node ) { 
@@ -76,22 +77,6 @@ declare function r:verb( $verb, $node ) {
     then r:mappingForRedirect( $req, $node/redirect-to )
     else r:mappingForDynamicRoute() (: purely dynamic route we need to figure it out :) 
 } ;
-
-(:
-let $k := fn:concat( "GET ", $node/@path )
-  return if ( $node/to )
-         then let $to := fn:tokenize( fn:normalize-space( $node/to ), "#" )
-                let $v := r:controller-action-path( $to [1], $to [2] )
-                return r:kvpair( $k, $v )
-         else if ( $node/redirect-to ) 
-              then r:kvpair( $k,
-                     fn:concat( r:invoke-path(),
-                       "?_action=redirect&amp;_url=",
-                     xdmp:url-encode(
-                       fn:normalize-space( $node/redirect-to ) ) ) )
-              else r:kvpair( $k, fn:concat( r:invoke-path(), "?_" ) ) } ;
-
-:)
 
 declare function r:mappingForRedirect( $req, $node ) { () };
 declare function  r:mappingForDynamicRoute() { () } ;

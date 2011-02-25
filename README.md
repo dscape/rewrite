@@ -106,16 +106,18 @@ Root in an element for requests against the server root.
      Dispatches to : /resource/server.xqy?action=ping
 
 ####  ✔ get 
-
      Request       : GET /list
-     routes.xml    : <get path="/list"> <to> article#list </to> </get>
+     routes.xml    : <routes> 
+                       <get path="/list"> <to> article#list </to> </get>
+                     </routes>
      Dispatches to : /resource/article.xqy?action=list
 
-####  ✕ put 
-
-     Request       : 
-     routes.xml    : 
-     Dispatches to :
+####  ✔ put 
+     Request       : PUT /upload
+     routes.xml    : <routes>
+                       <put path="/upload"> <to> file#upload </to> </put>
+                     </routes>
+     Dispatches to : /resource/file.xqy?action=upload
 
 ####  ✕ post 
 
@@ -168,6 +170,11 @@ By default the application will look for resources in `/resource/`, static in `/
      routes.xml    : <routes> <root> server#version </root> </routes> 
      paths.xml     : <paths> <resourceDirectory>/</resourceDirectory> </paths>
      Dispatches to : /server.xqy?action=ping
+
+####  ✕ permissions
+MarkLogic permissions support
+
+####  ✕ content negotiation
 
 ### Roadmap
 
