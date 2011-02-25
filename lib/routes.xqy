@@ -60,13 +60,47 @@ declare function r:mappings( $routesCfg ) {
 declare function r:transform( $node ) {
   typeswitch ( $node )
     case element( root )     return r:root( $node )
+    case element( get )      return r:verb( 'GET', $node )
     default                  return () } ;
 
-declare function r:root( $node ) {
+declare function r:root( $node ) { 
+  r:mappingForHash( "GET /(\?.*)?$", $node ) } ;
+
+declare function r:verb( $verb, $node ) { 
+  xdmp:log(($verb, $node)),
+  let $req := fn:concat( $verb, " ", $node/@path )
+  return 
+    if ( $node/to ) (: if there's a place to go :)
+    then r:mappingForHash( $req, $node/to )
+    else if ( $node/redirect-to ) (: if theres a redirect :) 
+    then r:mappingForRedirect( $req, $node/redirect-to )
+    else r:mappingForDynamicRoute() (: purely dynamic route we need to figure it out :) 
+} ;
+
+(:
+let $k := fn:concat( "GET ", $node/@path )
+  return if ( $node/to )
+         then let $to := fn:tokenize( fn:normalize-space( $node/to ), "#" )
+                let $v := r:controller-action-path( $to [1], $to [2] )
+                return r:kvpair( $k, $v )
+         else if ( $node/redirect-to ) 
+              then r:kvpair( $k,
+                     fn:concat( r:invoke-path(),
+                       "?_action=redirect&amp;_url=",
+                     xdmp:url-encode(
+                       fn:normalize-space( $node/redirect-to ) ) ) )
+              else r:kvpair( $k, fn:concat( r:invoke-path(), "?_" ) ) } ;
+
+:)
+
+declare function r:mappingForRedirect( $req, $node ) { () };
+declare function  r:mappingForDynamicRoute() { () } ;
+
+declare function r:mappingForHash( $req, $node ) { 
   let $resource   := r:resourceActionPair( $node ) [1]
   let $action     := r:resourceActionPair( $node ) [2]
   return 
-    r:mapping( "GET /(\?.*)?$", r:resourceActionPath( $resource, $action ) ) } ;
+    r:mapping( $req, r:resourceActionPath( $resource, $action ) ) } ;
 
 declare function r:resourceActionPair( $node ) {
   fn:tokenize ( fn:normalize-space( $node ), $resourceActionSeparator )  } ;

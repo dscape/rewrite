@@ -89,34 +89,85 @@ the following information:
 
 This will help us be faster fixing the problem.
 
-This is not the actual test that we run (you can see a list of those in test/index.xqy) but it's all the information we need for a bug report.
+This is not the actual test that we run (you can see a list of those in test/index.html) but it's all the information we need for a bug report.
 
 ## Supported Functionality
 
 In this section we describe the DSL that you can use to define your routes
 and what is generated based on it.
 
-####  ✔ static (functionality)
+### Routes
+
+####  ✔ root 
+Root in an element for requests against the server root.
+
+     Request       : GET /
+     routes.xml    : <routes> <root> server#version </root> </routes> 
+     Dispatches to : /resource/server.xqy?action=ping
+
+####  ✔ get 
+
+     Request       : GET /list
+     routes.xml    : <get path="/list"> <to> article#list </to> </get>
+     Dispatches to : /resource/article.xqy?action=list
+
+####  ✕ put 
+
+     Request       : 
+     routes.xml    : 
+     Dispatches to :
+
+####  ✕ post 
+
+     Request       : 
+     routes.xml    : 
+     Dispatches to :
+
+####  ✕ delete 
+
+     Request       : 
+     routes.xml    : 
+     Dispatches to :
+
+####  ✕ head 
+
+     Request       : 
+     routes.xml    : 
+     Dispatches to :
+
+### More
+
+####  ✕ redirect
+redirect to
+
+####  ✕ dynamic resources
+
+####  ✕ dynamic defaults
+/:controller/:action/:id
+
+####  ✕ constraints
+You can run constraints against your routes to ensure they:
+
+1. are of a certain datatype, e.g. :id is of type xs:integer
+2. match a certain regular expression, e.g. :id is [0-9]+
+3. will only be selected if an XQuery expression yielded fn:true()
+
+Not yet, need more routes
+
+####  ✔ static
 If no match is found rewrite will dispatch your query to a /static/ folder where you should keep all your static files. This way you don't have to create routing rules for static files.
 
      Request       : GET /css/style.css
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /static/css/style.css
 
-####  ✔ paths (functionality)
+####  ✔ paths
 By default the application will look for resources in `/resource/`, static in `/static/` and will use the `.xqy` extension for XQuery files. You can change this by providing a `paths.xml` file:
 
      Request       : GET /
      routes.xml    : <routes> <root> server#version </root> </routes> 
      paths.xml     : <paths> <resourceDirectory>/</resourceDirectory> </paths>
      Dispatches to : /server.xqy?action=ping
-
-####  ✔ root (route)
-Root in an element for requests against the server root.
-
-     Request       : GET /
-     routes.xml    : <routes> <root> server#version </root> </routes> 
-     Dispatches to : /resource/server.xqy?action=ping
 
 ### Roadmap
 

@@ -27,6 +27,16 @@
            }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
+      module("get") ;
+      asyncTest("static get to", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/list', 
+            '<get path="/list"> <to> article#list </to> </get>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/article.xqy?action=list', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
       module("paths") ;
       asyncTest("Change resource directory to /controller/", function() {
         $.ajax( {
