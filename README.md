@@ -547,7 +547,7 @@ If you are interested in any of these (or other) feature and don't want to wait 
 
 In this section we have the know limitations:
 
-#### Dynamic paths
+### Dynamic paths
 
 When using dynamic paths it is impractical to keep separate files for each user you have. So in the `/:user` example you map them to `user.xqy` and pass the username as a parameter, e.g. `user.xqy?user=dscape`. 
 
