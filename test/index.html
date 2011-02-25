@@ -175,7 +175,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/5/enable', 
             '<resources name="users">'+
-            '<memberInclude action="enable"/></resources>', '' )
+            '<member action="enable"/></resources>', '' )
         , success:  function(d,t,j) { 
           equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
@@ -184,7 +184,7 @@
         $.ajax( {
           url: rewriteUrl( 'PUT', '/users/5/enable', 
             '<resources name="users">'+
-            '<memberInclude action="enable" for="DELETE,PUT"/>'+
+            '<member action="enable" for="DELETE,PUT"/>'+
             '</resources>', '' )
         , type: 'PUT' 
         , success:  function(d,t,j) { 
@@ -195,7 +195,7 @@
         $.ajax( {
           url: rewriteUrl( 'PUT', '/users/5/enable', 
             '<resources name="users">'+
-            '<memberInclude action="enable" for="DELETE,GET,POST"/>'+
+            '<member action="enable" for="DELETE,GET,POST"/>'+
             '</resources>', '' )
         , type: 'PUT' 
         , success:  function(d,t,j) { 
@@ -207,7 +207,7 @@
         $.ajax( {
           url: rewriteUrl( 'PUT', '/users/notify', 
             '<resources name="users">'+
-            '<setInclude action="notify" for="PUT"/></resources>', '' )
+            '<set action="notify" for="PUT"/></resources>', '' )
         , success:  function(d,t,j) { 
           equals( d, '/resource/users.xqy?action=notify', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
@@ -271,7 +271,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/car/ignition', 
             '<resource name="car">'+
-            '<include action="ignition"/></resource>', '' )
+            '<member action="ignition"/></resource>', '' )
         , success:  function(d,t,j) { 
           equals( d, '/resource/car.xqy?action=ignition', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
@@ -280,7 +280,7 @@
         $.ajax( {
           url: rewriteUrl( 'PUT', '/car/ignition', 
             '<resource name="car">'+
-            '<include action="ignition" for="DELETE,PUT"/>'+
+            '<member action="ignition" for="DELETE,PUT"/>'+
             '</resource>', '' )
         , type: 'PUT' 
         , success:  function(d,t,j) { 
@@ -353,8 +353,8 @@
         $.ajax( {
           url: rewriteUrl( 'PUT', '/users/notify', 
             '<resources name="users">'+
-            '<setInclude action="notify" for="PUT"/>'+
-            '<memberInclude action="notify" for="GET,PUT"/>'+
+            '<set action="notify" for="PUT"/>'+
+            '<member action="notify" for="GET,PUT"/>'+
             '</resources>', '' )
         , success:  function(d,t,j) { 
           equals( d, '/resource/users.xqy?action=notify', "OK" ); }
@@ -364,8 +364,8 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/5/enable', 
             '<resources name="users">'+
-            '<setInclude action="enable"/>' +
-            '<memberInclude action="enable"/></resources>', '' )
+            '<set action="enable"/>' +
+            '<member action="enable"/></resources>', '' )
         , success:  function(d,t,j) { 
           equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }

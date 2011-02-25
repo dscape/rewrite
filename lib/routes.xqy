@@ -99,8 +99,8 @@ declare function r:resources( $node ) {
   let $edit       := if ($webservice) then () else
     r:mapping( fn:concat( 'GET /', $resource, '/:id/edit' ), 
       r:resourceActionPath( $resource, 'edit' ) )
-  let $memberInc  := r:includes( $resource, $node/memberInclude, fn:true() )
-  let $setInc     := r:includes( $resource, $node/setInclude, fn:false() )
+  let $memberInc  := r:includes( $resource, $node/member, fn:true() )
+  let $setInc     := r:includes( $resource, $node/set, fn:false() )
   return ( $edit, $new, $memberInc, $setInc, $verbs, $post, $index ) };
 
 declare function r:resource( $node ) {
@@ -115,7 +115,7 @@ declare function r:resource( $node ) {
   let $edit       := if ($webservice) then () else
     r:mapping( fn:concat( 'GET /', $resource, '/edit' ), 
       r:resourceActionPath( $resource, 'edit' ) )
-  let $memberInc  := r:includes( $resource, $node/include, fn:false() )
+  let $memberInc  := r:includes( $resource, $node/member, fn:false() )
   return ( $edit, $memberInc, $verbs, $post ) };
 
 declare function r:mappingForRedirect( $req, $node ) { () };

@@ -262,7 +262,7 @@ The following example explains a single match against one of the multiple routes
 #### 1.7.1. includes
 Resources are really great cause they save you all the trouble of writing all those routes all the same (especially when order matters and you have to make sure you get it right).
 
-#### 1.7.1.1. memberInclude
+#### 1.7.1.1. member
 Sometimes you will need to include one or more actions that are not part of the default, e.g. you might want to create a enable or disable one of your users. 
 
 So you need the resource to respond to `PUT /users/dscape/enabled` and understand that should re-enable the user. This action runs against a specific user is that's why we call it member include. Here's an example of how you can express that in `rewrite`:
@@ -270,14 +270,14 @@ So you need the resource to respond to `PUT /users/dscape/enabled` and understan
      Request       : PUT /users/dscape/enabled
      routes.xml    : <routes> 
                        <resources name="users">
-                         <memberInclude action="enabled" for="PUT,DELETE"/>
+                         <member action="enabled" for="PUT,DELETE"/>
                        </resources>
                      </routes>
      Dispatches to : /resource/users.xqy?action=enabled&id=dscape
 
 If you are curious about the DELETE - it's simply there to allow you to disable a user the RESTful way. If you don't pass the `for` attribute then  GET will be created.
 
-####  1.7.1.2. setInclude
+####  1.7.1.2. set
 Another type of action you might ned to add are global actions, e.g. searching all users in full text. 
 
 We call this a set include and express it as follows:
@@ -285,8 +285,8 @@ We call this a set include and express it as follows:
      Request       : PUT /users/search?q=foo
      routes.xml    : <routes> 
                        <resources name="users">
-                         <memberInclude action="enabled" for="PUT,DELETE"/>
-                         <setInclude action="search"/>
+                         <member action="enabled" for="PUT,DELETE"/>
+                         <set action="search"/>
                        </resources>
                      </routes>
      Dispatches to : /resource/users.xqy?action=search&q=foo
@@ -362,8 +362,7 @@ As with `get`, `put`, etc, you can also create a dynamic resource by prefixing t
                      </routes>
      Dispatches to : /resource/database.xqy?action=put&database=Documents
 
-### 1.8.2. include
-For singular resource `include` acts like a `memberInclude` as there is not set to consider:
+### 1.8.2. member
 
       Request       : PUT /car/ignition
       routes.xml    : <routes> 
@@ -422,6 +421,9 @@ If you are interested in any of these (or other) feature and don't want to wait 
 on "Contribute" and send in your code
 
 * Generating Paths and URLs from code
+* Make singular resources map to plural controllers
+* Nested Resources
+* Namespaces & Scopes, e.g. /admin/user/1/edit
 
 ### Known Limitations
 
