@@ -99,6 +99,17 @@
            }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
+
+      asyncTest("user id", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/user/43', 
+            '<get path="/user/:id"> <to> user#show </to> </get>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/user.xqy?action=show?id=43', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
       
       module("complex") ;
       asyncTest("route should match with and without trailing /", function() {

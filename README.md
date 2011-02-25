@@ -159,6 +159,15 @@ redirect to
                      </routes>
      Dispatches to : /resource/story.xqy?action=search&q=in%2blove
 
+####  ✔ mixed paths
+     Request       : GET /user/43
+     routes.xml    : <routes> 
+                       <get path="/user/:id">
+                         <to> user#show </to>
+                       </get>
+                     </routes>
+     Dispatches to : /resource/user.xqy?action=show&id=43
+
 ####  ✕ dynamic resources
 
 ####  ✕ dynamic defaults
