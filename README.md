@@ -17,7 +17,7 @@ This project also allows you to make security part of this process by introducin
 
 `rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities.
 
-`rewrite` is heavily inspired in the [Rails 3.0 routing][4].
+`rewrite` is heavily inspired in the [Rails 3.0 routing][4]. For a brief introduction to how rewriting works in MarkLogic please refer to MarkLogic's official guide on [Setting Up URL Rewriting for an HTTP App Server][11]
 
 ## Basics
 
@@ -70,9 +70,9 @@ In your application `root` folder place a file named `rewrite.xqy` with the foll
      
      r:selectedRoute( $routesCfg, $pathsCfg )
 
-Now if you do a request against your server for `/` your will de redirected to `/users.xqy?action=list`. If you request `/users/dscape` you will be dispatched to `/users.xqy?action=show&id=dscape`.
+If you do a request against your server for `/` your will de redirected to `/users.xqy?action=list`. If you request `/users/dscape` you will be dispatched to `/users.xqy?action=show&id=dscape`.
 
-If you want to save your routing & path configuration in a file you can use the `xdmp:document-get` function to retrieve the file:
+If you want to save your routing & path configuration in a file you can use the [xdmp:document-get][9] function to retrieve the file:
 
      xquery version "1.0-ml" ;
      
@@ -86,7 +86,9 @@ If you want to save your routing & path configuration in a file you can use the 
      
      r:selectedRoute( $routesCfg )
 
-You're done. Just don't forget to create your resource XQuery files. Here's an example of how your `users.xqy` might look like:
+You're done. Check "Supported Features" for a description of what the `routes.xml` file translates to. 
+
+Just don't forget to create your resource XQuery files. Here's an example of how your `users.xqy` might look like:
 
      xquery version "1.0-ml";
      
@@ -99,7 +101,11 @@ You're done. Just don't forget to create your resource XQuery files. Here's an e
      try          { xdmp:apply( h:function() ) } 
      catch ( $e ) { h:error( $e ) }
 
-Check features for a description of what the `routes.xml` file translates to. This section also doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
+This assumes a hypothetical `users.xqy` file that actually does the work of listing users and retrieving information about a user. 
+
+It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs or even create your fully fledged [MVC][10] framework.
+
+This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
 
 ## paths.xml
 You can use a `paths.xml` file to override the defaults for:
@@ -126,50 +132,10 @@ Here's an example of what a `paths.xml` might look like:
 
 Not yet. Include redirect-to because it can't be proven without an extra file.
 
-## Contribute
-
-Everyone is welcome to contribute. 
-
-1. Fork rewrite in github
-2. Create a new branch - `git checkout -b my-branch`
-3. Test your changes
-4. Commit your changes
-5. Push to your branch - `git push origin my-branch`
-6. Create an pull request
-
-The documentation is severely lacking. Feel free to contribute to the wiki if 
-you think something could be improved.
-
-### Running the tests
-
-To run the tests simply point an MarkLogic HTTP AppServer to the root of `rewrite`
-
-You can run the tests by accessing:
-(assuming 127.0.0.1 is the host and 8090 is the port)
-
-    http://127.0.0.1:8090/test/
-
-Make sure all the tests pass before sending in your pull request!
-
-### Report a bug
-
-If you want to contribute with a test case please file a [issue][1] and attach 
-the following information:
-
-* Request Method
-* Request Path
-* routes.xml
-* Request Headers (if relevant)
-* paths.xml (if relevant)
-
-This will help us be faster fixing the problem.
-
-This is not the actual test that we run (you can see a list of those in test/index.html) but it's all the information we need for a bug report.
-
 ## Supported Functionality
 
-In this section we describe the DSL that you can use to define your routes
-and what is generated based on it.
+In this section we describe the DSL that you can use to map your routes
+to where they should be dispatched. This is meant to give you overall understanding of the functionality without having to read the code.
 
 ### 1. Routes
 
@@ -182,7 +148,7 @@ and what is generated based on it.
 Let's start by defining some properties that are common amongst all verbs: get, put, post, delete, and head.
 
 #### 1.2.1.1. dynamic paths
-If you think about website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that if no other route matches we need to route all our first levels display user information.
+If you think about a website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that we need to route all our first levels display user information.
 
 `rewrite` exposes that functionality with dynamic paths. For the twitter example we would have something like:
 
@@ -194,7 +160,7 @@ If you think about website like twitter.com the first level path is given to use
                      </routes>
      Dispatches to : /resource/user.xqy?action=get&user=dscape
 
-The colon in `:user` lets the routing algorithm know that it shouldn't be evaluated as a string but rather as a dynamic resource. You can even combine dynamic and static paths:
+The colon in `:user` lets the routing algorithm know that `:user` shouldn't be evaluated as a string but rather as a dynamic resource. You can even combine dynamic resources with static paths:
 
      Request       : GET /user/dscape
      routes.xml    : <routes> 
@@ -205,9 +171,9 @@ The colon in `:user` lets the routing algorithm know that it shouldn't be evalua
      Dispatches to : /resource/user.xqy?action=get&id=dscape
 
 ####  1.2.1.2. bound parameters
-Two symbols are special `:resource` maps to the name of a controller in your application, and `:action` maps to the name of an action within that controller. When you supply both in a route it will be evaluated by calling that action on the specified resource. Everything else will be passed as field values and can be retrieve by invoking the `xdmp:get-request-value\1` function.
+There are two symbols that are special `:resource` maps to the name of a controller in your application, and `:action` maps to the name of an action within that controller. When you supply both in a route it will be evaluated by calling that action on the specified resource. Everything else will be passed as field values and can be retrieve by invoking the [xdmp:get-request-field][12] function.
 
-This is a route that will match `/users/get/1` to resource `users` action `get` id `1`:
+The following example is a route with bound parameters that will match `/users/get/1` to resource `users`, action `get`, id `1`:
 
      Request       : GET /users/get/1
      routes.xml    : <routes> 
@@ -216,18 +182,7 @@ This is a route that will match `/users/get/1` to resource `users` action `get` 
      Dispatches to : /resource/users.xqy?action=get&id=1
 
 ####  1.2.1.3 redirect-to
-The `rewriter` script cannot do redirect natively in MarkLogic Server 4.2. This means `rewrite` can only do as much in what comes to redirects.
-
-The current implementation sends all redirects to a `redirect` dispatcher with an url-encoded option `url` that contains the url. You can change the dispatcher name by using `paths.xml` (see paths.xml)
-
-Here's an example of the `redirect.xqy` dispatcher:
-
-     let $url := xdmp:get-request-field( "url" )
-     return if ( $url )
-            then xdmp:redirect-response( xdmp:url-decode( $url ) )
-            else fn:error()
-
-After setting up your `redirect.xqy` can redirect any simple request by using the `redirect-to` element inside your route:
+You can specify a redirect by using the `redirect-to` element inside your route:
 
      Request       : GET /google
      routes.xml    : <routes> 
@@ -240,6 +195,19 @@ After setting up your `redirect.xqy` can redirect any simple request by using th
                        <redirect>dispatcher</redirect>
                      </paths>
      Dispatches to : /dispatcher.xqy?url=http%3a//www.google.com
+
+The `rewriter` script cannot process re-directs natively in MarkLogic Server 4.2, as the output of any rewrite script must be a xs:string.
+
+The current implementation of `rewrite` sends all redirects to a `redirect` dispatcher with an url-encoded option `url` that contains the url. 
+
+The dispatcher can have any logic you like. Here is an example of a possible `redirect.xqy` dispatcher:
+
+     let $url := xdmp:get-request-field( "url" )
+     return if ( $url )
+            then xdmp:redirect-response( xdmp:url-decode( $url ) )
+            else fn:error()
+
+If you are using `redirect-to` don't forget to place a `redirect.xqy` in the resource directory. If you don't you will start to get 404 errors every-time a user tries to do a redirect.
 
 ####  ✔ 1.2.2. get 
      Request       : GET /list
@@ -277,7 +245,7 @@ After setting up your `redirect.xqy` can redirect any simple request by using th
      Dispatches to : /resource/server.xqy?action=ping
 
 ####  ✔ 1.3. resources
-So far all the features have been for handling a single case. However it's often the case when you want to perform all CRUD (Create, Read, Update, Delete) actions on a single resource, e.g. you want to create, read, update and delete users. RESTful architectures normally map those actions to HTTP verbs such as GET, PUT, POST and DELETE.
+It's often the case when you want to perform all CRUD (Create, Read, Update, Delete) actions on a single resource, e.g. you want to create, read, update and delete users. RESTful architectures normally map those actions to HTTP verbs such as GET, PUT, POST and DELETE.
 
 When you create a resource in `rewrite` you expose these actions:
 
@@ -351,12 +319,12 @@ The following example explains a single match against one of the multiple routes
      Dispatches to : /resource/users.xqy?action=put&id=1
 
 #### 1.3.1. includes
-Resources are really great cause they save you all the trouble of writing all those routes all the same (especially when order matters and you have to make sure you get it right).
+Resources are really great cause they save you all the trouble of writing all those routes all the time (especially when order matters and you have to make sure you get it right).
 
 #### 1.3.1.1. member
-Sometimes you will need to include one or more actions that are not part of the default, e.g. you might want to create a enable or disable one of your users. 
+Sometimes you will need to include one or more actions that are not part of the default resource, e.g. you might want to create a enable or disable one of your users. 
 
-So you need the resource to respond to `PUT /users/dscape/enabled` and understand that should re-enable the user. This action runs against a specific user is that's why we call it member include. Here's an example of how you can express that in `rewrite`:
+For this you need the resource to respond to `PUT /users/dscape/enabled` and understand that should re-enable the user. This action runs against a specific user - that's why we call it `member` include. Here's an example of how you can express that in `rewrite`:
 
      Request       : PUT /users/dscape/enabled
      routes.xml    : <routes> 
@@ -366,10 +334,10 @@ So you need the resource to respond to `PUT /users/dscape/enabled` and understan
                      </routes>
      Dispatches to : /resource/users.xqy?action=enabled&id=dscape
 
-If you are curious about the DELETE - it's simply there to allow you to disable a user the RESTful way. If you don't pass the `for` attribute then  GET will be created.
+If you are curious about the DELETE - it's simply there to allow you to disable a user the RESTful way. If you don't pass the `for` attribute then  GET will be the default.
 
 ####  1.3.1.2. set
-Another type of action you might ned to add are global actions, e.g. searching all users in full text. 
+Another type of action you might need to add are global actions, e.g. searching all users in full text. 
 
 We call this a set include and express it as follows:
 
@@ -382,12 +350,12 @@ We call this a set include and express it as follows:
                      </routes>
      Dispatches to : /resource/users.xqy?action=search&q=foo
 
-Member and set includes are not exclusive of each other and you can use as many as you want in your resources as you can see in the above example.
+Member and set includes are not exclusive of each other and you can use as many as you want in your resources.
 
 ####  ✔ 1.4. resource
-Some resource only expose a single item, e.g. your about page. While you might want to be able to perform CRUD actions on a about page there is only one about page so using resources would be useful.
+Some resource only expose a single item, e.g. your about page. While you might want to be able to perform CRUD actions on a about page there is only one about page so using `resources` (plural) would be useless.
 
-When you create a resource in `rewrite` you expose these actions:
+When you create a `resource` in `rewrite` you expose these actions:
 
 <table>
   <tr>
@@ -436,7 +404,7 @@ When you create a resource in `rewrite` you expose these actions:
 
 By default post, and edit actions are created. If you are creating a web-service and have no interest in them you can change this behavior by simply passing a `webservice="true"` attribute to the resources specification.
 
-The following example illustrate a resource
+The following example illustrates a resource:
 
      Request       : GET /about
      routes.xml    : <routes> 
@@ -465,7 +433,7 @@ As with `get`, `put`, etc, you can also create a dynamic resource by prefixing t
 
 ### 2. Extras
 
-####  ✔ 2.1. mixed paths
+###  ✔ 2.1. mixed paths
      Request       : GET /user/43
      routes.xml    : <routes> 
                        <get path="/user/:id">
@@ -474,27 +442,29 @@ As with `get`, `put`, etc, you can also create a dynamic resource by prefixing t
                      </routes>
      Dispatches to : /resource/user.xqy?action=show&id=43
 
-####  ✔ 2.2. static
+###  ✔ 2.2. static
 If no match is found `rewrite` will dispatch your query to a /static/ folder where you should keep all your static files. This way you don't have to create routing rules for static files.
 
      Request       : GET /css/style.css
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /static/css/style.css
 
-####  ✕ 2.3. constraints
+###  ✕ 2.3. constraints
 
 #### 2.3.1 bound parameters
-When you bound parameters you sometime need to validate that they are valid. For our twitter example we would want to validate that `dscape` is indeed a proper `:user`. In a simpler case you might want to check that an `:id` is a decimal number.
+When you bound parameters you sometime need to validate that they are valid. For our twitter example we would want to validate that `dscape` is indeed a proper `:user` using a [regular expression][13]. In a simpler case you might want to check that an `:id` is a decimal number.
 
 #### 2.3.2 permissions
 
 #### 2.3.3. xquery lambdas
-When you need more granularity than you might want to run an XQuery lambda function. An example for this need would be only show the user information that pertains to the currently logged-in user.
+The most flexible way of ensuring constraints is to run an XQuery lambda function. An example usage for a lambda in a contraint would be:
 
-####  ✕ content negotiation and other mvc goodies
+1. Only show the user information that pertains to the currently logged-in user
+
+###  ✕ content negotiation and other mvc goodies
 Content negotiations and other MVC goodies are deliberately not bundled in `rewrite`. 
 
-The objective of `rewrite` is only to simplify the mapping between external URLs and internal file paths. If you are curious about content negotiation and other topics you can look at some of my on-going work at the [dxc][5] project.
+The objective of `rewrite` is to simplify the mapping between external URLs and internal file paths. If you are curious about content negotiation and other topics you can look at some of my on-going work at the [dxc][5] project.
 
 For example, this is how content negotiation is currently implemented in the [http.xqy][6] library:
 
@@ -520,9 +490,49 @@ For example, this is how content negotiation is currently implemented in the [ht
 
 For your convenience this (and some other) functions that might be necessary to run an application with `rewrite` have be placed in the `/lib/helper.xqy` library.
 
-### Roadmap
+## Contribute
 
-If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. Also I'm very inclined to implement these features so it might be that a simple email is enough to motivate me to implement one of these features.
+Everyone is welcome to contribute. 
+
+1. Fork rewrite in github
+2. Create a new branch - `git checkout -b my-branch`
+3. Test your changes
+4. Commit your changes
+5. Push to your branch - `git push origin my-branch`
+6. Create an pull request
+
+The documentation is severely lacking. Feel free to contribute to the wiki if 
+you think something could be improved.
+
+### Running the tests
+
+To run the tests simply point an MarkLogic HTTP AppServer to the root of `rewrite`
+
+You can run the tests by accessing:
+(assuming 127.0.0.1 is the host and 8090 is the port)
+
+    http://127.0.0.1:8090/test/
+
+Make sure all the tests pass before sending in a pull request!
+
+### Report a bug
+
+If you want to contribute with a test case please file a [issue][1] and attach 
+the following information:
+
+* Request Method
+* Request Path
+* routes.xml
+* Request Headers (if relevant)
+* paths.xml (if relevant)
+
+This will help us be faster fixing the problem.
+
+This is not the actual test that we run (you can see a list of those in test/index.html) but it's all the information we need from a bug report.
+
+## Roadmap
+
+If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. I'm also very inclined to implement these features myself so it might be that a simple email is enough to motivation for me to get it done.
 
 * Generating Paths and URLs from code
 * Make singular resources map to plural controllers
@@ -535,18 +545,21 @@ If you are interested in any of these (or other) feature and don't want to wait 
 
 ### Known Limitations
 
-In this section we have the know limitations excluding the features that are not supported. To better understand what is supported refer to the Supported Features section.
+In this section we have the know limitations:
 
-* Special handlers like :id and :database are passed as normal parameters. This means your if your user/form provides an id as well you will have two :ids, one for the request and another for what comes from the post. The first one is always the special :id and the subsequent ones are whatever the user gave you. Need to write this up a little better
+#### Dynamic paths
 
+When using dynamic paths it is impractical to keep separate files for each user you have. So in the `/:user` example you map them to `user.xqy` and pass the username as a parameter, e.g. `user.xqy?user=dscape`. 
 
-#### Important Technicality 
+Please keep this in mind when developing your web applications. Other request fields can have the same name and your users can even inject fields, e.g. `user.xqy?user=dscape&user=hkstirman`. This framework will always give you the dynamic path as the first parameter so a safe way of avoiding people tampering with your logic is to get the first field only:
 
-We don't want to map each user to a file, just like we do for other requests. It's impractical to keep separate files for each user you have. So you map them  to `user.xqy` and pass the username as a parameter, e.g. `user.xqy?user=dscape`. Please keep this in mind when developing your webapps as other request fields can exist with the same name and your users can even inject other users in the field, e.g. `user.xqy?user=dscape&user=hkstirman`. This framework will always give you what was generated as the first parameter so a safe way of avoiding this is to simply get the first field named user:
+     xdmp:get-request-field( 'user' ) [1]
 
-    xdmp:get-request-field( 'user' ) [1]
+In the `user.xqy?user=dscape&user=hkstirman` this would return:
 
-On previous versions of `rewrite` dynamic routes where prefixed by `_`, so `user` would be `_user`. I choose to make it explicit so people stumble upon it faster and realize they still need to carefully protect themselves against  tricks like this.
+     dscape
+
+On previous versions of `rewrite` dynamic paths where prefixed by `_`, so `user` would be `_user`. I choose to make it explicit so people stumble upon it faster and realize they still need to carefully protect themselves against  hacks like this.
 
 ## Meta
 
@@ -565,3 +578,8 @@ On previous versions of `rewrite` dynamic routes where prefixed by `_`, so `user
 [6]: https://github.com/dscape/dxc/blob/master/http/http.xqy#L27
 [7]: http://developer.marklogic.com
 [8]: http://www.marklogic.com/services/training.html
+[9]: http://xqzone.marklogic.com/pubs/4.2/apidocs/Ext-7.html#xdmp:document-get
+[10]: http://en.wikipedia.org/wiki/Model–View–Controller
+[11]: http://docs.marklogic.com/4.2doc/docapp.xqy#display.xqy?fname=http://pubs/4.2doc/xml/dev_guide/appserver-control.xml%2313050
+[12]: http://developer.marklogic.com/pubs/4.2/apidocs/AppServerBuiltins.html#xdmp:get-request-field
+[13]: http://en.wikipedia.org/wiki/Regular_expression
