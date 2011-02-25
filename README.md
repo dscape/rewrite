@@ -99,8 +99,6 @@ and what is generated based on it.
 ### Routes
 
 ####  ✔ root 
-Root in an element for requests against the server root.
-
      Request       : GET /
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /resource/server.xqy?action=ping
@@ -135,11 +133,10 @@ Root in an element for requests against the server root.
                      </routes>
      Dispatches to : /resource/database.xqy?action=delete-all
 
-####  ✕ head 
-
-     Request       : 
-     routes.xml    : 
-     Dispatches to :
+####  ✔ head 
+     Request       : HEAD /
+     routes.xml    : <routes> <head> <to> server#ping </to> </head> </routes>
+     Dispatches to : /resource/server.xqy?action=ping
 
 ### Extras
 

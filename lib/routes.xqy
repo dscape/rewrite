@@ -50,7 +50,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
             fn:concat( $labels[$p], "=", xdmp:url-encode( $match ) )
          else (), $args ), "&amp;" )
       return fn:concat( $dispatchTo, 
-        if ($params) then fn:concat("?", $args) else "")
+        if ($params) then fn:concat("?", $params) else "")
     else (: didn't find a match so let's try the static folder :)
       fn:concat( fn:replace($staticDirectory, "/$", ""), $route ) } ;
 
@@ -64,13 +64,13 @@ declare function r:transform( $node ) {
     case element( put )      return r:verb( 'PUT',    $node )
     case element( post )     return r:verb( 'POST',   $node )
     case element( delete )   return r:verb( 'DELETE', $node )
+    case element( head )     return r:verb( 'HEAD',   $node )
     default                  return () (: ignored :) } ;
 
 declare function r:root( $node ) { 
-  r:mappingForHash( "GET /(\?.*)?$", $node ) } ;
+  r:mappingForHash( "GET /", $node ) } ;
 
 declare function r:verb( $verb, $node ) { 
-  xdmp:log(($verb, $node)),
   let $req := fn:concat( $verb, " ", $node/@path )
   return 
     if ( $node/to ) (: if there's a place to go :)
@@ -107,7 +107,7 @@ declare function r:generateRegularExpression( $node ) {
     fn:concat(
       fn:replace( $path ,  $dynamicRouteRegExp, $dynamicRouteRegExpReplacement ), 
       (: Fixing trailing slashes for everything but root node :)
-      if ( fn:tokenize( $path, " " ) [2] = "/" ) then "" else "(/)?" ) };
+      if ( fn:tokenize( $path, " " ) [2] = "/" ) then "(\?.*)?$" else "/?" ) };
 
 declare function r:extractLabels( $node ) {
   fn:analyze-string($node,  $dynamicRouteRegExp) //s:match/s:group/fn:string(.) } ;
