@@ -15,8 +15,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '' )
         , success:  function(d,t,j) { 
-          equals( d, '/resource/server.xqy?action=status', "OK" );
-           }
+          equals( d, '/resource/server.xqy?action=status', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("shouldn't match root", function() {
@@ -24,8 +23,16 @@
           url: rewriteUrl( 'GET', '/foo.jpg', 
             '<root>server#status</root>', '' )
         , success:  function(d,t,j) { 
-          equals( d, '/static/foo.jpg', "OK" );
-           }
+          equals( d, '/static/foo.jpg', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("root with arguments", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/?q=foo&foo=lander',
+            '<root>store#search</root>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/store.xqy?action=search&q=foo&foo=lander',
+            "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
         
@@ -35,8 +42,7 @@
           url: rewriteUrl( 'GET', '/list', 
             '<get path="/list"> <to> article#list </to> </get>', '' )
         , success:  function(d,t,j) { 
-          equals( d, '/resource/article.xqy?action=list', "OK" );
-           }
+          equals( d, '/resource/article.xqy?action=list', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
         
@@ -47,8 +53,7 @@
             '<put path="/upload"> <to> file#upload </to> </put>', '' )
         , type: 'PUT'
         , success:  function(d,t,j) { 
-          equals( d, '/resource/file.xqy?action=upload', "OK" );
-           }
+          equals( d, '/resource/file.xqy?action=upload', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       
@@ -59,8 +64,7 @@
             '<post path="/upload"> <to> file#upload </to> </post>', '' )
         , type: 'POST'
         , success:  function(d,t,j) { 
-          equals( d, '/resource/file.xqy?action=upload', "OK" );
-           }
+          equals( d, '/resource/file.xqy?action=upload', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       
@@ -71,8 +75,7 @@
             '<delete path="/all-dbs"> <to> db#del </to> </delete>', '' )
         , type: 'DELETE'
         , success:  function(d,t,j) { 
-          equals( d, '/resource/db.xqy?action=del', "OK" );
-           }
+          equals( d, '/resource/db.xqy?action=del', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       
@@ -83,20 +86,150 @@
             '<head path="/"> <to> server#ping </to> </head>', '' )
         , type: 'GET' // head doesnt return body
         , success:  function(d,t,j) { 
-          equals( d, '/resource/server.xqy?action=ping', "OK" );
-           }
+          equals( d, '/resource/server.xqy?action=ping', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       
+      module("resources") ;
+      asyncTest("get", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/users/5', 
+            '<resources name="users"/>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=get&id=5', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("index", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/users', 
+            '<resources name="users"/>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=index', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("index with trailing slash", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/users/', 
+            '<resources name="users"/>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=index', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("put", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/users/5', 
+            '<resources name="users"/>', '' )
+        , type: 'PUT' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=put&id=5', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("delete", function() {
+        $.ajax( {
+          url: rewriteUrl( 'DELETE', '/users/5', 
+            '<resources name="users"/>', '' )
+        , type: 'DELETE' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=delete&id=5', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("illegal post from webservice", function() {
+        $.ajax( {
+          url: rewriteUrl( 'POST', '/users', 
+            '<resources name="users" webservice="true"/>', '' )
+        , type: 'POST' 
+        , success:  function(d,t,j) { 
+          equals( d, '/static/users', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("post", function() {
+        $.ajax( {
+          url: rewriteUrl( 'POST', '/users', 
+            '<resources name="users"/>', '' )
+        , type: 'POST' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=post', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("new", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/users/new', 
+            '<resources name="users"/>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=new', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("edit", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/users/5/edit', 
+            '<resources name="users"/>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=edit&id=5', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("member include", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/users/5/enable', 
+            '<resources name="users">'+
+            '<memberInclude action="enable"/></resources>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("include with multiple verbs", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/users/5/enable', 
+            '<resources name="users">'+
+            '<memberInclude action="enable" for="DELETE,PUT"/>'+
+            '</resources>', '' )
+        , type: 'PUT' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("include with multiple verbs but none matches", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/users/5/enable', 
+            '<resources name="users">'+
+            '<memberInclude action="enable" for="DELETE,GET,POST"/>'+
+            '</resources>', '' )
+        , type: 'PUT' 
+        , success:  function(d,t,j) { 
+          notEqual( d, '/resource/users.xqy?action=enable&id=5', 
+            "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("include set", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/users/notify', 
+            '<resources name="users">'+
+            '<setInclude action="notify" for="PUT"/></resources>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=notify', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+
       module("dynamic") ;
-      asyncTest("dynamic search", function() {
+      asyncTest("dynamic search containing spaces", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/in love', 
             '<get path="/:q"> <to> story#search </to> </get>', '' )
         , type: 'GET' 
         , success:  function(d,t,j) { 
-          equals( d, '/resource/story.xqy?action=search?q=in%2blove', "OK" );
-           }
+          equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("dynamic id using slashes", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/file//Some/File', 
+            '<get path="/file/:id"> <to> file#get </to> </get>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
 
@@ -106,8 +239,7 @@
             '<get path="/user/:id"> <to> user#show </to> </get>', '' )
         , type: 'GET' 
         , success:  function(d,t,j) { 
-          equals( d, '/resource/user.xqy?action=show?id=43', "OK" );
-           }
+          equals( d, '/resource/user.xqy?action=show&id=43', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       
@@ -117,19 +249,37 @@
           url: rewriteUrl( 'GET', '/list/', 
             '<get path="/list"> <to> article#list </to> </get>', '' )
         , success:  function(d,t,j) { 
-          equals( d, '/resource/article.xqy?action=list', "OK" );
-           }
+          equals( d, '/resource/article.xqy?action=list', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
-      
+      asyncTest("complex set include", function() {
+        $.ajax( {
+          url: rewriteUrl( 'PUT', '/users/notify', 
+            '<resources name="users">'+
+            '<setInclude action="notify" for="PUT"/>'+
+            '<memberInclude action="notify" for="GET,PUT"/>'+
+            '</resources>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=notify', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("include", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/users/5/enable', 
+            '<resources name="users">'+
+            '<setInclude action="enable"/>' +
+            '<memberInclude action="enable"/></resources>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
       module("paths") ;
       asyncTest("Change resource directory to /controller/", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
           '<resourceDirectory>/controller/</resourceDirectory>' )
         , success:  function(d,t,j) { 
-          equals( d, '/controller/server.xqy?action=status', "OK" );
-           }
+          equals( d, '/controller/server.xqy?action=status', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("Change resource directory to /", function() {
@@ -137,8 +287,7 @@
           url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
           '<resourceDirectory>/</resourceDirectory>' )
         , success:  function(d,t,j) { 
-          equals( d, '/server.xqy?action=status', "OK" );
-           }
+          equals( d, '/server.xqy?action=status', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("Change resource directory to ()", function() {
@@ -146,8 +295,7 @@
           url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
           '<resourceDirectory/>' )
         , success:  function(d,t,j) { 
-          equals( d, 'server.xqy?action=status', "OK" );
-           }
+          equals( d, 'server.xqy?action=status', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("Change extension to .xq", function() {
@@ -155,8 +303,7 @@
            url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
            '<xqyExtension>xq</xqyExtension>' )
          , success:  function(d,t,j) { 
-           equals( d, '/resource/server.xq?action=status', "OK" );
-            }
+           equals( d, '/resource/server.xq?action=status', "OK" ); }
          , error:    function(j,t,e) { ok(false, "NOK") }
          , complete: function()      { start(); } }) }) ;
       asyncTest("Change static to /public/", function() {
@@ -165,8 +312,7 @@
              '<root>server#status</root>', '',
              '<staticDirectory>/public/</staticDirectory>' )
          , success:  function(d,t,j) { 
-           equals( d, '/public/css/style.css', "OK" );
-            }
+           equals( d, '/public/css/style.css', "OK" ); }
          , error:    function(j,t,e) { ok(false, "NOK") }
          , complete: function()      { start(); } }) }) ;
     }) ;

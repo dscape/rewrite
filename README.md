@@ -27,7 +27,7 @@ This project also tries to help you to make security part of this process by int
 2. Get the first that matched and redirect according to the rule (refer to functionality for a description of these rules)
 3. If none matched redirect to a directory with static files. This way if you can still serve your css and javascript files without having to create special rules for them. Simply place them in the /static/ directory of your application.
 
-Routes order matters, if one rules comes before other and both match the first match will be used. 
+Routes order matters, if one rules comes before other and both match the first match will be used. This is really important: It means for once that the `<root/>` should always be the last route in your DSL as it will match everything.
 
 Not all routes are born the same and some have dynamic names. For example when in twitter you want to match twitter.com/dscape to the user dscape. This is what we call a dynamic route and you write it like `/:user`. The colon lets the routing algorithm know that it shouldn't be evaluated as a string but rather as a dynamic resource. Neat right?
 
@@ -107,35 +107,58 @@ This is not the actual test that we run (you can see a list of those in test/ind
 In this section we describe the DSL that you can use to define your routes
 and what is generated based on it.
 
-### Routes
+### 1. Routes
 
-####  ✔ root 
+####  ✔ 1.1. root 
      Request       : GET /
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /resource/server.xqy?action=ping
 
-####  ✔ get 
+####  ✔ 1.2. get 
      Request       : GET /list
      routes.xml    : <routes> 
                        <get path="/list"> <to> article#list </to> </get>
                      </routes>
      Dispatches to : /resource/article.xqy?action=list
 
-####  ✔ put 
+#####  ✔ 1.2.1. dynamic paths
+Sometimes however you need the url to be flexible. If you think about website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that if no other route matches we need to route all our first levels to something that can display a single user.
+
+`rewrite` exposes that functionality with dynamic paths. For the twitter example we would have something like:
+
+     Request       : GET /dscape
+     routes.xml    : <routes> 
+                       <get path="/:user">
+                         <to> user#get </to>
+                       </get>
+                     </routes>
+     Dispatches to : /resource/user.xqy?action=get&user=dscape
+
+You can also combine dynamic and static paths:
+
+     Request       : GET /user/dscape
+     routes.xml    : <routes> 
+                       <get path="/user/:id">
+                         <to> user#get </to>
+                       </get>
+                     </routes>
+     Dispatches to : /resource/user.xqy?action=get&id=dscape
+
+####  ✔ 1.3. put 
      Request       : PUT /upload
      routes.xml    : <routes>
                        <put path="/upload"> <to> file#upload </to> </put>
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
-####  ✔ post
+####  ✔ 1.4. post
      Request       : POST /upload
      routes.xml    : <routes>
                        <post path="/upload"> <to> file#upload </to> </post>
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
-####  ✔ delete 
+####  ✔ 1.5. delete 
      Request       : DELETE /all-dbs
      routes.xml    : <routes>
                        <delete path="/all-dbs"> 
@@ -144,12 +167,12 @@ and what is generated based on it.
                      </routes>
      Dispatches to : /resource/database.xqy?action=delete-all
 
-####  ✔ head 
+####  ✔ 1.6. head 
      Request       : HEAD /
      routes.xml    : <routes> <head> <to> server#ping </to> </head> </routes>
      Dispatches to : /resource/server.xqy?action=ping
 
-####  ✕ resources
+####  ✔ 1.7. resources
 So far all the features have been for handling a single case. However it's often the case when you want to perform all CRUD (Create, Read, Update, Delete) actions on a single resource, e.g. you want to create, read, update and delete users. RESTful architectures normally map those actions to HTTP verbs such as GET, PUT, POST and DELETE.
 
 When you create a resource in `rewrite` you expose all these actions as follows:
@@ -159,61 +182,97 @@ When you create a resource in `rewrite` you expose all these actions as follows:
     <th>Verb</th>
     <th>Path</th>
     <th>Action</th>
-    <th>Default</th>
+    <th>Used in</th>
     <th>Notes</th>
   </tr>
   <tr>
     <td>GET</td>
     <td>/users</td>
     <td>index</td>
-    <td>Yes</td>
+    <td>Web-Services, Web-Applications</td>
     <td>Displays a list of all users</td>
   </tr>
   <tr>
     <td>GET</td>
     <td>/users/:id</td>
     <td>get</td>
-    <td>Yes</td>
+    <td>Web-Services, Web-Applications</td>
     <td>Display information about a specific user</td>
   </tr>
   <tr>
     <td>PUT</td>
     <td>/users/:id</td>
     <td>put</td>
-    <td>Yes</td>
+    <td>Web-Services, Web-Applications</td>
     <td>Creates or updates a user</td>
   </tr>
   <tr>
     <td>DELETE</td>
     <td>/users/:id</td>
     <td>delete</td>
-    <td>Yes</td>
+    <td>Web-Services, Web-Applications</td>
     <td>Deletes a user</td>
   </tr>
   <tr>
     <td>POST</td>
-    <td>/users/:id</td>
+    <td>/users</td>
     <td>post</td>
-    <td>No</td>
+    <td>Web-Applications</td>
     <td>No special meaning</td>
   </tr>
   <tr>
     <td>GET</td>
     <td>/users/new</td>
     <td>new</td>
-    <td>No</td>
-    <td>Return a form for creating a user. Not necessary in web-services</td>
+    <td>Web-Applications</td>
+    <td>Return a form for creating a user.</td>
   </tr>
   <tr>
     <td>GET</td>
     <td>/users/:id/edit</td>
     <td>edit</td>
-    <td>No</td>
-    <td>Return a form for editing the user. Not necessary in web-services</td>
+    <td>Web-Applications</td>
+    <td>Return a form for editing the user.</td>
   </tr>
 </table>
 
-By default
+By default post, new and edit actions are created. You can change this behavior by simply passing a `webservice="true"` attribute to the resources specification.
+
+The following example explains a single match against one of the multiple routes a resource creates. Please explore further examples (or try it out yourself) if you want to have a better understanding of resources.
+
+     Request       : PUT /users/1
+     routes.xml    : <routes> <resources name="users"/> </routes>
+     Dispatches to : /resource/users.xqy?action=put&id=1
+
+#####  ✔ 1.7.1. includes
+Resources are really great cause they save you all the trouble of writing all those routes all the same (especially when order matters and you have to make sure you get it right).
+
+######  ✔ 1.7.1.1. memberInclude
+However sometimes you will wish you could to include one or more actions that are not part of the default. For instance you might want to create a enable or disable one of your users. So you need the resource to respond to something like `PUT /users/dscape/enabled` and understand that should re-enable the user. An extra action that, like this one, runs against a specific user is what we call a member include. Here's an example of how you can express that in `rewrite`:
+
+     Request       : PUT /users/dscape/enabled
+     routes.xml    : <routes> 
+                       <resources name="users">
+                         <memberInclude action="enabled" for="PUT,DELETE"/>
+                       </resources>
+                     </routes>
+     Dispatches to : /resource/users.xqy?action=enabled&id=dscape
+
+If you are curious about the DELETE - it's simply there to allow you to disable a user the RESTful way. If you don't pass the `for` attribute then  GET will be created.
+
+######  ✔ 1.7.1.2. setInclude
+Another type of action you might want to add are global actions, actions that work in the scope of all users, e.g. searching all users. We call this a set include and express it as follows.
+
+     Request       : PUT /users/search?q=foo
+     routes.xml    : <routes> 
+                       <resources name="users">
+                         <memberInclude action="enabled" for="PUT,DELETE"/>
+                         <setInclude action="search"/>
+                       </resources>
+                     </routes>
+     Dispatches to : /resource/users.xqy?action=search&q=foo
+
+Member and set includes are not exclusive of each other and you can use as many as you want in your resources.
 
 ####  ✕ resource
 
@@ -222,17 +281,10 @@ By default
 
 ####  ✕ nested resources
 
+
+
 ####  ✕ redirect
 redirect to
-
-####  ✔ dynamic paths
-     Request       : GET /in%20love
-     routes.xml    : <routes> 
-                       <get path="/:q">
-                         <to> story#search </to>
-                       </get>
-                     </routes>
-     Dispatches to : /resource/story.xqy?action=search&q=in%2blove
 
 ####  ✔ mixed paths
      Request       : GET /user/43

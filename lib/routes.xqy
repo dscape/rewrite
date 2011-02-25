@@ -11,8 +11,8 @@ declare variable $xqyExtension        := 'xqy' ;
 declare variable $resourceActionSeparator       := "#" ;
 declare variable $dynamicRouteDelimiter         := ':' ;
 declare variable $dynamicRouteRegExp            := 
-  fn:concat( $dynamicRouteDelimiter, "([\w|\-|_]+)" ) ;
-declare variable $dynamicRouteRegExpReplacement := "([\\w|\\-|_|\\.]+)" ;
+  fn:concat( $dynamicRouteDelimiter, "([\w|\-|_|\s|:]+)" ) ;
+declare variable $dynamicRouteRegExpReplacement := "([\\w|\\-|_|\\s|:|\\.]+)" ;
 
 declare function r:selectedRoute( $routesCfg ) {
   r:selectedRoute( $routesCfg, xdmp:get-request-url(), 
@@ -41,7 +41,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
       let $regexp      := $selected/@regexp
       let $labels      := r:extractLabels( $route )
       let $labelValues := fn:analyze-string( $req, $regexp ) 
-        //s:match/s:group/fn:string(.)
+        //s:match/s:group/fn:string(.)        
       let $params := fn:string-join( (
         if ( $labelValues ) 
         then
@@ -50,7 +50,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
             fn:concat( $labels[$p], "=", xdmp:url-encode( $match ) )
          else (), $args ), "&amp;" )
       return fn:concat( $dispatchTo, 
-        if ($params) then fn:concat("?", $params) else "")
+        if ($params) then fn:concat("&amp;", $params) else "")
     else (: didn't find a match so let's try the static folder :)
       fn:concat( fn:replace($staticDirectory, "/$", ""), $route ) } ;
 
@@ -60,6 +60,7 @@ declare function r:mappings( $routesCfg ) {
 declare function r:transform( $node ) {
   typeswitch ( $node )
     case element( root )     return r:root( $node )
+    case element( resources ) return r:resources( $node )
     case element( get )      return r:verb( 'GET',    $node )
     case element( put )      return r:verb( 'PUT',    $node )
     case element( post )     return r:verb( 'POST',   $node )
@@ -80,8 +81,38 @@ declare function r:verb( $verb, $node ) {
     else r:mappingForDynamicRoute() (: purely dynamic route we need to figure it out :) 
 } ;
 
+declare function r:resources( $node ) {
+  let $resource   := $node/@name
+  let $webservice := $node/@webservice
+  let $index      := r:mapping( fn:concat('GET /', $resource),
+    r:resourceActionPath( $resource, 'index' ) )
+  let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
+    return r:mapping( fn:concat( $verb, ' /', $resource, '/:id' ), 
+      r:resourceActionPath( $resource, fn:lower-case($verb) ) )
+  let $post       := if ($webservice) then () else
+    r:mapping( fn:concat( 'POST /', $resource ), 
+      r:resourceActionPath( $resource, 'post' ) )
+  let $new        := if ($webservice) then () else
+    r:mapping( fn:concat( 'GET /', $resource, '/new' ), 
+      r:resourceActionPath( $resource, 'new' ) )
+  let $edit       := if ($webservice) then () else
+    r:mapping( fn:concat( 'GET /', $resource, '/:id/edit' ), 
+      r:resourceActionPath( $resource, 'edit' ) )
+  let $memberInc  := r:includes( $resource, $node/memberInclude, fn:true() )
+  let $setInc     := r:includes( $resource, $node/setInclude, fn:false() )
+  return ( $edit, $new, $memberInc, $setInc, $verbs, $post, $index ) };
+
 declare function r:mappingForRedirect( $req, $node ) { () };
 declare function  r:mappingForDynamicRoute() { () } ;
+
+declare function r:includes( $resource, $includes, $member ){
+  for $include in $includes
+    let $action := fn:data( $include/@action )
+    let $verbs  := fn:tokenize($include/@for, ',')
+    for $verb in (if($verbs) then $verbs else 'GET')
+      return r:mapping( fn:concat( $verb, " /", $resource, 
+        if( $member ) then "/:id/" else "/", $action ), 
+        r:resourceActionPath( $resource, $action ) ) };
 
 declare function r:mappingForHash( $req, $node ) { 
   let $resource   := r:resourceActionPair( $node ) [1]

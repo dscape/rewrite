@@ -9,14 +9,11 @@ declare variable $method := xdmp:get-request-field( 'method' )  ;
 declare variable $routes := xdmp:get-request-field( 'routes' )  ;
 declare variable $paths  := xdmp:get-request-field( 'paths'  )  ;
 
-xdmp:log(
-  (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", "JS>> uri:", 
-   $uri, "method: ", $method, "routes: ", $routes, "paths: ", $paths)
-),
+xdmp:log( fn:string-join( ("async >>", $method, $uri), " ") ),
 if ( $routes and $uri and $method )
 then 
   let $r-xml := <routes> { xdmp:unquote( $routes ) } </routes>
-  let $r-uri := xdmp:url-encode($uri)
+  let $r-uri := $uri
   return 
     if ($paths and fn:not($paths="undefined")) 
     then
