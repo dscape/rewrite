@@ -37,17 +37,25 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
     if ($selected) (: found a match, using the first :)
     then 
       let $route       := $selected/@key
-      let $dispatchTo  := $selected/@value
       let $regexp      := $selected/@regexp
       let $labels      := r:extractLabels( $route )
       let $labelValues := fn:analyze-string( $req, $regexp ) 
-        //s:match/s:group/fn:string(.)        
+        //s:match/s:group/fn:string(.)    
+      let $dispatchTo  := 
+        if ( $selected/@value = "" ) (: dynamic route, couldn't calculate :)
+        then
+          let $r := fn:index-of($labels, 'resource')
+          let $a := fn:index-of($labels, 'action')
+          return r:resourceActionPath( $labelValues[$r], $labelValues[$a] )
+        else $selected/@value 
       let $params := fn:string-join( (
         if ( $labelValues ) 
         then
           for $match at $p in $labelValues
+          let $label := $labels[$p]
+          where $label != 'resource' and $label != 'action'
           return 
-            fn:concat( $labels[$p], "=", xdmp:url-encode( $match ) )
+            fn:concat( $label, "=", xdmp:url-encode( $match ) )
          else (), $args ), "&amp;" )
       return fn:concat( $dispatchTo, 
         if ($params) then fn:concat("&amp;", $params) else "")
@@ -79,7 +87,7 @@ declare function r:verb( $verb, $node ) {
     then r:mappingForHash( $req, $node/to )
     else if ( $node/redirect-to ) (: if theres a redirect :) 
     then r:mappingForRedirect( $req, $node/redirect-to )
-    else r:mappingForDynamicRoute() (: purely dynamic route we need to figure it out :) 
+    else r:mappingForDynamicRoute( $node ) (: purely dynamic route we need to figure it out :) 
 } ;
 
 declare function r:resources( $node ) {
@@ -119,7 +127,15 @@ declare function r:resource( $node ) {
   return ( $edit, $memberInc, $verbs, $post ) };
 
 declare function r:mappingForRedirect( $req, $node ) { () };
-declare function  r:mappingForDynamicRoute() { () } ;
+declare function  r:mappingForDynamicRoute( $node ) { 
+  let $path       := $node/@path
+  let $resource   := fn:matches($path, ":resource")
+  let $action     := fn:matches($path, ":action")
+  return 
+    if ( $resource and $action )
+    then let $_ := xdmp:log('fddfdfdf') return
+      r:mapping( fn:concat( 'GET ', $path ), () )
+    else () } ;
 
 declare function r:includes( $resource, $includes, $member ){
   for $include in $includes
@@ -144,9 +160,12 @@ declare function r:resourceActionPath( $resource, $action ) {
     fn:replace( $resource, $dynamicRouteDelimiter, "" ), ".", 
     r:xqyExtension(), "?action=", $action ) } ;
 
-declare function r:mapping( $k, $v ) {
+declare function r:mapping( $k, $v ) { 
+  r:mapping( $k, $v, r:generateRegularExpression( $k ) ) };
+
+declare function r:mapping( $k, $v, $r ) {
   <mapping key="{ $k }" 
-    regexp="{ r:generateRegularExpression( $k ) }" value="{ $v }"/> };
+    regexp="{ $r }" value="{ $v }"/> };
 
 declare function r:generateRegularExpression( $node ) {
   let $path := fn:normalize-space($node)

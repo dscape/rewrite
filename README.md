@@ -127,14 +127,10 @@ and what is generated based on it.
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /resource/server.xqy?action=ping
 
-####  ✔ 1.2. get 
-     Request       : GET /list
-     routes.xml    : <routes> 
-                       <get path="/list"> <to> article#list </to> </get>
-                     </routes>
-     Dispatches to : /resource/article.xqy?action=list
+####  ✔ 1.2. verbs
+Let's start by defining some properties that are common amongst all verbs: get, put, post, delete, and head.
 
-#### 1.2.1. dynamic paths
+#### 1.2.1.1. dynamic paths
 If you think about website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that if no other route matches we need to route all our first levels display user information.
 
 `rewrite` exposes that functionality with dynamic paths. For the twitter example we would have something like:
@@ -157,21 +153,42 @@ The colon in `:user` lets the routing algorithm know that it shouldn't be evalua
                      </routes>
      Dispatches to : /resource/user.xqy?action=get&id=dscape
 
-####  ✔ 1.3. put 
+####  1.2.1.2. bound parameters
+Two symbols are special `:resource` maps to the name of a controller in your application, and `:action` maps to the name of an action within that controller. When you supply both in a route it will be evaluated by calling that action on the specified resource. Everything else will be passed as field values and can be retrieve by invoking the `xdmp:get-request-value\1` function.
+
+This is a route that will match `/users/get/1` to resource `users` action `get` id `1`:
+
+     Request       : GET /users/get/1
+     routes.xml    : <routes> 
+                       <get path="/:resource/:action/:id"/>
+                     </routes>
+     Dispatches to : /resource/users.xqy?action=get&id=1
+
+####  1.2.1.3 redirect-to
+You can redirect any simple request by using the `redirect-to` element inside your route.
+
+####  ✔ 1.2.2. get 
+     Request       : GET /list
+     routes.xml    : <routes> 
+                       <get path="/list"> <to> article#list </to> </get>
+                     </routes>
+     Dispatches to : /resource/article.xqy?action=list
+
+####  ✔ 1.2.3. put 
      Request       : PUT /upload
      routes.xml    : <routes>
                        <put path="/upload"> <to> file#upload </to> </put>
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
-####  ✔ 1.4. post
+####  ✔ 1.2.4. post
      Request       : POST /upload
      routes.xml    : <routes>
                        <post path="/upload"> <to> file#upload </to> </post>
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
-####  ✔ 1.5. delete 
+####  ✔ 1.2.5. delete 
      Request       : DELETE /all-dbs
      routes.xml    : <routes>
                        <delete path="/all-dbs"> 
@@ -180,12 +197,12 @@ The colon in `:user` lets the routing algorithm know that it shouldn't be evalua
                      </routes>
      Dispatches to : /resource/database.xqy?action=delete-all
 
-####  ✔ 1.6. head 
+####  ✔ 1.2.6. head 
      Request       : HEAD /
      routes.xml    : <routes> <head> <to> server#ping </to> </head> </routes>
      Dispatches to : /resource/server.xqy?action=ping
 
-####  ✔ 1.7. resources
+####  ✔ 1.3. resources
 So far all the features have been for handling a single case. However it's often the case when you want to perform all CRUD (Create, Read, Update, Delete) actions on a single resource, e.g. you want to create, read, update and delete users. RESTful architectures normally map those actions to HTTP verbs such as GET, PUT, POST and DELETE.
 
 When you create a resource in `rewrite` you expose these actions:
@@ -259,10 +276,10 @@ The following example explains a single match against one of the multiple routes
                      </routes>
      Dispatches to : /resource/users.xqy?action=put&id=1
 
-#### 1.7.1. includes
+#### 1.3.1. includes
 Resources are really great cause they save you all the trouble of writing all those routes all the same (especially when order matters and you have to make sure you get it right).
 
-#### 1.7.1.1. member
+#### 1.3.1.1. member
 Sometimes you will need to include one or more actions that are not part of the default, e.g. you might want to create a enable or disable one of your users. 
 
 So you need the resource to respond to `PUT /users/dscape/enabled` and understand that should re-enable the user. This action runs against a specific user is that's why we call it member include. Here's an example of how you can express that in `rewrite`:
@@ -277,7 +294,7 @@ So you need the resource to respond to `PUT /users/dscape/enabled` and understan
 
 If you are curious about the DELETE - it's simply there to allow you to disable a user the RESTful way. If you don't pass the `for` attribute then  GET will be created.
 
-####  1.7.1.2. set
+####  1.3.1.2. set
 Another type of action you might ned to add are global actions, e.g. searching all users in full text. 
 
 We call this a set include and express it as follows:
@@ -293,7 +310,7 @@ We call this a set include and express it as follows:
 
 Member and set includes are not exclusive of each other and you can use as many as you want in your resources as you can see in the above example.
 
-####  ✔ 1.8. resource
+####  ✔ 1.4. resource
 Some resource only expose a single item, e.g. your about page. While you might want to be able to perform CRUD actions on a about page there is only one about page so using resources would be useful.
 
 When you create a resource in `rewrite` you expose these actions:
@@ -353,7 +370,7 @@ The following example illustrate a resource
                      </routes>
      Dispatches to : /resource/about.xqy?action=get
 
-### 1.8.1. dynamic resource
+### 1.4.1. dynamic resource
 As with `get`, `put`, etc, you can also create a dynamic resource by prefixing the name with `:`. Here's an example of using this to create a database:
 
      Request       : PUT /documents
@@ -362,7 +379,7 @@ As with `get`, `put`, etc, you can also create a dynamic resource by prefixing t
                      </routes>
      Dispatches to : /resource/database.xqy?action=put&database=Documents
 
-### 1.8.2. member
+### 1.4.2. member
 
       Request       : PUT /car/ignition
       routes.xml    : <routes> 
@@ -399,12 +416,10 @@ By default the application will look for resources in `/resource/`, static in `/
      Dispatches to : /server.xqy?action=ping
 
 
-####  ✕ nested resources
 ####  ✕ content negotiation
 ####  ✕ redirect
 redirect to
-####  ✕ dynamic defaults
-/:controller/:action/:id
+
 ####  ✕ constraints
 You can run constraints against your routes to ensure they:
 

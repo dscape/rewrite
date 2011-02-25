@@ -329,7 +329,6 @@
             "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
-
       asyncTest("user id", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/user/43', 
@@ -339,6 +338,56 @@
           equals( d, '/resource/user.xqy?action=show&id=43', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
+      asyncTest(":controller :action", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/user/get', 
+            '<get path="/:resource/:action"/>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/user.xqy?action=get', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest(":controller ", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/user/get', 
+            '<get path="/:resource"/>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/static/user/get', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest(":controller :action :id", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/user/get/1', 
+            '<get path="/:resource/:action/:id"/>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest(":controller :id :action", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/user/1/edit', 
+            '<get path="/:resource/:id/:action"/>', '' )
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/user.xqy?action=edit&id=1', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+        asyncTest("static :controller :action :id", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/admin/user/get/1', 
+              '<get path="/admin/:resource/:action/:id"/>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("static :controller :action  static :id static", 
+          function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/admin/user/get/detail/1/jpg/picture', 
+             '<get ' +
+             'path="/admin/:resource/:action/detail/:id/:how/picture"/>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=get&id=1&how=jpg', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
       
       module("complex") ;
       asyncTest("route should match with and without trailing /", function() {
