@@ -138,10 +138,26 @@ and what is generated based on it.
      routes.xml    : <routes> <head> <to> server#ping </to> </head> </routes>
      Dispatches to : /resource/server.xqy?action=ping
 
+####  ✕ resource
+
+####  ✕ resources
+
+
 ### Extras
+
+####  ✕ nested resources
 
 ####  ✕ redirect
 redirect to
+
+####  ✔ dynamic paths
+     Request       : GET /in%20love
+     routes.xml    : <routes> 
+                       <get path="/:q">
+                         <to> story#search </to>
+                       </get>
+                     </routes>
+     Dispatches to : /resource/story.xqy?action=search&q=in%2blove
 
 ####  ✕ dynamic resources
 

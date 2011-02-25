@@ -88,6 +88,18 @@
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       
+      module("dynamic") ;
+      asyncTest("dynamic search", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/in love', 
+            '<get path="/:q"> <to> story#search </to> </get>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/story.xqy?action=search?q=in%2blove', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      
       module("complex") ;
       asyncTest("route should match with and without trailing /", function() {
         $.ajax( {
