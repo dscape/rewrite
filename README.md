@@ -43,14 +43,62 @@ the get route for the `/:user` will be matched before the get `/about`. To fix t
 
 ## Usage
 
-Not yet, hello world app
+Start by creating an HTTP Application Server in MarkLogic. In the `rewrite` input write `rewrite.xqy`
 
-* Install
-* Point app Server to rewrite
-* Makes routes and supporting XQuery
-* Done
+In your application `root` folder place a file named `rewrite.xqy` (assuming you stored the `routes.xqy` library in `/lib/`):
 
-Check features for a description of what the `routes.xml` file translates to. 
+     xquery version "1.0-ml" ;
+     
+     import module namespace r = "routes.xqy" at "/lib/routes.xqy" ;
+     
+     declare variable $routesCfg := 
+       <routes>
+         <root> users#list </root>
+         <get path="/users/:id">
+           <to> users#show </to>
+         </get>
+       </routes> ;
+     
+     declare variable $pathsCfg :=
+       <paths>
+         <resourceDirectory>/</resourceDirectory>
+         <xqyExtension>xq</xqyExtension>
+         <staticDirectory>/public/</staticDirectory>
+         <redirect>dispatcher</redirect>
+       </paths> ;
+     
+     r:selectedRoute( $routesCfg, $pathsCfg )
+
+Now if you do a request against your server for `/` your will de redirected to `/users.xqy?action=list`. If you request `/users/dscape` you will be dispatched to `/users.xqy?action=show&id=dscape`.
+
+If you want to save your routing & path configuration in a file you can use the `xdmp:document-get` function to retrieve the file:
+
+     xquery version "1.0-ml" ;
+     
+     import module namespace r = "routes.xqy" at "/lib/routes.xqy" ;
+     
+     declare function local:documentGet( $path ) { 
+       xdmp:document-get( fn:concat( xdmp:modules-root(), $path ) ) } ;
+     
+     declare variable $routesCfg := 
+       local:documentGet( "config/routes.xml" ) ;
+     
+     r:selectedRoute( $routesCfg )
+
+You're done. Just don't forget to create your resource XQuery files. Here's an example of how your `users.xqy` might look like:
+
+     xquery version "1.0-ml";
+     
+     import module namespace u = "user.xqy" at "/lib/user.xqy";
+     import module namespace h = "helper.xqy" at "/lib/helper.xqy";
+     
+     declare function local:list() { u:list() };
+     declare function local:get()  { u:get( h:id() ) } ;
+     
+     try          { xdmp:apply( h:function() ) } 
+     catch ( $e ) { h:error( $e ) }
+
+Check features for a description of what the `routes.xml` file translates to. This section also doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
 
 ## paths.xml
 You can use a `paths.xml` file to override the defaults for:
@@ -432,6 +480,16 @@ If no match is found `rewrite` will dispatch your query to a /static/ folder whe
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /static/css/style.css
 
+####  ✕ 2.3. constraints
+
+#### 2.3.1 bound parameters
+When you bound parameters you sometime need to validate that they are valid. For our twitter example we would want to validate that `dscape` is indeed a proper `:user`. In a simpler case you might want to check that an `:id` is a decimal number.
+
+#### 2.3.2 permissions
+
+#### 2.3.3. xquery lambdas
+When you need more granularity than you might want to run an XQuery lambda function. An example for this need would be only show the user information that pertains to the currently logged-in user.
+
 ####  ✕ content negotiation and other mvc goodies
 Content negotiations and other MVC goodies are deliberately not bundled in `rewrite`. 
 
@@ -440,7 +498,7 @@ The objective of `rewrite` is only to simplify the mapping between external URLs
 For example, this is how content negotiation is currently implemented in the [http.xqy][6] library:
 
      (: uses a default content type, no 406 errors :)
-     declare function local:negotiate-content-type( $accept, 
+     declare function local:negotiateContentType( $accept, 
        $supported-content-types, $default-content-type ) {
        let $ordered-accept-types :=
          for $media-range in fn:tokenize($accept, "\s*,\s*")
@@ -459,25 +517,20 @@ For example, this is how content negotiation is currently implemented in the [ht
                 return $sct) [1]
                 return $match, $default-content-type) [1] } ;
 
-####  ✕ constraints
-You can run constraints against your routes to ensure they:
-
-1. are of a certain datatype, e.g. :id is of type xs:integer
-2. match a certain regular expression, e.g. :id is [0-9]+
-3. will only be selected if an XQuery expression yielded fn:true()
-4. user has the right permissions
-
-Not yet, need more routes
+For your convenience this (and some other) functions that might be necessary to run an application with `rewrite` have be placed in the `/lib/helper.xqy` library.
 
 ### Roadmap
 
-If you are interested in any of these (or other) feature and don't want to wait just read the instructions
-on "Contribute" and send in your code
+If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. Also I'm very inclined to implement these features so it might be that a simple email is enough to motivate me to implement one of these features.
 
 * Generating Paths and URLs from code
 * Make singular resources map to plural controllers
-* Nested Resources
+* Extend constraints for <resource/>
+* Translated Paths
+* Route Globbing
 * Namespaces & Scopes, e.g. /admin/user/1/edit
+* Nested Resources
+* Restricting Resource(s) Routes
 
 ### Known Limitations
 
@@ -509,3 +562,5 @@ On previous versions of `rewrite` dynamic routes where prefixed by `_`, so `user
 [4]: http://edgeguides.rubyonrails.org/routing.html
 [5]: http://github.com/dscape/dxc
 [6]: https://github.com/dscape/dxc/blob/master/http/http.xqy#L27
+[7]: http://developer.marklogic.com
+[8]: http://www.marklogic.com/services/training.html
