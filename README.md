@@ -1,10 +1,10 @@
 # rewrite
 
-The purpose of `rewrite` is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing a intermediate layer that recognizes URLs and dispatches them to application code.
+The purpose of `rewrite` is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing an intermediate layer that recognizes URLs and dispatches them to application code.
 
-This way you can map a easy to write route like `/users/17` to an internal file uri like `/users.xqy?action=show&id=17`.
+This way you can map a route like `/users/17` to an internal file uri like `/users.xqy?action=show&id=17`.
 
-The way we define the routes is with a XML domain specific language (DSL) for routing intended to make routing logic simple and easy to maintain:
+The way we define the routes is with a XML domain specific language (DSL) intended to make routing logic simple and easy to maintain:
 
       <routes>
         <root> users#list </root>
@@ -13,7 +13,7 @@ The way we define the routes is with a XML domain specific language (DSL) for ro
         </get>
       </routes>
 
-This project also tries to help you to make security part of this process by introducing XQuery constraints in the DSL.
+This project also allows you to make security part of this process by introducing XQuery constraints in the DSL.
 
 `rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities.
 
@@ -43,12 +43,13 @@ the get route for the `/:user` will be matched before the get `/about`. To fix t
 
 ## Usage
 
-Start by creating an HTTP Application Server in MarkLogic. In the `rewrite` input write `rewrite.xqy`
+Start by creating an HTTP Application Server in MarkLogic. Put `rewrite.xqy` in the `rewrite` input.
 
-In your application `root` folder place a file named `rewrite.xqy` (assuming you stored the `routes.xqy` library in `/lib/`):
+In your application `root` folder place a file named `rewrite.xqy` with the following contents:
 
      xquery version "1.0-ml" ;
      
+     (: assuming you stored the routes.xqy library in /lib/ :)
      import module namespace r = "routes.xqy" at "/lib/routes.xqy" ;
      
      declare variable $routesCfg := 
