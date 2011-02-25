@@ -126,11 +126,14 @@ Root in an element for requests against the server root.
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
-####  ✕ delete 
-
-     Request       : 
-     routes.xml    : 
-     Dispatches to :
+####  ✔ delete 
+     Request       : DELETE /all-dbs
+     routes.xml    : <routes>
+                       <delete path="/all-dbs"> 
+                         <to> database#delete-all </to>
+                       </delete>
+                     </routes>
+     Dispatches to : /resource/database.xqy?action=delete-all
 
 ####  ✕ head 
 

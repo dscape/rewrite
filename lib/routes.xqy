@@ -60,10 +60,11 @@ declare function r:mappings( $routesCfg ) {
 declare function r:transform( $node ) {
   typeswitch ( $node )
     case element( root )     return r:root( $node )
-    case element( get )      return r:verb( 'GET',  $node )
-    case element( put )      return r:verb( 'PUT',  $node )
-    case element( post )     return r:verb( 'POST', $node )
-    default                  return () } ;
+    case element( get )      return r:verb( 'GET',    $node )
+    case element( put )      return r:verb( 'PUT',    $node )
+    case element( post )     return r:verb( 'POST',   $node )
+    case element( delete )   return r:verb( 'DELETE', $node )
+    default                  return () (: ignored :) } ;
 
 declare function r:root( $node ) { 
   r:mappingForHash( "GET /(\?.*)?$", $node ) } ;

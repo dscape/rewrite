@@ -51,7 +51,7 @@
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       
-      module("POST") ;
+      module("post") ;
       asyncTest("static post to", function() {
         $.ajax( {
           url: rewriteUrl( 'POST', '/upload', 
@@ -62,7 +62,19 @@
            }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
-        
+      
+      module("delete") ;
+      asyncTest("static delete to", function() {
+        $.ajax( {
+          url: rewriteUrl( 'DELETE', '/all-dbs', 
+            '<delete path="/all-dbs"> <to> db#del </to> </delete>', '' )
+        , type: 'DELETE'
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/db.xqy?action=del', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      
       module("paths") ;
       asyncTest("Change resource directory to /controller/", function() {
         $.ajax( {
