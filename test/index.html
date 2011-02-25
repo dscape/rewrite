@@ -50,6 +50,18 @@
            }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
+      
+      module("POST") ;
+      asyncTest("static post to", function() {
+        $.ajax( {
+          url: rewriteUrl( 'POST', '/upload', 
+            '<post path="/upload"> <to> file#upload </to> </post>', '' )
+        , type: 'POST'
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/file.xqy?action=upload', "OK" );
+           }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
         
       module("paths") ;
       asyncTest("Change resource directory to /controller/", function() {

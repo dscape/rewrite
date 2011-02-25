@@ -119,11 +119,12 @@ Root in an element for requests against the server root.
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
-####  ✕ post 
-
-     Request       : 
-     routes.xml    : 
-     Dispatches to :
+####  ✔ post
+     Request       : POST /upload
+     routes.xml    : <routes>
+                       <post path="/upload"> <to> file#upload </to> </post>
+                     </routes>
+     Dispatches to : /resource/file.xqy?action=upload
 
 ####  ✕ delete 
 
@@ -137,7 +138,7 @@ Root in an element for requests against the server root.
      routes.xml    : 
      Dispatches to :
 
-### More
+### Extras
 
 ####  ✕ redirect
 redirect to
@@ -153,6 +154,7 @@ You can run constraints against your routes to ensure they:
 1. are of a certain datatype, e.g. :id is of type xs:integer
 2. match a certain regular expression, e.g. :id is [0-9]+
 3. will only be selected if an XQuery expression yielded fn:true()
+4. user has the right permissions
 
 Not yet, need more routes
 
@@ -170,9 +172,6 @@ By default the application will look for resources in `/resource/`, static in `/
      routes.xml    : <routes> <root> server#version </root> </routes> 
      paths.xml     : <paths> <resourceDirectory>/</resourceDirectory> </paths>
      Dispatches to : /server.xqy?action=ping
-
-####  ✕ permissions
-MarkLogic permissions support
 
 ####  ✕ content negotiation
 
