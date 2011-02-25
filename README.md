@@ -58,6 +58,7 @@ You can use a `paths.xml` file to override the defaults for:
 1. Resource path (which defaults to /resource/), 
 2. xqy extension (which defaults to xqy)
 3. Static path (defaults to /static/). 
+4. Redirect resource name (defaults to redirect)
 
 To do so you can simply call the `r:selectedRoute\2` function:
 
@@ -69,11 +70,12 @@ Here's an example of what a `paths.xml` might look like:
        <resourceDirectory>/lib/</resourceDirectory>
        <xqyExtension>xq</xqyExtension>
        <staticDirectory>/public/</staticDirectory>
+       <redirect>dispatcher</redirect>
      </paths>
 
 ## Sample Application
 
-Not yet.
+Not yet. Include redirect-to because it can't be proven without an extra file.
 
 ## Contribute
 
@@ -165,7 +167,30 @@ This is a route that will match `/users/get/1` to resource `users` action `get` 
      Dispatches to : /resource/users.xqy?action=get&id=1
 
 ####  1.2.1.3 redirect-to
-You can redirect any simple request by using the `redirect-to` element inside your route.
+The `rewriter` script cannot do redirect natively in MarkLogic Server 4.2. This means `rewrite` can only do as much in what comes to redirects.
+
+The current implementation sends all redirects to a `redirect` dispatcher with an url-encoded option `url` that contains the url. You can change the dispatcher name by using `paths.xml` (see paths.xml)
+
+Here's an example of the `redirect.xqy` dispatcher:
+
+     let $url := xdmp:get-request-field( "url" )
+     return if ( $url )
+            then xdmp:redirect-response( xdmp:url-decode( $url ) )
+            else fn:error()
+
+After setting up your `redirect.xqy` can redirect any simple request by using the `redirect-to` element inside your route:
+
+     Request       : GET /google
+     routes.xml    : <routes> 
+                       <get path="/google">
+                         <redirect-to> http://www.google.com </redirect-to> 
+                       </get>
+                     </routes>
+     paths.xml     : <paths>
+                       <resourceDirectory>/</resourceDirectory>
+                       <redirect>dispatcher</redirect>
+                     </paths>
+     Dispatches to : /dispatcher.xqy?url=http%3a//www.google.com
 
 ####  ✔ 1.2.2. get 
      Request       : GET /list
@@ -407,19 +432,7 @@ If no match is found `rewrite` will dispatch your query to a /static/ folder whe
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /static/css/style.css
 
-####  ✔ 2.3. paths
-By default the application will look for resources in `/resource/`, static in `/static/` and will use the `.xqy` extension for XQuery files. You can change this by providing a `paths.xml` file:
-
-     Request       : GET /
-     routes.xml    : <routes> <root> server#version </root> </routes> 
-     paths.xml     : <paths> <resourceDirectory>/</resourceDirectory> </paths>
-     Dispatches to : /server.xqy?action=ping
-
-
 ####  ✕ content negotiation
-####  ✕ redirect
-redirect to
-
 ####  ✕ constraints
 You can run constraints against your routes to ensure they:
 
@@ -439,6 +452,7 @@ on "Contribute" and send in your code
 * Make singular resources map to plural controllers
 * Nested Resources
 * Namespaces & Scopes, e.g. /admin/user/1/edit
+* Redirect-to is not supported as it requires a `dispatcher.xqy`. See sample application for an example of a working redirect-to.
 
 ### Known Limitations
 

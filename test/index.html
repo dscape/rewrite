@@ -299,6 +299,32 @@
             "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
+        
+      module("redirects") ;
+      asyncTest("changing redirect dispatcher", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/google', 
+            '<get path="/google">' +
+            '<redirect-to> http://www.google.com </redirect-to> </get>', '',
+            '<resourceDirectory>/</resourceDirectory>'+
+            '<redirect>dispatcher</redirect>' )
+        , success:  function(d,t,j) { 
+          equal( d, '/dispatcher.xqy?url=http%3a//www.google.com', 
+            "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("simple redirect", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/google', 
+            '<get path="/google">' +
+            '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
+        , success:  function(d,t,j) { 
+          equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com', 
+            "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+
+/* redirect simple, redirect changing dispatcher */
 
       module("dynamic") ;
       asyncTest("search containing spaces", function() {

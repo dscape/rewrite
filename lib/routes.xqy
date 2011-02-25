@@ -7,6 +7,7 @@ declare namespace
 declare variable $resourceDirectory   := "/resource/" ;
 declare variable $staticDirectory     := '/static/' ;
 declare variable $xqyExtension        := 'xqy' ;
+declare variable $redirectResource    := 'redirect' ;
 
 declare variable $resourceActionSeparator       := "#" ;
 declare variable $dynamicRouteDelimiter         := ':' ;
@@ -86,7 +87,7 @@ declare function r:verb( $verb, $node ) {
     if ( $node/to ) (: if there's a place to go :)
     then r:mappingForHash( $req, $node/to )
     else if ( $node/redirect-to ) (: if theres a redirect :) 
-    then r:mappingForRedirect( $req, $node/redirect-to )
+    then r:mappingForRedirect( $req, $node )
     else r:mappingForDynamicRoute( $node ) (: purely dynamic route we need to figure it out :) 
 } ;
 
@@ -126,14 +127,20 @@ declare function r:resource( $node ) {
   let $memberInc  := r:includes( $resource, $node/member, fn:false() )
   return ( $edit, $memberInc, $verbs, $post ) };
 
-declare function r:mappingForRedirect( $req, $node ) { () };
+declare function r:mappingForRedirect( $req, $node ) {
+  let $redirect-to := fn:normalize-space( $node/redirect-to )
+  let $k           := fn:concat( 'GET ', $node/@path )
+  return r:mapping( $k, fn:concat( r:resourceDirectory(), 
+    r:redirectResource(), ".", r:xqyExtension(), 
+    '?url=', xdmp:url-encode($redirect-to) ) ) };
+
 declare function  r:mappingForDynamicRoute( $node ) { 
   let $path       := $node/@path
   let $resource   := fn:matches($path, ":resource")
   let $action     := fn:matches($path, ":action")
   return 
     if ( $resource and $action )
-    then let $_ := xdmp:log('fddfdfdf') return
+    then 
       r:mapping( fn:concat( 'GET ', $path ), () )
     else () } ;
 
@@ -182,8 +189,12 @@ declare function r:setDefaults( $defaultCfg ) {
   let $resourceDirectoryOverride   := $defaultCfg //resourceDirectory   [1]
   let $staticDirectoryOverride     := $defaultCfg //staticDirectory     [1]
   let $xqyExtensionOverride        := $defaultCfg //xqyExtension        [1]
+  let $redirectResourceOverride    := $defaultCfg //redirect            [1]
   return 
-    ( if ( $resourceDirectoryOverride ) 
+    ( if ( $redirectResourceOverride ) 
+      then xdmp:set( $redirectResource, $redirectResourceOverride/fn:string() )
+      else (),
+      if ( $resourceDirectoryOverride ) 
       then xdmp:set( $resourceDirectory, $resourceDirectoryOverride/fn:string() )
       else (),
       if ( $staticDirectoryOverride ) 
@@ -194,5 +205,6 @@ declare function r:setDefaults( $defaultCfg ) {
       else () ) } ;
 
 declare function r:resourceDirectory()   { $resourceDirectory } ;
-declare function r:staticDirectory()     { $staticDirectory } ;
-declare function r:xqyExtension()        { $xqyExtension } ;
+declare function r:staticDirectory()     { $staticDirectory   } ;
+declare function r:xqyExtension()        { $xqyExtension      } ;
+declare function r:redirectResource()    { $redirectResource  } ;
