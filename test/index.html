@@ -301,7 +301,7 @@
         , complete: function()      { start(); } }) }) ;
 
       module("dynamic") ;
-      asyncTest("dynamic search containing spaces", function() {
+      asyncTest("search containing spaces", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/in love', 
             '<get path="/:q"> <to> story#search </to> </get>', '' )
@@ -310,13 +310,23 @@
           equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
-      asyncTest("dynamic id using slashes", function() {
+      asyncTest("id using slashes", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/file//Some/File', 
             '<get path="/file/:id"> <to> file#get </to> </get>', '' )
         , type: 'GET' 
         , success:  function(d,t,j) { 
           equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
+        , error:    function(j,t,e) { ok(false, "NOK") }
+        , complete: function()      { start(); } }) }) ;
+      asyncTest("resource", function() {
+        $.ajax( {
+          url: rewriteUrl( 'GET', '/Documents', 
+            '<resource name=":database"/>', '' )
+        , type: 'GET' 
+        , success:  function(d,t,j) { 
+          equals( d, '/resource/database.xqy?action=get&database=Documents',
+            "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
 
@@ -360,6 +370,7 @@
           equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
+        
       module("paths") ;
       asyncTest("Change resource directory to /controller/", function() {
         $.ajax( {

@@ -353,7 +353,16 @@ The following example illustrate a resource
                      </routes>
      Dispatches to : /resource/about.xqy?action=get
 
-### 1.8.1. include
+### 1.8.1. dynamic resource
+As with `get`, `put`, etc, you can also create a dynamic resource by prefixing the name with `:`. Here's an example of using this to create a database:
+
+     Request       : PUT /documents
+     routes.xml    : <routes> 
+                       <resource name=":database"/> 
+                     </routes>
+     Dispatches to : /resource/database.xqy?action=put&database=Documents
+
+### 1.8.2. include
 For singular resource `include` acts like a `memberInclude` as there is not set to consider:
 
       Request       : PUT /car/ignition
@@ -392,7 +401,6 @@ By default the application will look for resources in `/resource/`, static in `/
 
 
 ####  ✕ nested resources
-####  ✕ dynamic resources
 ####  ✕ content negotiation
 ####  ✕ redirect
 redirect to
