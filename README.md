@@ -1,16 +1,27 @@
 # rewrite
 
-The purpose of the rewrite script is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing a intermediate layer that recognizes URLs and dispatches them to application code.
+The purpose of the `rewrite` script is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing a intermediate layer that recognizes URLs and dispatches them to application code.
+
+This way you can map a easy to write route like `/users/17` to an internal file uri like `/users.xqy?action=show&id=17`.
+
+The way we define the routes is with a small XML domain specific language (DSL) for routing:
+
+      <routes>
+        <root> users#list </root>
+        <get path="/users/:id">
+          <to> users#show </to>
+        </get>
+      </routes>
 
 This project also tries to help you to make security part of this process by introducing XQuery constraints.
 
-rewrite is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities.
+`rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities.
 
-rewrite is heavily inspired in the [Rails 3.0 routing][4].
+`rewrite` is heavily inspired in the [Rails 3.0 routing][4].
 
 ## Basics
 
-rewrite is a small DSL to make routing logic simple and easy to maintain. The logic behind is is:
+`rewrite` is a small DSL to make routing logic simple and easy to maintain. The logic behind is is:
 
 1. Check the routes that match a specific request
 2. Get the first that matched and redirect according to the rule (refer to functionality for a description of these rules)
@@ -26,7 +37,7 @@ We don't want to map each user to a file, just like we do for other requests. It
 
     xdmp:get-request-field( 'user' ) [1]
 
-On previous versions of rewrite dynamic routes where prefixed by `_`, so `user` would be `_user`. I choose to make it explicit so people stumble upon it faster and realize they still need to carefully protect themselves against  tricks like this.
+On previous versions of `rewrite` dynamic routes where prefixed by `_`, so `user` would be `_user`. I choose to make it explicit so people stumble upon it faster and realize they still need to carefully protect themselves against  tricks like this.
 
 ## Usage
 
@@ -67,7 +78,7 @@ you think something could be improved.
 
 ### Running the tests
 
-To run the tests simply point an MarkLogic HTTP AppServer to the root of rewrite
+To run the tests simply point an MarkLogic HTTP AppServer to the root of `rewrite`
 
 You can run the tests by accessing:
 (assuming 127.0.0.1 is the host and 8090 is the port)
@@ -138,9 +149,73 @@ and what is generated based on it.
      routes.xml    : <routes> <head> <to> server#ping </to> </head> </routes>
      Dispatches to : /resource/server.xqy?action=ping
 
-####  ✕ resource
-
 ####  ✕ resources
+So far all the features have been for handling a single case. However it's often the case when you want to perform all CRUD (Create, Read, Update, Delete) actions on a single resource, e.g. you want to create, read, update and delete users. RESTful architectures normally map those actions to HTTP verbs such as GET, PUT, POST and DELETE.
+
+When you create a resource in `rewrite` you expose all these actions as follows:
+
+<table>
+  <tr>
+    <th>Verb</th>
+    <th>Path</th>
+    <th>Action</th>
+    <th>Default</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/users</td>
+    <td>index</td>
+    <td>Yes</td>
+    <td>Displays a list of all users</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/users/:id</td>
+    <td>get</td>
+    <td>Yes</td>
+    <td>Display information about a specific user</td>
+  </tr>
+  <tr>
+    <td>PUT</td>
+    <td>/users/:id</td>
+    <td>put</td>
+    <td>Yes</td>
+    <td>Creates or updates a user</td>
+  </tr>
+  <tr>
+    <td>DELETE</td>
+    <td>/users/:id</td>
+    <td>delete</td>
+    <td>Yes</td>
+    <td>Deletes a user</td>
+  </tr>
+  <tr>
+    <td>POST</td>
+    <td>/users/:id</td>
+    <td>post</td>
+    <td>No</td>
+    <td>No special meaning</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/users/new</td>
+    <td>new</td>
+    <td>No</td>
+    <td>Return a form for creating a user. Not necessary in web-services</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/users/:id/edit</td>
+    <td>edit</td>
+    <td>No</td>
+    <td>Return a form for editing the user. Not necessary in web-services</td>
+  </tr>
+</table>
+
+By default
+
+####  ✕ resource
 
 
 ### Extras
@@ -184,7 +259,7 @@ You can run constraints against your routes to ensure they:
 Not yet, need more routes
 
 ####  ✔ static
-If no match is found rewrite will dispatch your query to a /static/ folder where you should keep all your static files. This way you don't have to create routing rules for static files.
+If no match is found `rewrite` will dispatch your query to a /static/ folder where you should keep all your static files. This way you don't have to create routing rules for static files.
 
      Request       : GET /css/style.css
      routes.xml    : <routes> <root> server#version </root> </routes> 
