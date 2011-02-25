@@ -356,13 +356,13 @@ The following example illustrate a resource
 ### 1.8.1. include
 For singular resource `include` acts like a `memberInclude` as there is not set to consider:
 
-Request       : PUT /car/ignition
-routes.xml    : <routes> 
-                  <resources name="car">
-                    <include action="ignition" for="PUT,DELETE"/>
-                  </resources>
-                </routes>
-Dispatches to : /resource/users.xqy?action=ignition
+      Request       : PUT /car/ignition
+      routes.xml    : <routes> 
+                        <resources name="car">
+                          <include action="ignition" for="PUT,DELETE"/>
+                        </resources>
+                      </routes>
+      Dispatches to : /resource/users.xqy?action=ignition
 
 ### 2. Extras
 
