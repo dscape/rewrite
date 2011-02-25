@@ -1,10 +1,10 @@
 # rewrite
 
-The purpose of the `rewrite` script is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing a intermediate layer that recognizes URLs and dispatches them to application code.
+The purpose of `rewrite` is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing a intermediate layer that recognizes URLs and dispatches them to application code.
 
 This way you can map a easy to write route like `/users/17` to an internal file uri like `/users.xqy?action=show&id=17`.
 
-The way we define the routes is with a small XML domain specific language (DSL) for routing:
+The way we define the routes is with a XML domain specific language (DSL) for routing intended to make routing logic simple and easy to maintain:
 
       <routes>
         <root> users#list </root>
@@ -13,7 +13,7 @@ The way we define the routes is with a small XML domain specific language (DSL) 
         </get>
       </routes>
 
-This project also tries to help you to make security part of this process by introducing XQuery constraints.
+This project also tries to help you to make security part of this process by introducing XQuery constraints in the DSL.
 
 `rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities.
 
@@ -21,23 +21,15 @@ This project also tries to help you to make security part of this process by int
 
 ## Basics
 
-`rewrite` is a small DSL to make routing logic simple and easy to maintain. The logic behind is is:
+`rewrite` runs as follow:
 
 1. Check the routes that match a specific request
-2. Get the first that matched and redirect according to the rule (refer to functionality for a description of these rules)
+2. Get the first that matched and redirect according to the rule
 3. If none matched redirect to a directory with static files. This way if you can still serve your css and javascript files without having to create special rules for them. Simply place them in the /static/ directory of your application.
 
-Routes order matters, if one rules comes before other and both match the first match will be used. This is really important: It means for once that the `<root/>` should always be the last route in your DSL as it will match everything.
+Routes order matters, if one rules comes before other and both match the first match will be used. This is really important: It means that the `<root/>` should always be the last route in your DSL as it will match everything.
 
 Not all routes are born the same and some have dynamic names. For example when in twitter you want to match twitter.com/dscape to the user dscape. This is what we call a dynamic route and you write it like `/:user`. The colon lets the routing algorithm know that it shouldn't be evaluated as a string but rather as a dynamic resource. Neat right?
-
-#### Important Technicality 
-
-We don't want to map each user to a file, just like we do for other requests. It's impractical to keep separate files for each user you have. So you map them  to `user.xqy` and pass the username as a parameter, e.g. `user.xqy?user=dscape`. Please keep this in mind when developing your webapps as other request fields can exist with the same name and your users can even inject other users in the field, e.g. `user.xqy?user=dscape&user=hkstirman`. This framework will always give you what was generated as the first parameter so a safe way of avoiding this is to simply get the first field named user:
-
-    xdmp:get-request-field( 'user' ) [1]
-
-On previous versions of `rewrite` dynamic routes where prefixed by `_`, so `user` would be `_user`. I choose to make it explicit so people stumble upon it faster and realize they still need to carefully protect themselves against  tricks like this.
 
 ## Usage
 
@@ -121,7 +113,7 @@ and what is generated based on it.
                      </routes>
      Dispatches to : /resource/article.xqy?action=list
 
-#####  ✔ 1.2.1. dynamic paths
+##### 1.2.1. dynamic paths
 Sometimes however you need the url to be flexible. If you think about website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that if no other route matches we need to route all our first levels to something that can display a single user.
 
 `rewrite` exposes that functionality with dynamic paths. For the twitter example we would have something like:
@@ -175,7 +167,7 @@ You can also combine dynamic and static paths:
 ####  ✔ 1.7. resources
 So far all the features have been for handling a single case. However it's often the case when you want to perform all CRUD (Create, Read, Update, Delete) actions on a single resource, e.g. you want to create, read, update and delete users. RESTful architectures normally map those actions to HTTP verbs such as GET, PUT, POST and DELETE.
 
-When you create a resource in `rewrite` you expose all these actions as follows:
+When you create a resource in `rewrite` you expose these actions as follows:
 
 <table>
   <tr>
@@ -236,19 +228,23 @@ When you create a resource in `rewrite` you expose all these actions as follows:
   </tr>
 </table>
 
-By default post, new and edit actions are created. You can change this behavior by simply passing a `webservice="true"` attribute to the resources specification.
+By default post, new and edit actions are created. If you are creating a web-service and have no interest in them you can change this behavior by simply passing a `webservice="true"` attribute to the resources specification.
 
 The following example explains a single match against one of the multiple routes a resource creates. Please explore further examples (or try it out yourself) if you want to have a better understanding of resources.
 
      Request       : PUT /users/1
-     routes.xml    : <routes> <resources name="users"/> </routes>
+     routes.xml    : <routes> 
+                       <resources name="users" webservice="true"/> 
+                     </routes>
      Dispatches to : /resource/users.xqy?action=put&id=1
 
-#####  ✔ 1.7.1. includes
+#### 1.7.1. includes
 Resources are really great cause they save you all the trouble of writing all those routes all the same (especially when order matters and you have to make sure you get it right).
 
-######  ✔ 1.7.1.1. memberInclude
-However sometimes you will wish you could to include one or more actions that are not part of the default. For instance you might want to create a enable or disable one of your users. So you need the resource to respond to something like `PUT /users/dscape/enabled` and understand that should re-enable the user. An extra action that, like this one, runs against a specific user is what we call a member include. Here's an example of how you can express that in `rewrite`:
+#### 1.7.1.1. memberInclude
+Sometimes you will need to include one or more actions that are not part of the default, e.g. you might want to create a enable or disable one of your users. 
+
+So you need the resource to respond to `PUT /users/dscape/enabled` and understand that should re-enable the user. This action runs against a specific user is that's why we call it member include. Here's an example of how you can express that in `rewrite`:
 
      Request       : PUT /users/dscape/enabled
      routes.xml    : <routes> 
@@ -260,8 +256,10 @@ However sometimes you will wish you could to include one or more actions that ar
 
 If you are curious about the DELETE - it's simply there to allow you to disable a user the RESTful way. If you don't pass the `for` attribute then  GET will be created.
 
-######  ✔ 1.7.1.2. setInclude
-Another type of action you might want to add are global actions, actions that work in the scope of all users, e.g. searching all users. We call this a set include and express it as follows.
+####  1.7.1.2. setInclude
+Another type of action you might ned to add are global actions, e.g. searching all users in full text. 
+
+We call this a set include and express it as follows:
 
      Request       : PUT /users/search?q=foo
      routes.xml    : <routes> 
@@ -272,21 +270,13 @@ Another type of action you might want to add are global actions, actions that wo
                      </routes>
      Dispatches to : /resource/users.xqy?action=search&q=foo
 
-Member and set includes are not exclusive of each other and you can use as many as you want in your resources.
+Member and set includes are not exclusive of each other and you can use as many as you want in your resources as you can see in the above example.
 
 ####  ✕ resource
 
+### 2. Extras
 
-### Extras
-
-####  ✕ nested resources
-
-
-
-####  ✕ redirect
-redirect to
-
-####  ✔ mixed paths
+####  ✔ 2.1. mixed paths
      Request       : GET /user/43
      routes.xml    : <routes> 
                        <get path="/user/:id">
@@ -295,11 +285,29 @@ redirect to
                      </routes>
      Dispatches to : /resource/user.xqy?action=show&id=43
 
-####  ✕ dynamic resources
+####  ✔ 2.2. static
+If no match is found `rewrite` will dispatch your query to a /static/ folder where you should keep all your static files. This way you don't have to create routing rules for static files.
 
+     Request       : GET /css/style.css
+     routes.xml    : <routes> <root> server#version </root> </routes> 
+     Dispatches to : /static/css/style.css
+
+####  ✔ 2.3. paths
+By default the application will look for resources in `/resource/`, static in `/static/` and will use the `.xqy` extension for XQuery files. You can change this by providing a `paths.xml` file:
+
+     Request       : GET /
+     routes.xml    : <routes> <root> server#version </root> </routes> 
+     paths.xml     : <paths> <resourceDirectory>/</resourceDirectory> </paths>
+     Dispatches to : /server.xqy?action=ping
+
+
+####  ✕ nested resources
+####  ✕ dynamic resources
+####  ✕ content negotiation
+####  ✕ redirect
+redirect to
 ####  ✕ dynamic defaults
 /:controller/:action/:id
-
 ####  ✕ constraints
 You can run constraints against your routes to ensure they:
 
@@ -309,23 +317,6 @@ You can run constraints against your routes to ensure they:
 4. user has the right permissions
 
 Not yet, need more routes
-
-####  ✔ static
-If no match is found `rewrite` will dispatch your query to a /static/ folder where you should keep all your static files. This way you don't have to create routing rules for static files.
-
-     Request       : GET /css/style.css
-     routes.xml    : <routes> <root> server#version </root> </routes> 
-     Dispatches to : /static/css/style.css
-
-####  ✔ paths
-By default the application will look for resources in `/resource/`, static in `/static/` and will use the `.xqy` extension for XQuery files. You can change this by providing a `paths.xml` file:
-
-     Request       : GET /
-     routes.xml    : <routes> <root> server#version </root> </routes> 
-     paths.xml     : <paths> <resourceDirectory>/</resourceDirectory> </paths>
-     Dispatches to : /server.xqy?action=ping
-
-####  ✕ content negotiation
 
 ### Roadmap
 
@@ -340,6 +331,15 @@ In this section we have the know limitations excluding the features that are not
 To better understand what is supported refer to the Supported Features section
 
 * Special handlers like :id and :database are passed as normal parameters. This means your if your user/form provides an id as well you will have two :ids, one for the request and another for what comes from the post. The first one is always the special :id and the subsequent ones are whatever the user gave you. Need to write this up a little better
+
+
+#### Important Technicality 
+
+We don't want to map each user to a file, just like we do for other requests. It's impractical to keep separate files for each user you have. So you map them  to `user.xqy` and pass the username as a parameter, e.g. `user.xqy?user=dscape`. Please keep this in mind when developing your webapps as other request fields can exist with the same name and your users can even inject other users in the field, e.g. `user.xqy?user=dscape&user=hkstirman`. This framework will always give you what was generated as the first parameter so a safe way of avoiding this is to simply get the first field named user:
+
+    xdmp:get-request-field( 'user' ) [1]
+
+On previous versions of `rewrite` dynamic routes where prefixed by `_`, so `user` would be `_user`. I choose to make it explicit so people stumble upon it faster and realize they still need to carefully protect themselves against  tricks like this.
 
 ## Meta
 
