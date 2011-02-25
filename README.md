@@ -27,7 +27,7 @@ This project also allows you to make security part of this process by introducin
 2. Get the first that matched and redirect according to the rule
 3. If none matched redirect to a directory with static files. This way you can still serve your css and javascript files by placing them in the /static/ directory.
 
-Routes are matched in the order they are specified, so if you have a routes like this:
+Routes are matched in the order they are specified, so if you have these routes:
 
      <routes>
        <get path="/:user">
