@@ -462,31 +462,9 @@ The most flexible way of ensuring constraints is to run an XQuery lambda functio
 1. Only show the user information that pertains to the currently logged-in user
 
 ###  ✕ content negotiation and other mvc goodies
-Content negotiations and other MVC goodies are deliberately not bundled in `rewrite`. 
+Some MVC goodies are deliberately not bundled in `rewrite`. 
 
-The objective of `rewrite` is to simplify the mapping between external URLs and internal file paths. If you are curious about content negotiation and other topics you can look at some of my on-going work at the [dxc][5] project.
-
-For example, this is how content negotiation is currently implemented in the [http.xqy][6] library:
-
-     (: uses a default content type, no 406 errors :)
-     declare function local:negotiateContentType( $accept, 
-       $supported-content-types, $default-content-type ) {
-       let $ordered-accept-types :=
-         for $media-range in fn:tokenize($accept, "\s*,\s*")
-              let $l := fn:tokenize($media-range, "\s*;\s*")
-              let $type   := $l [1]
-              let $params := fn:subsequence($l, 2)
-              let $quality := (for $p in $params
-                              let $q-or-ext := fn:tokenize($p, "\s*=\s*") 
-                              where $q-or-ext [1] = "q"
-                              return fn:number($q-or-ext[2]), 1.0) [1]
-              order by $quality descending
-              return $type
-       return (for $sat in $ordered-accept-types
-                let $match := (for $sct in $supported-content-types
-                where fn:matches($sct, fn:replace($sat, "\*", ".*"))
-                return $sct) [1]
-                return $match, $default-content-type) [1] } ;
+The objective of `rewrite` is to simplify the mapping between external URLs and internal file paths. If you are curious about MVC and other topics you can look at some of my on-going work at the [dxc][5] project.
 
 For your convenience this (and some other) functions that might be necessary to run an application with `rewrite` have be placed in the `/lib/helper.xqy` library.
 
@@ -534,6 +512,9 @@ This is not the actual test that we run (you can see a list of those in test/ind
 
 If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. I'm also very inclined to implement these features myself so it might be that a simple email is enough to motivation for me to get it done.
 
+* Scopes
+** Content-negotiation
+** Constraints
 * Generating Paths and URLs from code
 * Make singular resources map to plural controllers
 * Extend constraints for <resource/>
@@ -546,6 +527,8 @@ If you are interested in any of these (or other) feature and don't want to wait 
 ### Known Limitations
 
 In this section we have the know limitations:
+
+* Bound parameters containing / are not supported.
 
 ### Dynamic paths
 
