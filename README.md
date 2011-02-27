@@ -461,7 +461,7 @@ The most flexible way of ensuring constraints is to run an XQuery lambda functio
 
 1. Only show the user information that pertains to the currently logged-in user
 
-###  ✕ content negotiation and other mvc goodies
+###  ✕ mvc goodies
 Some MVC goodies are deliberately not bundled in `rewrite`. 
 
 The objective of `rewrite` is to simplify the mapping between external URLs and internal file paths. If you are curious about MVC and other topics you can look at some of my on-going work at the [dxc][5] project.
