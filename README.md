@@ -457,9 +457,12 @@ When you bound parameters you sometime need to validate that they are valid. For
 ### 2.3.2 permissions
 
 ### 2.3.3. xquery lambdas
-The most flexible way of ensuring constraints is to run an XQuery lambda function. An example usage for a lambda in a contraint would be:
+The most flexible way of ensuring constraints is to run an XQuery lambda function. An example usage for a lambda in a constraint would be:
 
 1. Only show the user information that pertains to the currently logged-in user
+
+###  ✕ 2.4. content-negotiation
+
 
 ###  ✕ mvc goodies
 Some MVC goodies are deliberately not bundled in `rewrite`. 
@@ -515,12 +518,12 @@ If you are interested in any of these (or other) feature and don't want to wait 
 * Scopes
 ** Content-negotiation
 ** Constraints
-* Generating Paths and URLs from code
-* Make singular resources map to plural controllers
 * Extend constraints for <resource/>
 * Translated Paths
+* Generating Paths and URLs from code
 * Route Globbing
-* Namespaces & Scopes, e.g. /admin/user/1/edit
+* Namespaces, e.g. /admin/user/1/edit
+* Make singular resources map to plural controllers
 * Nested Resources
 * Restricting Resource(s) Routes
 
