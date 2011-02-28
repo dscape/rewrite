@@ -114,7 +114,7 @@ If you have set an error handler you can configure `rewrite` to use it by adding
 
 By doing so `rewrite` will raise the following `fn:error` exceptions:
 
-1. Redirect will raise a [301 - Moved Permantly][15] `fn:error( xs:QName( 'REWRITE/REDIRECT' ), '301', $urlToRedirectTo )` if you ask for a redirect. (**default behavior** invokes a redirect handler as described in section 1.2.1.3 redirect-to)
+1. Redirect will raise a [301 - Moved Permantly][15] `fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', $urlToRedirectTo )` if you ask for a redirect. (**default behavior** invokes a redirect handler as described in section 1.2.1.3 redirect-to)
 
 Here is a sample of how the error handler `error.xqy` might look like:
 

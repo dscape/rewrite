@@ -31,7 +31,7 @@ declare function h:etag( $id, $strong ) {
 
 (: If you want content negotiation to fail when simply change the code to
  : to raise:
- :    fn:error( xs:QName( 'REWRITE/CNFAILED' ), '406', $defaultContentType ) 
+ :    fn:error( xs:QName( 'REWRITE-CNFAILED' ), '406', $defaultContentType ) 
  : if content negotiation fails.
  :
  : h:error/2 as been set to match this behavior
@@ -79,9 +79,9 @@ declare function h:error( $exception ) {
 declare function h:error ( $exception, $notFoundXqy ) { 
   if ( $exception//*:code = 'XDMP-UNDFUN' )
   then h:redirect-to( 404, 'Not Found', $notFoundXqy )
-  else if ( $exception//*:code = '301' and $exception//*:name = 'REWRITE/REDIRECT' )
+  else if ( $exception//*:code = '301' and $exception//*:name = 'REWRITE-REDIRECT' )
   then h:redirect-to( 301, 'Moved Permantly', $e/*:data/*:datum/fn:string() )
-  else if ( $exception//*:code = '406' and $exception//*:name = 'REWRITE/CNFAILED' )
+  else if ( $exception//*:code = '406' and $exception//*:name = 'REWRITE-CNFAILED' )
   then h:error( 406, 'Not Acceptable', $e/*:data/*:datum/fn:string() )
   else ( h:error( 500, 'Internal Server Error', $e//error:message/fn:string() ), 
   xdmp:log( $exception ) ) } ;

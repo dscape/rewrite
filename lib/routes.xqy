@@ -39,7 +39,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
     if ( $selected ) (: found a match, using the first :)
     then 
       if ( $errorHandler and $selected/@type = 'redirect' )
-      then fn:error( xs:QName( 'REWRITE/REDIRECT' ), '301', $selected/@url/fn:string() )
+      then fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', $selected/@url/fn:string() )
       else
         let $route       := $selected/@key
         let $regexp      := $selected/@regexp
@@ -182,8 +182,8 @@ declare function r:mapping( $k, $v, $r ) {
 
 declare function r:mapping( $k, $v, $r, $extraNodes ) {
   element mapping {
-    attribute key    { $key },   attribute regexp { $regexp },
-    attribute value  { $value }, $extraNodes } } ;
+    attribute key    { $k },   attribute regexp { $r },
+    attribute value  { $v }, $extraNodes } } ;
 
 declare function r:generateRegularExpression( $node ) {
   let $path := fn:normalize-space($node)
