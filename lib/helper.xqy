@@ -30,23 +30,26 @@ declare function h:etag( $id, $strong ) {
   return xdmp:add-response-header('ETag', $etag) } ;
 
 declare function h:negotiateContentType( $accept, 
-  $supported-content-types, $default-content-type ) {
-  let $ordered-accept-types :=
-    for $media-range in fn:tokenize($accept, "\s*,\s*")
-         let $l := fn:tokenize($media-range, "\s*;\s*")
-         let $type   := $l [1]
-         let $params := fn:subsequence($l, 2)
-         let $quality := (for $p in $params
-                         let $q-or-ext := fn:tokenize($p, "\s*=\s*") 
-                         where $q-or-ext [1] = "q"
-                         return fn:number($q-or-ext[2]), 1.0) [1]
-         order by $quality descending
-         return $type
-  return (for $sat in $ordered-accept-types
-           let $match := (for $sct in $supported-content-types
-           where fn:matches($sct, fn:replace($sat, "\*", ".*"))
-           return $sct) [1]
-           return $match, $default-content-type) [1] } ;
+  $supportedContentTypes, $defaultContentType ) {
+  let $orderedAcceptTypes :=
+    for $mediaRange in fn:tokenize($accept, "\s*,\s*")
+    let $l := fn:tokenize($mediaRange, "\s*;\s*")
+    let $type   := $l [1]
+    let $params := fn:subsequence( $l, 2 )
+    let $quality := (
+      for $p in $params
+      let $qOrExt := fn:tokenize($p, "\s*=\s*") 
+      where $qOrExt [1] = "q"
+      return fn:number( $qOrExt[2] ), 1.0 ) [1]
+    order by $quality descending
+    return $type
+  return (
+    for $sat in $orderedAcceptTypes
+    let $match := (
+      for $sct in $supportedContentTypes
+      where fn:matches( $sct, fn:replace( $sat, "\*", ".*" ) )
+      return $sct ) [1]
+    return $match, $defaultContentType ) [1] } ;
 
 (: basic getters :)
 declare function h:action() { 
