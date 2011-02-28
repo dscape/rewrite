@@ -475,12 +475,37 @@ If no match is found `rewrite` will dispatch your query to a /static/ folder whe
 ### 2.3.1 bound parameters
 When you bound parameters you sometime need to validate that they are valid. For our twitter example we would want to validate that `dscape` is indeed a proper `:user` using a [regular expression][13]. In a simpler case you might want to check that an `:id` is a decimal number.
 
+     Request       : GET /user/dscape
+     routes.xml    : <routes> 
+                       <get path="/user/:id">
+                         <constraints>
+                           <id type="xs:integer"/>
+                         </constraints>
+                         <to> user#show </to>
+                       </get>
+                     </routes>
+     Dispatches to : /static/user/dscape  (no match of type xs:integer, trying static)
+
+Regular Expression Example:
+
+     Request       : GET /lost-username/bill@sample.com
+     routes.xml    : <routes> 
+                       <get path="/lost-username/:email">
+                         <constraints>
+                           <email 
+                             type="xs:string"  match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"/>
+                         </constraints>
+                         <to> users#recoverUserName </to>
+                       </get>
+                     </routes>
+     Dispatches to : /resource/users.xqy?action=recoverUserName?email=bill@sample.com
+
 ### 2.3.2 permissions
 
 ### 2.3.3. xquery lambdas
-The most flexible way of ensuring constraints is to run an XQuery lambda function. An example usage for a lambda in a constraint would be:
+The most flexible way of ensuring constraints is to run an XQuery lambda function. An example usage for a lambda in a constraint would be "only show the user information that pertains to the currently logged-in user"
 
-1. Only show the user information that pertains to the currently logged-in user
+###  ✕ 2.4. scopes
 
 ###  ✕ mvc goodies
 Content Negotiation and other MVC goodies are deliberately not bundled in `rewrite`. 
@@ -534,8 +559,8 @@ This is not the actual test that we run (you can see a list of those in test/ind
 If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. I'm also very inclined to implement these features myself so it might be that a simple email is enough to motivation for me to get it done.
 
 * Scopes
-** Content-negotiation
 ** Constraints
+* Add error handling for constraints for better errors
 * Extend constraints for <resource/>
 * Translated Paths
 * Generating Paths and URLs from code
