@@ -473,13 +473,13 @@ If no match is found `rewrite` will dispatch your query to a /static/ folder whe
 ###  ✕ 2.3. constraints
 
 ### 2.3.1 bound parameters
-When you bound parameters you sometime need to validate that they are valid. For our twitter example we would want to validate that `dscape` is indeed a proper `:user` using a [regular expression][13]. In a simpler case you might want to check that an `:id` is a decimal number.
+When you bound parameters you sometime need to validate that they are valid. For our twitter example we would want to validate that `dscape` is indeed a proper `:user` using a [regular expression][13]. In a simpler case you might want to check that an `:id` is a decimal number. You can do that using the [XML schema datatypes][16]
 
      Request       : GET /user/dscape
      routes.xml    : <routes> 
                        <get path="/user/:id">
                          <constraints>
-                           <id type="xs:integer"/>
+                           <id type="integer"/>
                          </constraints>
                          <to> user#show </to>
                        </get>
@@ -493,7 +493,7 @@ Regular Expression Example:
                        <get path="/lost-username/:email">
                          <constraints>
                            <email 
-                             type="xs:string"  match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"/>
+                             type="string"  match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"/>
                          </constraints>
                          <to> users#recoverUserName </to>
                        </get>
@@ -569,6 +569,7 @@ If you are interested in any of these (or other) feature and don't want to wait 
 * Make singular resources map to plural controllers
 * Nested Resources
 * Restricting Resource(s) Routes
+* Make redirect-to flexible
 
 ### Known Limitations
 
@@ -614,3 +615,4 @@ On previous versions of `rewrite` dynamic paths where prefixed by `_`, so `user`
 [13]: http://en.wikipedia.org/wiki/Regular_expression
 [14]: http://docs.marklogic.com/4.2doc/docapp.xqy#display.xqy?fname=http://pubs/4.2doc/xml/dev_guide/appserver-control.xml
 [15]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+[16]: http://www.w3.org/TR/xmlschema-2

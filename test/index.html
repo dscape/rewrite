@@ -10,7 +10,7 @@
       src="static/rewrite-tests.js"></script>
     <script>
     $(document).ready(function(){
-      module("root") ;
+      /*module("root") ;
       asyncTest("simple root", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '' )
@@ -333,7 +333,7 @@
         , success:  function(d,t,j) { 
           equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
+        , complete: function()      { start(); } }) }) ; 
       asyncTest("id using slashes", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/file//Some/File', 
@@ -485,14 +485,14 @@
          , success:  function(d,t,j) { 
            equals( d, '/public/css/style.css', "OK" ); }
          , error:    function(j,t,e) { ok(false, "NOK") }
-         , complete: function()      { start(); } }) }) ;
+         , complete: function()      { start(); } }) }) ;*/
       
       module("bound parameter constraints") ;
       asyncTest("castable type", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/45', 
             '<get path="/users/:id">' +
-            '<constraints> <id type="xs:integer"/> </constraints>'+
+            '<constraints> <id type="integer"/> </constraints>'+
             '<to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/resource/users.xqy?action=show&id=45', "OK" ); }
@@ -502,7 +502,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<get path="/users/:id">' +
-            '<constraints> <id type="xs:integer"/> </constraints>'+
+            '<constraints> <id type="integer"/> </constraints>'+
             '<to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/static/users/dscape', "OK" ); }
@@ -515,7 +515,7 @@
             '<email match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
-          equal( d, '/resource/users.xqy?action=show&email=john@doe.com', "OK" ); }
+          equal( d, '/resource/users.xqy?action=show&email=john%40doe.com', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) })  ;
       asyncTest("doesnt match", function() {
@@ -532,18 +532,18 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/john@doe.com', 
             '<get path="/users/:id">' +
-            '<constraints> <id type="xs:string" '+
+            '<constraints> <id type="string" '+
             'match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
-          equal( d, '/resource/users.xqy?action=show&id=john@doe.com', "OK" ); }
+          equal( d, '/resource/users.xqy?action=show&id=john%40doe.com', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) })  ;
       asyncTest("uncastable and matchable", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/john@doe.com', 
             '<get path="/users/:id">' +
-            '<constraints> <id type="xs:integer" '+
+            '<constraints> <id type="integer" '+
             'match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
@@ -554,7 +554,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<get path="/users/:id">' +
-            '<constraints> <id type="xs:integer" ' +
+            '<constraints> <id type="integer" ' +
             'match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
@@ -565,7 +565,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<get path="/users/:id">' +
-            '<constraints> <id type="xs:string"/>'+
+            '<constraints> <id type="string"/>'+
             '<id match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
@@ -576,7 +576,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/45/nuno', 
             '<get path="/users/:id/:name">' +
-            '<constraints> <id type="xs:integer"/><name match="[a-z]"/></constraints>'+
+            '<constraints> <id type="integer"/><name match="[a-z]"/></constraints>'+
             '<to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/resource/users.xqy?action=show&id=45&name=nuno', "OK" ); }
@@ -586,17 +586,17 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/download/1', 
             '<get path="/download/:id">' +
-            '<constraints> <id type="xs:integer"/> </constraints>'+
+            '<constraints> <id type="integer"/> </constraints>'+
             '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
         , success:  function(d,t,j) { 
-          equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com', "OK" ); }
+          equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com&id=1', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("redirect fail", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/download/nop', 
             '<get path="/download/:id">' +
-            '<constraints> <id type="xs:integer"/> </constraints>'+
+            '<constraints> <id type="integer"/> </constraints>'+
             '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/static/download/nop', "OK" ); }
@@ -606,18 +606,18 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/documents', 
             '<resource name=":db">' +
-            '<constraints> <db type="xs:string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
+            '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
             '</resource>', '' )
         , type: 'GET' 
         , success:  function(d,t,j) { 
-          equals( d, '/resource/database.xqy?action=get&database=documents', "OK" ); }
+          equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("dynamic resource fail", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/Documents', 
             '<resource name=":db">' +
-            '<constraints> <db type="xs:string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
+            '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
             '</resource>', '' )
         , type: 'GET' 
         , success:  function(d,t,j) { 
@@ -628,10 +628,10 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<resources name="users">'+
-            '<constraints> <id type="xs:integer"/> </constraints> </resources>', '' )
+            '<constraints> <id type="integer"/> </constraints> </resources>', '' )
         , type: 'GET' 
         , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=get&id=5', "OK" ); }
+          equals( d, '/static/users/dscape', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("resource ok", function() {
@@ -641,14 +641,14 @@
             '<constraints> <id match="[a-z]"/> </constraints> </resources>', '' )
         , type: 'GET' 
         , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=get&id=5', "OK" ); }
+          equals( d, '/resource/users.xqy?action=get&id=dscape', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
       asyncTest("default route ok", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/user/get/1', 
             '<get path="/:resource/:action/:id">'+
-            '<constraints> <id type="xs:integer"/> <action match="[a-z]"/>' +
+            '<constraints> <id type="integer"/> <action match="[a-z]"/>' +
             '<resource match="[a-z]"/> </constraints> </get>', '' )
         , success:  function(d,t,j) { 
           equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
@@ -658,7 +658,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/user/get/1', 
             '<get path="/:resource/:action/:id">'+
-            '<constraints> <resource type="xs:integer"/> </constraints> </get>', '' )
+            '<constraints> <resource type="integer"/> </constraints> </get>', '' )
         , success:  function(d,t,j) { 
           equals( d, '/static/user/get/1', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
