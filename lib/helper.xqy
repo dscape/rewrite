@@ -29,6 +29,13 @@ declare function h:etag( $id, $strong ) {
   let $etag := if ($strong) then $str else fn:concat("W/", $str)
   return xdmp:add-response-header('ETag', $etag) } ;
 
+(: If you want content negotiation to fail when simply change the code to
+ : to raise:
+ :    fn:error( xs:QName( 'REWRITE/CNFAILED' ), '406', $defaultContentType ) 
+ : if content negotiation fails.
+ :
+ : h:error/2 as been set to match this behavior
+ :)
 declare function h:negotiateContentType( $accept, 
   $supportedContentTypes, $defaultContentType ) {
   let $orderedAcceptTypes :=
@@ -66,18 +73,30 @@ declare function h:function() {
 declare function h:function( $name ) {
   xdmp:function( xs:QName( fn:concat( "local:", $name ) ) ) } ;
 
-declare function h:error ( $exception ) { 
+declare function h:error( $exception ) { 
+  h:error( $exception, '/static/404.xqy' ) } ;
+
+declare function h:error ( $exception, $notFoundXqy ) { 
   if ( $exception//*:code = 'XDMP-UNDFUN' )
-  then xdmp:redirect-response( '/static/404.xqy' )
+  then h:redirect-to( 404, 'Not Found', $notFoundXqy )
+  else if ( $exception//*:code = '301' and $exception//*:name = 'REWRITE/REDIRECT' )
+  then h:redirect-to( 301, 'Moved Permantly', $e/*:data/*:datum/fn:string() )
+  else if ( $exception//*:code = '406' and $exception//*:name = 'REWRITE/CNFAILED' )
+  then h:error( 406, 'Not Acceptable', $e/*:data/*:datum/fn:string() )
   else ( h:error( 500, 'Internal Server Error', $e//error:message/fn:string() ), 
   xdmp:log( $exception ) ) } ;
 
-declare function h:error( $code, $msg, $reason ) {
+declare function h:error( $code, $msg ) {
   h:error( $code, $msg, () ) } ;
 
 declare function h:error( $code, $msg, $reason ) {
   ( xdmp:set-response-code( $code, $msg )
   , xdmp:add-response-header( "Date", fn:string(fn:current-dateTime() ) )
   , if ( $reason ) 
-    then xdmp:add-response-header( "X-errorReason", $reason )
+    then xdmp:add-response-header( "X-rewriteExceptionMessage", $reason )
     else () ) } ;
+
+declare function h:redirect-to( $code, $msg, $url ) {
+  ( xdmp:set-response-code( $code, $msg )
+  , xdmp:add-response-header( "Date", fn:string(fn:current-dateTime() ) )
+  , xdmp:redirect-to( $url ) ) } ;

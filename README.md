@@ -41,6 +41,8 @@ the get route for the `/:user` will be matched before the get `/about`. To fix t
        <get path="/:user">
      </routes>
 
+`rewrite.xqy` can only do the mapping between URLs and internal files - gets a request and returns the invokable path of the file.
+
 ## Usage
 
 Start by creating an HTTP Application Server in MarkLogic. Put `rewrite.xqy` in the `rewrite` input.
@@ -81,8 +83,7 @@ If you want to save your routing & path configuration in a file you can use the 
      declare function local:documentGet( $path ) { 
        xdmp:document-get( fn:concat( xdmp:modules-root(), $path ) ) } ;
      
-     declare variable $routesCfg := 
-       local:documentGet( "config/routes.xml" ) ;
+     declare variable $routesCfg := local:documentGet( "config/routes.xml" ) ;
      
      r:selectedRoute( $routesCfg )
 
@@ -101,9 +102,27 @@ Just don't forget to create your resource XQuery files. Here's an example of how
      try          { xdmp:apply( h:function() ) } 
      catch ( $e ) { h:error( $e ) }
 
-This assumes a hypothetical `users.xqy` file that actually does the work of listing users and retrieving information about a user. 
+This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. 
 
-It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs or even create your fully fledged [MVC][10] framework.
+It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.
+
+In the above example error handling is done at the `users.xqy` level. A centralized [error handler][14] can also be used removing the need for a `try catch` statement in each XQuery main module and allowing you to control exception handling consistently.
+
+If you have set an error handler you can configure `rewrite` to use it by adding:
+
+     <routes useErrorHandler="Yes">
+
+By doing so `rewrite` will raise the following `fn:error` exceptions:
+
+1. Redirect will raise a [301 - Moved Permantly][15] `fn:error( xs:QName( 'REWRITE/REDIRECT' ), '301', $urlToRedirectTo )` if you ask for a redirect. (**default behavior** invokes a redirect handler as described in section 1.2.1.3 redirect-to)
+
+Here is a sample of how the error handler `error.xqy` might look like:
+
+     xquery version "1.0-ml";
+     import module namespace h = "helper.xqy" at "/lib/helper.xqy";
+     declare variable $error:errors as node()* external;
+     
+     h:error( $error:errors )
 
 This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
 
@@ -130,7 +149,7 @@ Here's an example of what a `paths.xml` might look like:
 
 ## Sample Application
 
-Not yet. Include redirect-to because it can't be proven without an extra file.
+Not yet. Include redirect-to because it can't be proven without an extra file. Include errors.xqy as well!
 
 ## Supported Functionality
 
@@ -207,7 +226,9 @@ The dispatcher can have any logic you like. Here is an example of a possible `re
             then xdmp:redirect-response( xdmp:url-decode( $url ) )
             else fn:error()
 
-If you are using `redirect-to` don't forget to place a `redirect.xqy` in the resource directory. If you don't you will start to get 404 errors every-time a user tries to do a redirect.
+If you are using `redirect-to` don't forget to place a `redirect.xqy` in the resource directory.
+
+An alternative is to user a error handler as described in usage.
 
 ###  ✔ 1.2.2. get 
      Request       : GET /list
@@ -461,15 +482,12 @@ The most flexible way of ensuring constraints is to run an XQuery lambda functio
 
 1. Only show the user information that pertains to the currently logged-in user
 
-###  ✕ 2.4. content-negotiation
-
-
 ###  ✕ mvc goodies
-Some MVC goodies are deliberately not bundled in `rewrite`. 
+Content Negotiation and other MVC goodies are deliberately not bundled in `rewrite`. 
 
 The objective of `rewrite` is to simplify the mapping between external URLs and internal file paths. If you are curious about MVC and other topics you can look at some of my on-going work at the [dxc][5] project.
 
-For your convenience this (and some other) functions that might be necessary to run an application with `rewrite` have be placed in the `/lib/helper.xqy` library.
+For your convenience some functions that might be necessary to run an application with `rewrite` have be placed in the `/lib/helper.xqy` library.
 
 ## Contribute
 
@@ -569,3 +587,5 @@ On previous versions of `rewrite` dynamic paths where prefixed by `_`, so `user`
 [11]: http://docs.marklogic.com/4.2doc/docapp.xqy#display.xqy?fname=http://pubs/4.2doc/xml/dev_guide/appserver-control.xml%2313050
 [12]: http://developer.marklogic.com/pubs/4.2/apidocs/AppServerBuiltins.html#xdmp:get-request-field
 [13]: http://en.wikipedia.org/wiki/Regular_expression
+[14]: http://docs.marklogic.com/4.2doc/docapp.xqy#display.xqy?fname=http://pubs/4.2doc/xml/dev_guide/appserver-control.xml
+[15]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html

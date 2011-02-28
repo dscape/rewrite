@@ -27,39 +27,43 @@ declare function r:selectedRoute( $routesCfg, $url, $method ) {
  r:selectedRoute( $routesCfg, $url, $method, () ) };
 
 declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
-  let $_        := r:setDefaults( $defaultCfg )
-  let $tokens   := fn:tokenize( $url, '\?' )
-  let $route    := $tokens [1]
-  let $args     := $tokens [2]
-  let $req      := fn:string-join( ( $method, $route ), " " )
-  let $mappings := r:mappings ( $routesCfg )
-  let $selected := $mappings //mapping [ fn:matches( $req, @regexp ) ] [1]
+  let $_            := r:setDefaults( $defaultCfg )
+  let $tokens       := fn:tokenize( $url, '\?' )
+  let $route        := $tokens [1]
+  let $args         := $tokens [2]
+  let $req          := fn:string-join( ( $method, $route ), " " )
+  let $mappings     := r:mappings ( $routesCfg )
+  let $errorHandler := $routesCfg /@useErrorHandler = 'Yes'
+  let $selected     := $mappings //mapping [ fn:matches( $req, @regexp ) ] [1]
   return
-    if ($selected) (: found a match, using the first :)
+    if ( $selected ) (: found a match, using the first :)
     then 
-      let $route       := $selected/@key
-      let $regexp      := $selected/@regexp
-      let $labels      := r:extractLabels( $route )
-      let $labelValues := fn:analyze-string( $req, $regexp ) 
-        //s:match/s:group/fn:string(.)    
-      let $dispatchTo  := 
-        if ( $selected/@value = "" ) (: dynamic route, couldn't calculate :)
-        then
-          let $r := fn:index-of($labels, 'resource')
-          let $a := fn:index-of($labels, 'action')
-          return r:resourceActionPath( $labelValues[$r], $labelValues[$a] )
-        else $selected/@value 
-      let $params := fn:string-join( (
-        if ( $labelValues ) 
-        then
-          for $match at $p in $labelValues
-          let $label := $labels[$p]
-          where $label != 'resource' and $label != 'action'
-          return 
-            fn:concat( $label, "=", xdmp:url-encode( $match ) )
-         else (), $args ), "&amp;" )
-      return fn:concat( $dispatchTo, 
-        if ($params) then fn:concat("&amp;", $params) else "")
+      if ( $errorHandler and $selected/@type = 'redirect' )
+      then fn:error( xs:QName( 'REWRITE/REDIRECT' ), '301', $selected/@url/fn:string() )
+      else
+        let $route       := $selected/@key
+        let $regexp      := $selected/@regexp
+        let $labels      := r:extractLabels( $route )
+        let $labelValues := fn:analyze-string( $req, $regexp ) 
+          //s:match/s:group/fn:string(.)    
+        let $dispatchTo  := 
+          if ( $selected/@value = "" ) (: dynamic route, couldn't calculate :)
+          then
+            let $r := fn:index-of($labels, 'resource')
+            let $a := fn:index-of($labels, 'action')
+            return r:resourceActionPath( $labelValues[$r], $labelValues[$a] )
+          else $selected/@value 
+        let $params := fn:string-join( (
+          if ( $labelValues ) 
+          then
+            for $match at $p in $labelValues
+            let $label := $labels[$p]
+            where $label != 'resource' and $label != 'action'
+            return 
+              fn:concat( $label, "=", xdmp:url-encode( $match ) )
+           else (), $args ), "&amp;" )
+        return fn:concat( $dispatchTo, 
+          if ($params) then fn:concat("&amp;", $params) else "")
     else (: didn't find a match so let's try the static folder :)
       fn:concat( fn:replace($staticDirectory, "/$", ""), $route ) } ;
 
@@ -130,9 +134,12 @@ declare function r:resource( $node ) {
 declare function r:mappingForRedirect( $req, $node ) {
   let $redirect-to := fn:normalize-space( $node/redirect-to )
   let $k           := fn:concat( 'GET ', $node/@path )
-  return r:mapping( $k, fn:concat( r:resourceDirectory(), 
-    r:redirectResource(), ".", r:xqyExtension(), 
-    '?url=', xdmp:url-encode($redirect-to) ) ) };
+  return r:mapping( $k, 
+    fn:concat( 
+      r:redirectToBasePath(), 
+      xdmp:url-encode( $redirect-to ) ), 
+    r:generateRegularExpression( $k ),  
+    ( attribute url { $redirect-to }, attribute type { 'redirect' } ) ) };
 
 declare function  r:mappingForDynamicRoute( $node ) { 
   let $path       := $node/@path
@@ -168,11 +175,15 @@ declare function r:resourceActionPath( $resource, $action ) {
     r:xqyExtension(), "?action=", $action ) } ;
 
 declare function r:mapping( $k, $v ) { 
-  r:mapping( $k, $v, r:generateRegularExpression( $k ) ) };
+  r:mapping( $k, $v, r:generateRegularExpression( $k ), () ) };
 
-declare function r:mapping( $k, $v, $r ) {
-  <mapping key="{ $k }" 
-    regexp="{ $r }" value="{ $v }"/> };
+declare function r:mapping( $k, $v, $r ) { 
+  r:mapping( $k, $v, $r, () ) } ;
+
+declare function r:mapping( $k, $v, $r, $extraNodes ) {
+  element mapping {
+    attribute key    { $key },   attribute regexp { $regexp },
+    attribute value  { $value }, $extraNodes } } ;
 
 declare function r:generateRegularExpression( $node ) {
   let $path := fn:normalize-space($node)
@@ -203,6 +214,9 @@ declare function r:setDefaults( $defaultCfg ) {
       if ( $xqyExtensionOverride ) 
       then xdmp:set( $xqyExtension, $xqyExtensionOverride/fn:string() )
       else () ) } ;
+declare function r:redirectToBasePath() {
+  fn:concat( r:resourceDirectory(), r:redirectResource(), ".", 
+  r:xqyExtension(), '?url=' ) } ;
 
 declare function r:resourceDirectory()   { $resourceDirectory } ;
 declare function r:staticDirectory()     { $staticDirectory   } ;
