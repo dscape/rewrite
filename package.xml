@@ -1,7 +1,8 @@
 <package type="main">
   <name>rewrite</name>
   <author>Nuno Job [nunojobpinto@gmail.com]</author>
-  <description>Dispatch HTTP requests to controllers according to a DSL</description>
+  <tagline>MarkLogic rewrite logic made simple</tagline>
+  <description>rewrite eliminates the 1-to-1 mapping between files and MarkLogic App Servers by introducing an intermediate layer that recognizes URLs and dispatches them to application code. This is achieved by a XML domain specific language (DSL) that makes routing logic simple and easy to maintain.</description>
   <repo type="git" tag="0.1">
     git://github.com/dscape/rewrite.git
   </repo>
