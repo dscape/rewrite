@@ -892,6 +892,121 @@
             equals( d, '/static/user/get/1', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
           , complete: function()      { start(); } }) }) ;
+        
+        module("scopes") ;
+        asyncTest("false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/admin', 
+              '<scope> <constraints> <id type="integer"/> </constraints> ' +
+              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+              ' <put path="/user/:id"> <to> user#put </to> </put> ' +
+              ' <get path="/user/:id"> <to> user#get </to> </get> </scope>'
+              , '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/user/admin', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/admin', 
+              '<scope> <constraints> <id type="string"/> </constraints> ' +
+              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+              ' <put path="/user/:id"> <to> user#put </to> </put> ' +
+              ' <get path="/user/:id"> <to> user#get </to> </get> </scope>'
+              , '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=get&id=admin', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("resources false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/admin', 
+              '<scope> <constraints> <id type="integer"/> </constraints> ' +
+              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+              ' <resources name="user"/> </scope>'
+              , '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/user/admin', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("resources true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/admin', 
+              '<scope> <constraints> <id type="string"/> </constraints> ' +
+              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+              '  <resources name="user"/> </scope>'
+              , '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=get&id=admin', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("resource false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/docs', 
+              '<scope> <constraints> <db type="integer"/> </constraints> ' +
+              ' <lambda> $db castable as xs:string </lambda> ' +
+              ' <resource name=":db"/> </scope>'
+              , '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/docs', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("resource true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/docs', 
+              '<scope> <constraints> <db type="string"/> </constraints> ' +
+              ' <lambda> $db castable as xs:string </lambda> ' +
+              ' <resource name=":db"/> </scope>'
+              , '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/db.xqy?action=get&db=docs', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("redirect true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/google', 
+              '<scope> <lambda> fn:true() </lambda> <get path="/google">  ' +
+              '<redirect-to> http://www.google.com </redirect-to> </get>' +
+              ' </scope>', '' )
+          , success:  function(d,t,j) { 
+            equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com', 
+              "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("redirect fail", function() {
+            $.ajax( {
+              url: rewriteUrl( 'GET', '/google', 
+              '<scope> <lambda> fn:false() </lambda> <get path="/google">  ' +
+              '<redirect-to> http://www.google.com </redirect-to> </get>' +
+              ' </scope>', '' )
+            , success:  function(d,t,j) { 
+              equal( d, '/static/google', "OK" ); }
+            , error:    function(j,t,e) { ok(false, "NOK") }
+            , complete: function()      { start(); } }) }) ;
+        asyncTest("multiple vars true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/get/1', 
+              '<scope> <lambda> '+
+              '       $resource = "user" '+
+              '   and $action = "get" '+
+              '   and $id castable as xs:integer'+
+              '</lambda> <get path="/:resource/:action/:id"/> </scope>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("multiple vars false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/get/1', 
+              '<scope> <lambda> '+
+              '       $resource = "user" '+
+              '   and $action = "notget" '+
+              '   and $id castable as xs:integer'+
+              '</lambda> <get path="/:resource/:action/:id"/> </scope>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/user/get/1', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
     }) ;
     </script>
   </head>

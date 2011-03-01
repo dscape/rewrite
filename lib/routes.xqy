@@ -155,7 +155,15 @@ declare function r:transform( $node ) {
     case element( post )      return r:verb( 'POST',   $node )
     case element( delete )    return r:verb( 'DELETE', $node )
     case element( head )      return r:verb( 'HEAD',   $node )
+    case element( scope )     return r:scope( $node )
     default                   return () (: ignored :) } ;
+
+declare function r:scope( $node ) {
+let $aditional := r:aditional( $node )
+return 
+  for $n in $node/* 
+  return r:transform(
+    element { fn:node-name( $n ) } { $n/@*, $aditional, $n/* } ) } ;
 
 declare function r:root( $node ) { 
   r:mappingForHash( "GET /", $node, () ) } ;
@@ -164,8 +172,7 @@ declare function r:verb( $verb, $node ) {
   let $req := fn:concat( $verb, " ", $node/@path )
   return 
     if ( $node/to ) (: if there's a place to go :)
-    then r:mappingForHash( $req, $node/to, 
-      ( $node/constraints, $node/privileges, $node/lambda ) )
+    then r:mappingForHash( $req, $node/to, r:aditional( $node ) )
     else if ( $node/redirect-to ) (: if theres a redirect :) 
     then r:mappingForRedirect( $req, $node )
     else r:mappingForDynamicRoute( $node ) (: purely dynamic route we need to figure it out :) 
@@ -174,7 +181,7 @@ declare function r:verb( $verb, $node ) {
 declare function r:resources( $node ) {
   let $resource   := $node/@name
   let $webservice := $node/@webservice
-  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
+  let $aditional  := r:aditional( $node )
   let $index      := r:mapping( fn:concat('GET /', $resource),
     r:resourceActionPath( $resource, 'index' ), $aditional )
   let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
@@ -196,7 +203,7 @@ declare function r:resources( $node ) {
 declare function r:resource( $node ) {
   let $resource   := $node/@name
   let $webservice := $node/@webservice
-  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
+  let $aditional  := r:aditional( $node )
   let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
     return r:mapping( fn:concat( $verb, ' /', $resource ), 
       r:resourceActionPath( $resource, fn:lower-case($verb) ), $aditional )
@@ -212,7 +219,7 @@ declare function r:resource( $node ) {
 declare function r:mappingForRedirect( $req, $node ) {
   let $redirect-to := fn:normalize-space( $node/redirect-to )
   let $k           := fn:concat( 'GET ', $node/@path )
-  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
+  let $aditional  := r:aditional( $node )
   return r:mapping( $k, 
     fn:concat( r:redirectToBasePath(), xdmp:url-encode( $redirect-to ) ),  
     ( attribute url { $redirect-to }, attribute type { 'redirect' }, 
@@ -220,7 +227,7 @@ declare function r:mappingForRedirect( $req, $node ) {
 
 declare function  r:mappingForDynamicRoute( $node ) { 
   let $path       := $node/@path
-  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
+  let $aditional  := r:aditional( $node )
   let $resource   := fn:matches($path, ":resource")
   let $action     := fn:matches($path, ":action")
   return 
@@ -302,6 +309,7 @@ declare function r:resourceDirectory()   { $resourceDirectory } ;
 declare function r:staticDirectory()     { $staticDirectory   } ;
 declare function r:xqyExtension()        { $xqyExtension      } ;
 declare function r:redirectResource()    { $redirectResource  } ;
-
+declare function r:aditional( $node ) { 
+  ( $node/constraints, $node/privileges, $node/lambda ) } ;
 declare function r:castableAs( $value, $type ) {
   xdmp:castable-as( "http://www.w3.org/2001/XMLSchema", $type, $value ) } ;

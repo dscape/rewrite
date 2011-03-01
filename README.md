@@ -545,11 +545,31 @@ The most flexible way of ensuring constraints is to run an XQuery lambda functio
                          <to> user#get </to>
                        </get>
                      </routes>
-     Dispatches to : /resource/user.xqy?action=get&id=dscape
+     Dispatches to : /resource/user.xqy?action=get&id=admin
 
 The bound parameters will be available in the lambda as an xs:string external variable; e.g. `:id` will be available as `$id`. 
 
 ###  ✕ 2.4. scopes
+Scopes allow you to reuse your constraints for multiple routes:
+
+     Request       : GET /user/admin
+     routes.xml    : <routes>
+                       <scope>
+                         <constraints>
+                           <id type="string"/>
+                         </constraints>
+                         <lambda>
+                           xdmp:get-current-user() = $id
+                         </lamda>
+                         <put path="/user/:id">
+                           <to> user#put </to>
+                         </put>
+                         <get path="/user/:id">
+                           <to> user#get </to>
+                         </get>
+                     </routes>
+     Dispatches to : /resource/user.xqy?action=get&id=admin
+
 
 ###  ✕ mvc goodies
 Content Negotiation and other MVC goodies are deliberately not bundled in `rewrite`. 
