@@ -549,7 +549,7 @@ The most flexible way of ensuring constraints is to run an XQuery lambda functio
 
 The bound parameters will be available in the lambda as an xs:string external variable; e.g. `:id` will be available as `$id`. 
 
-###  ✕ 2.4. scopes
+###  ✔ 2.4. scopes
 Scopes allow you to reuse your constraints for multiple routes:
 
      Request       : GET /user/admin
