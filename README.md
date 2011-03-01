@@ -106,6 +106,7 @@ This assumes a hypothetical `users.xqy` XQuery library that actually does the wo
 
 It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.
 
+### Using an Error Handler
 In the above example error handling is done at the `users.xqy` level. A centralized [error handler][14] can also be used removing the need for a `try catch` statement in each XQuery main module and allowing you to control exception handling consistently.
 
 If you have set an error handler you can configure `rewrite` to use it by adding:
@@ -114,7 +115,7 @@ If you have set an error handler you can configure `rewrite` to use it by adding
 
 By doing so `rewrite` will raise the following `fn:error` exceptions:
 
-1. Redirect will raise a [301 - Moved Permantly][15] `fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', $urlToRedirectTo )` if you ask for a redirect. (**default behavior** invokes a redirect handler as described in section 1.2.1.3 redirect-to)
+1. Redirect will raise a [301 - Moved Permantly][15] `fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', $urlToRedirectTo )`. (**default behavior** invokes a redirect handler as described in section 1.2.1.3 redirect-to)
 
 Here is a sample of how the error handler `error.xqy` might look like:
 
@@ -500,7 +501,39 @@ Regular Expression Example:
                      </routes>
      Dispatches to : /resource/users.xqy?action=recoverUserName?email=bill@sample.com
 
-### 2.3.2 permissions
+### 2.3.2 privileges
+Privilege constraints make routes visible to the user if he is part of a role with the specified permission:
+
+     Request       : GET /list
+     User has      : 
+     routes.xml    : <routes> 
+                       <privileges>
+                         <execute> 
+                           http://marklogic.com/xdmp/privileges/xdmp-eval
+                         </execute>
+                         <uri>
+                           http://marklogic.com/xdmp/triggers/
+                         </uri>
+                       </privileges>
+                       <get path="/list"> <to> article#list </to> </get>
+                     </routes>
+     Dispatches to : /resource/article.xqy?action=list
+
+Many applications use the same login do all accesses to the database. Hence it might be useful to explicitly pass the username in the privilege constraints. This is how you can express this in `rewrite`:
+
+     Request       : GET /list
+     User has      : 
+     routes.xml    : <routes> 
+                       <privileges for="user">
+                         <execute> 
+                           http://marklogic.com/xdmp/privileges/xdmp-eval
+                         </execute>
+                       </privileges>
+                       <get path="/list"> <to> article#list </to> </get>
+                     </routes>
+     Dispatches to : /resource/article.xqy?action=list
+
+While very flexible this also means your `routes.xml` is no longer static. You will have to pass the current user every time a request comes.
 
 ### 2.3.3. xquery lambdas
 The most flexible way of ensuring constraints is to run an XQuery lambda function. An example usage for a lambda in a constraint would be "only show the user information that pertains to the currently logged-in user"
