@@ -6,7 +6,10 @@ import module
 
 declare variable $uri    := xdmp:get-request-field( 'uri'    )  ;
 declare variable $method := xdmp:get-request-field( 'method' )  ;
-declare variable $routes := xdmp:get-request-field( 'routes' )  ;
+declare variable $routes := 
+  fn:replace( fn:replace(
+    xdmp:get-request-field( 'routes' ), "%2B", "+"
+  ), "%2A", "*" )  ;
 declare variable $paths  := xdmp:get-request-field( 'paths'  )  ;
 
 xdmp:log( fn:string-join( ("async >>", $method, $uri), " ") ),

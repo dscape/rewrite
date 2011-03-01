@@ -222,8 +222,8 @@ declare function r:generateRegularExpression( $node ) {
   return 
     fn:concat(
       fn:replace( $path ,  $dynamicRouteRegExp, $dynamicRouteRegExpReplacement ), 
-      (: Fixing trailing slashes for everything but root node :)
-      if ( fn:tokenize( $path, " " ) [2] = "/" ) then "(\?.*)?$" else "/?" ) };
+      (: Fixing trailing slashes for everything but root node, args are in :)
+      if ( fn:tokenize( $path, " " ) [2] = "/" ) then "(\?.*)?$" else "/?(\?.*)?$" ) };
 
 declare function r:extractLabels( $node ) {
   fn:analyze-string($node,  $dynamicRouteRegExp) //s:match/s:group/fn:string(.) } ;

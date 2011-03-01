@@ -10,7 +10,7 @@
       src="static/rewrite-tests.js"></script>
     <script>
     $(document).ready(function(){
-      /*module("root") ;
+      module("root") ;
       asyncTest("simple root", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '' )
@@ -485,7 +485,7 @@
          , success:  function(d,t,j) { 
            equals( d, '/public/css/style.css', "OK" ); }
          , error:    function(j,t,e) { ok(false, "NOK") }
-         , complete: function()      { start(); } }) }) ;*/
+         , complete: function()      { start(); } }) }) ;
       
       module("bound parameter constraints") ;
       asyncTest("castable type", function() {
@@ -512,7 +512,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/john@doe.com', 
             '<get path="/users/:email"><constraints> '+
-            '<email match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
+            '<email match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/resource/users.xqy?action=show&email=john%40doe.com', "OK" ); }
@@ -522,7 +522,7 @@
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<get path="/users/:email"><constraints> '+
-            '<email match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
+            '<email match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/static/users/dscape', "OK" ); }
@@ -533,7 +533,7 @@
           url: rewriteUrl( 'GET', '/users/john@doe.com', 
             '<get path="/users/:id">' +
             '<constraints> <id type="string" '+
-            'match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
+            'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/resource/users.xqy?action=show&id=john%40doe.com', "OK" ); }
@@ -544,7 +544,7 @@
           url: rewriteUrl( 'GET', '/users/john@doe.com', 
             '<get path="/users/:id">' +
             '<constraints> <id type="integer" '+
-            'match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
+            'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/static/users/john@doe.com', "OK" ); }
@@ -555,7 +555,7 @@
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<get path="/users/:id">' +
             '<constraints> <id type="integer" ' +
-            'match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
+            'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/static/users/dscape', "OK" ); }
@@ -566,7 +566,7 @@
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<get path="/users/:id">' +
             '<constraints> <id type="string"/>'+
-            '<id match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" />'+
+            '<id match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
             '</constraints> <to> users#show </to></get>', '' )
         , success:  function(d,t,j) { 
           equal( d, '/static/users/dscape', "OK" ); }
@@ -624,7 +624,7 @@
           equals( d, '/static/Documents', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
-      asyncTest("resource fail", function() {
+      asyncTest("resources fail", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<resources name="users">'+
@@ -634,7 +634,7 @@
           equals( d, '/static/users/dscape', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ;
-      asyncTest("resource ok", function() {
+      asyncTest("resources ok", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/users/dscape', 
             '<resources name="users">'+
