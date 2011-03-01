@@ -505,11 +505,10 @@ Regular Expression Example:
 Privilege constraints make routes visible to the user if he is part of a role with the specified permission:
 
      Request       : GET /list
-     User has      : 
      routes.xml    : <routes> 
                        <privileges>
                          <execute> 
-                           http://marklogic.com/xdmp/privileges/xdmp-eval
+                           http://marklogic.com/xdmp/privileges/admin-ui
                          </execute>
                          <uri>
                            http://marklogic.com/xdmp/triggers/
@@ -522,7 +521,6 @@ Privilege constraints make routes visible to the user if he is part of a role wi
 Many applications use the same login do all accesses to the database. Hence it might be useful to explicitly pass the username in the privilege constraints. This is how you can express this in `rewrite`:
 
      Request       : GET /list
-     User has      : 
      routes.xml    : <routes> 
                        <privileges for="user">
                          <execute> 

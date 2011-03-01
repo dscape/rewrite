@@ -37,11 +37,14 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
   let $selected     := (
     for $mapping in $mappings //mapping [ fn:matches( $req, @regexp ) ] 
     let $regexp      := $mapping/@regexp
-    let $labels      := r:extractLabels( $mapping/@key )
+    let $labels      := fn:tokenize( $mapping/@labels, ";" )
     let $labelValues := fn:analyze-string( $req, $regexp ) 
       //s:match/s:group/fn:string(.)
     let $constraints := $mapping/constraints
-    where r:boundParameterConstraints($labels, $labelValues, $constraints)
+    let $privileges  := $mapping/privileges
+    where 
+      r:boundParameterConstraints($labels, $labelValues, $constraints)
+      and r:privilegeConstraints( $privileges )
     return $mapping ) [1]
   return
     if ( $selected ) (: found a match, using the first :)
@@ -51,7 +54,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
       else
         let $route       := $selected/@key
         let $regexp      := $selected/@regexp
-        let $labels      := r:extractLabels( $route )
+        let $labels      := fn:tokenize( $selected/@labels, ";" )
         let $labelValues := fn:analyze-string( $req, $regexp ) 
           //s:match/s:group/fn:string(.)   
         let $dispatchTo  := 
@@ -97,6 +100,32 @@ declare function r:singleBPConstraint( $keys, $values, $constraint ) {
         else fn:true() (: no type or match? then its ok! :)
     else fn:true() (: if :key is not in the route then its valid :) };
 
+declare function r:privilegeConstraints( $privileges ) { 
+  let $user     := 
+    if ( $privileges/@for )
+    then fn:normalize-space( $privileges/@for )
+    else xdmp:get-current-user()
+  let $executes := for $e in  $privileges/execute return fn:normalize-space( $e )
+  let $uris     := for $u in  $privileges/uri return fn:normalize-space( $u )
+  return 
+    ( 
+      ( every $e in $executes satisfies r:singlePrivilegeConstraint( $e, $user, 'execute' ) )
+    and 
+      ( every $u in $uris satisfies r:singlePrivilegeConstraint( $u, $user, 'uri' ) ) ) };
+
+declare function r:singlePrivilegeConstraint( $action, $user, $type ) {
+  let $userRoles  := xdmp:user-roles( $user )
+  let $privExists := try          { xdmp:privilege( $action, $type ) }
+                     catch ( $e ) { fn:false() }
+  let $privRoles  := xdmp:privilege-roles( $action, $type )
+  return 
+    if ( $privExists )
+    then
+      if ( $userRoles = $privRoles )
+      then fn:true()
+      else fn:false()
+    else fn:true() (: consistent with behavior of xdmp:has-privilege :) };
+
 declare function r:mappings( $routesCfg ) { 
   <mappings> { for $e in $routesCfg/* return r:transform($e) } </mappings> } ;
 
@@ -119,7 +148,8 @@ declare function r:verb( $verb, $node ) {
   let $req := fn:concat( $verb, " ", $node/@path )
   return 
     if ( $node/to ) (: if there's a place to go :)
-    then r:mappingForHash( $req, $node/to, $node/constraints )
+    then r:mappingForHash( $req, $node/to, 
+      ( $node/constraints, $node/privileges ) )
     else if ( $node/redirect-to ) (: if theres a redirect :) 
     then r:mappingForRedirect( $req, $node )
     else r:mappingForDynamicRoute( $node ) (: purely dynamic route we need to figure it out :) 
@@ -128,69 +158,69 @@ declare function r:verb( $verb, $node ) {
 declare function r:resources( $node ) {
   let $resource   := $node/@name
   let $webservice := $node/@webservice
-  let $constraints := $node/constraints
+  let $aditional  := ( $node/constraints, $node/privileges)
   let $index      := r:mapping( fn:concat('GET /', $resource),
-    r:resourceActionPath( $resource, 'index' ), $constraints )
+    r:resourceActionPath( $resource, 'index' ), $aditional )
   let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
     return r:mapping( fn:concat( $verb, ' /', $resource, '/:id' ), 
-      r:resourceActionPath( $resource, fn:lower-case($verb) ), $constraints )
+      r:resourceActionPath( $resource, fn:lower-case($verb) ), $aditional )
   let $post       := if ($webservice) then () else
     r:mapping( fn:concat( 'POST /', $resource ), 
-      r:resourceActionPath( $resource, 'post' ), $constraints )
+      r:resourceActionPath( $resource, 'post' ), $aditional )
   let $new        := if ($webservice) then () else
     r:mapping( fn:concat( 'GET /', $resource, '/new' ), 
-      r:resourceActionPath( $resource, 'new' ), $constraints )
+      r:resourceActionPath( $resource, 'new' ), $aditional )
   let $edit       := if ($webservice) then () else
     r:mapping( fn:concat( 'GET /', $resource, '/:id/edit' ), 
-      r:resourceActionPath( $resource, 'edit' ), $constraints )
-  let $memberInc  := r:includes( $resource, $node/member, fn:true(), $constraints )
-  let $setInc     := r:includes( $resource, $node/set, fn:false(), $constraints )
+      r:resourceActionPath( $resource, 'edit' ), $aditional )
+  let $memberInc  := r:includes( $resource, $node/member, fn:true(), $aditional )
+  let $setInc     := r:includes( $resource, $node/set, fn:false(), $aditional )
   return ( $edit, $new, $memberInc, $setInc, $verbs, $post, $index ) };
 
 declare function r:resource( $node ) {
   let $resource   := $node/@name
   let $webservice := $node/@webservice
-  let $constraints := $node/constraints
+  let $aditional  := ( $node/constraints, $node/privileges)
   let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
     return r:mapping( fn:concat( $verb, ' /', $resource ), 
-      r:resourceActionPath( $resource, fn:lower-case($verb) ), $constraints )
+      r:resourceActionPath( $resource, fn:lower-case($verb) ), $aditional )
   let $post       := if ($webservice) then () else
     r:mapping( fn:concat( 'POST /', $resource ), 
-      r:resourceActionPath( $resource, 'post' ), $constraints )
+      r:resourceActionPath( $resource, 'post' ), $aditional )
   let $edit       := if ($webservice) then () else
     r:mapping( fn:concat( 'GET /', $resource, '/edit' ), 
-      r:resourceActionPath( $resource, 'edit' ), $constraints )
-  let $memberInc  := r:includes( $resource, $node/member, fn:false(), $constraints )
+      r:resourceActionPath( $resource, 'edit' ), $aditional )
+  let $memberInc  := r:includes( $resource, $node/member, fn:false(), $aditional )
   return ( $edit, $memberInc, $verbs, $post ) };
 
 declare function r:mappingForRedirect( $req, $node ) {
   let $redirect-to := fn:normalize-space( $node/redirect-to )
   let $k           := fn:concat( 'GET ', $node/@path )
-  let $constraints := $node/constraints
+  let $aditional  := ( $node/constraints, $node/privileges)
   return r:mapping( $k, 
     fn:concat( r:redirectToBasePath(), xdmp:url-encode( $redirect-to ) ),  
     ( attribute url { $redirect-to }, attribute type { 'redirect' }, 
-      $constraints ) ) };
+      $aditional ) ) };
 
 declare function  r:mappingForDynamicRoute( $node ) { 
   let $path       := $node/@path
-  let $constraints := $node/constraints
+  let $aditional  := ( $node/constraints, $node/privileges)
   let $resource   := fn:matches($path, ":resource")
   let $action     := fn:matches($path, ":action")
   return 
     if ( $resource and $action )
     then 
-      r:mapping( fn:concat( 'GET ', $path ), (), $constraints )
+      r:mapping( fn:concat( 'GET ', $path ), (), $aditional )
     else () } ;
 
-declare function r:includes( $resource, $includes, $member, $constraints ){
+declare function r:includes( $resource, $includes, $member, $aditional ){
   for $include in $includes
     let $action := fn:data( $include/@action )
     let $verbs  := fn:tokenize($include/@for, ',')
     for $verb in (if($verbs) then $verbs else 'GET')
       return r:mapping( fn:concat( $verb, " /", $resource, 
         if( $member ) then "/:id/" else "/", $action ), 
-        r:resourceActionPath( $resource, $action ), $constraints ) };
+        r:resourceActionPath( $resource, $action ), $aditional ) };
 
 declare function r:mappingForHash( $req, $node, $extraNodes ) { 
   let $resource   := r:resourceActionPair( $node ) [1]
@@ -215,7 +245,9 @@ declare function r:mapping( $k, $v, $extraNodes ) {
 declare function r:mapping( $k, $v, $r, $extraNodes ) {
   element mapping {
     attribute key    { $k },   attribute regexp { $r },
-    attribute value  { $v }, $extraNodes } } ;
+    attribute value  { $v }, 
+    attribute labels { fn:string-join( r:extractLabels( $k ), ";" ) },
+    $extraNodes } } ;
 
 declare function r:generateRegularExpression( $node ) {
   let $path := fn:normalize-space($node)

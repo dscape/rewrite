@@ -662,146 +662,146 @@
         , success:  function(d,t,j) { 
           equals( d, '/static/user/get/1', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-        /*
+        , complete: function()      { start(); } }) }) ; 
+        
         module("privileges") ;
-        asyncTest("privilege doesnt exist", function() {
+        /* should have setup and teardown for privileges but im 
+         * just using defaults for now - lazy bum */
+        asyncTest("privilege doesn't exist", function() {
           $.ajax( {
             url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges>' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+              '<get path="/">  <privileges>' +
+              '<execute>  i-dont-exist </execute>' +
+              '</privileges> <to> server#ping </to> </get>', '' )
           , success:  function(d,t,j) { 
             equals( d, '/resource/server.xqy?action=ping', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        asyncTest("user doesnt exist", function() {
+          , complete: function()      { start(); } }) })  ;
+        asyncTest("user doesn't exist", function() {
           $.ajax( {
             url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges for="idontexist">' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        asyncTest("current user has execute privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges>' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        asyncTest("current user has uri privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges>' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        asyncTest("current user doesnt have execute privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges>' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+              '<get path="/">  <privileges for="idontexist">' +
+              '<execute>  ' +
+              ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+              '</privileges> <to> server#ping </to> </get>', '' )
           , success:  function(d,t,j) { 
             equals( d, '/static/', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("current user has execute privileges", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/', 
+              '<get path="/">  <privileges>' +
+              '<execute>  ' +
+              ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
+              '</privileges> <to> server#ping </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("current user doesn't have execute privileges", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/', 
+            '<get path="/">  <privileges>' +
+            '<execute>  ' +
+            ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+            '</privileges> <to> server#ping </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
         asyncTest("current user doesnt have uri privileges", function() {
           $.ajax( {
             url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges>' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+            '<get path="/">  <privileges>' +
+            '<uri>  ' +
+            ' http://marklogic.com/cpf/pipelines/ </uri>' +
+            '</privileges> <to> server#ping </to> </get>', '' )
           , success:  function(d,t,j) { 
             equals( d, '/static/', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        asyncTest("current user has execute privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges>' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
+          , complete: function()      { start(); } }) }) ;
         asyncTest("admin has execute privileges", function() {
           $.ajax( {
             url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges for="admin">' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+              '<get path="/">  <privileges for="admin">' +
+              '<execute>  ' +
+              ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
+              '</privileges> <to> server#ping </to> </get>', '' )
           , success:  function(d,t,j) { 
             equals( d, '/resource/server.xqy?action=ping', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        asyncTest("admin has uri privileges", function() {
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("infostudio-admin has uri privileges", function() {
           $.ajax( {
             url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges for="admin">' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+              '<get path="/">  <privileges for="infostudio-admin">' +
+              '<uri>  ' +
+              ' http://marklogic.com/cpf/pipelines/ </uri>' +
+              '</privileges> <to> server#ping </to> </get>', '' )
           , success:  function(d,t,j) { 
             equals( d, '/resource/server.xqy?action=ping', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
+          , complete: function()      { start(); } }) }) ;
         asyncTest("admin doesn't have execute privileges", function() {
           $.ajax( {
             url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges for="admin">' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+              '<get path="/">  <privileges for="admin">' +
+              '<execute>  ' +
+              ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+              '</privileges> <to> server#ping </to> </get>', '' )
           , success:  function(d,t,j) { 
             equals( d, '/static/', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
+          , complete: function()      { start(); } }) }) ;
         asyncTest("admin doesn't have uri privileges", function() {
           $.ajax( {
             url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges for="admin">' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+              '<get path="/">  <privileges for="admin">' +
+              '<uri>  ' +
+              ' http://marklogic.com/cpf/pipelines/ </uri> ' +
+              '</privileges> <to> server#ping </to> </get>', '' )
           , success:  function(d,t,j) { 
             equals( d, '/static/', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        asyncTest("admin has execute privileges", function() {
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("dynamic resource has privileges", function() {
           $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get path="/">  <privileges  for="admin">' 
-              '' +
-              + '</privileges> <to> server#ping </to> </get>', '' )
+            url: rewriteUrl( 'GET', '/documents', 
+              '<resource name=":db">' +
+              '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints> <privileges for="admin">' +
+              '<execute>  ' +
+              ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
+              '</privileges> </resource>', '' )
+          , type: 'GET' 
           , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+            equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) 
-        ;
-        - mix with bound contraints hardest example
-          has permission
-          doesnt have permission
-          permission doesnt exist
-          */        
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("dynamic resource no privileges", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/documents', 
+              '<resource name=":db">' +
+              '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints><privileges>' +
+              '<execute>  ' +
+              ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+              '</privileges></resource>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/documents', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("dynamic resource privilege doesn't exist", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/documents', 
+              '<resource name=":db">' +
+              '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints><privileges>' +
+              '<execute>  i-dont-exist </execute>' +
+              '</privileges> </resource>', '' )
+          , type: 'GET' 
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;  
     }) ;
 
     </script>
