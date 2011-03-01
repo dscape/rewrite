@@ -622,14 +622,19 @@ This is not the actual test that we run (you can see a list of those in test/ind
 
 If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. I'm also very inclined to implement these features myself so it might be that a simple email is enough to motivation for me to get it done.
 
-* Scopes
-** Constraints
+v0.1
+
+* Nested Resources
+* Improve read-me, re-factor all notes to wiki
+* Sample app
+
+v0.2
+
 * Translated Paths for resources
 * Generating Paths and URLs from code
 * Route Globbing
 * Namespaces, e.g. /admin/user/1/edit
 * Make singular resources map to plural controllers
-* Nested Resources
 * Restricting Resource(s) Routes
 * Make redirect-to flexible
 * Allows bound constraints containing / in the values (test exists)
