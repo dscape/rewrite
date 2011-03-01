@@ -567,6 +567,7 @@ Scopes allow you to reuse your constraints for multiple routes:
                          <get path="/user/:id">
                            <to> user#get </to>
                          </get>
+                       </scope>
                      </routes>
      Dispatches to : /resource/user.xqy?action=get&id=admin
 
