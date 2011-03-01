@@ -42,9 +42,11 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
       //s:match/s:group/fn:string(.)
     let $constraints := $mapping/constraints
     let $privileges  := $mapping/privileges
+    let $lambdas     := $mapping/lambda
     where 
-      r:boundParameterConstraints($labels, $labelValues, $constraints)
+      r:boundParameterConstraints( $labels, $labelValues, $constraints)
       and r:privilegeConstraints( $privileges )
+      and r:lamdaConstraints( $labels, $labelValues, $lambdas )
     return $mapping ) [1]
   return
     if ( $selected ) (: found a match, using the first :)
@@ -126,6 +128,20 @@ declare function r:singlePrivilegeConstraint( $action, $user, $type ) {
       else fn:false()
     else fn:true() (: consistent with behavior of xdmp:has-privilege :) };
 
+declare function r:lamdaConstraints( $labels, $labelValues, $lambdas ) {
+  let $prolog :=
+    fn:string-join( 
+      for $match at $p in $labelValues
+      let $label := $labels[$p]
+      return 
+        fn:concat("declare variable $", $label, ' := "', $match, '" ; ' )  
+    , "&#x0a;" )
+  return every $l in $lambdas 
+    satisfies r:singleLambdaConstraint( fn:concat( $prolog, " &#x0a;", $l ) ) };
+
+declare function r:singleLambdaConstraint( $lambda ) {
+  try { xdmp:eval( $lambda ) } catch ( $e ) { fn:false() } } ;
+
 declare function r:mappings( $routesCfg ) { 
   <mappings> { for $e in $routesCfg/* return r:transform($e) } </mappings> } ;
 
@@ -149,7 +165,7 @@ declare function r:verb( $verb, $node ) {
   return 
     if ( $node/to ) (: if there's a place to go :)
     then r:mappingForHash( $req, $node/to, 
-      ( $node/constraints, $node/privileges ) )
+      ( $node/constraints, $node/privileges, $node/lambda ) )
     else if ( $node/redirect-to ) (: if theres a redirect :) 
     then r:mappingForRedirect( $req, $node )
     else r:mappingForDynamicRoute( $node ) (: purely dynamic route we need to figure it out :) 
@@ -158,7 +174,7 @@ declare function r:verb( $verb, $node ) {
 declare function r:resources( $node ) {
   let $resource   := $node/@name
   let $webservice := $node/@webservice
-  let $aditional  := ( $node/constraints, $node/privileges)
+  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
   let $index      := r:mapping( fn:concat('GET /', $resource),
     r:resourceActionPath( $resource, 'index' ), $aditional )
   let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
@@ -180,7 +196,7 @@ declare function r:resources( $node ) {
 declare function r:resource( $node ) {
   let $resource   := $node/@name
   let $webservice := $node/@webservice
-  let $aditional  := ( $node/constraints, $node/privileges)
+  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
   let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
     return r:mapping( fn:concat( $verb, ' /', $resource ), 
       r:resourceActionPath( $resource, fn:lower-case($verb) ), $aditional )
@@ -196,7 +212,7 @@ declare function r:resource( $node ) {
 declare function r:mappingForRedirect( $req, $node ) {
   let $redirect-to := fn:normalize-space( $node/redirect-to )
   let $k           := fn:concat( 'GET ', $node/@path )
-  let $aditional  := ( $node/constraints, $node/privileges)
+  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
   return r:mapping( $k, 
     fn:concat( r:redirectToBasePath(), xdmp:url-encode( $redirect-to ) ),  
     ( attribute url { $redirect-to }, attribute type { 'redirect' }, 
@@ -204,7 +220,7 @@ declare function r:mappingForRedirect( $req, $node ) {
 
 declare function  r:mappingForDynamicRoute( $node ) { 
   let $path       := $node/@path
-  let $aditional  := ( $node/constraints, $node/privileges)
+  let $aditional  := ( $node/constraints, $node/privileges, $node/lambda)
   let $resource   := fn:matches($path, ":resource")
   let $action     := fn:matches($path, ":action")
   return 

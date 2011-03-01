@@ -471,7 +471,7 @@ If no match is found `rewrite` will dispatch your query to a /static/ folder whe
      routes.xml    : <routes> <root> server#version </root> </routes> 
      Dispatches to : /static/css/style.css
 
-###  ✕ 2.3. constraints
+###  ✔ 2.3. constraints
 
 ### 2.3.1 bound parameters
 When you bound parameters you sometime need to validate that they are valid. For our twitter example we would want to validate that `dscape` is indeed a proper `:user` using a [regular expression][13]. In a simpler case you might want to check that an `:id` is a decimal number. You can do that using the [XML schema datatypes][16]
@@ -533,8 +533,21 @@ Many applications use the same login do all accesses to the database. Hence it m
 
 While very flexible this also means your `routes.xml` is no longer static. You will have to pass the current user every time a request comes.
 
-### 2.3.3. xquery lambdas
+### 2.3.3. lambdas
 The most flexible way of ensuring constraints is to run an XQuery lambda function. An example usage for a lambda in a constraint would be "only show the user information that pertains to the currently logged-in user"
+
+     Request       : GET /user/admin
+     routes.xml    : <routes> 
+                       <get path="/user/:id">
+                         <lambda>
+                           xdmp:get-current-user() = $id
+                         </lamda>
+                         <to> user#get </to>
+                       </get>
+                     </routes>
+     Dispatches to : /resource/user.xqy?action=get&id=dscape
+
+The bound parameters will be available in the lambda as an xs:string external variable; e.g. `:id` will be available as `$id`. 
 
 ###  ✕ 2.4. scopes
 
@@ -591,9 +604,7 @@ If you are interested in any of these (or other) feature and don't want to wait 
 
 * Scopes
 ** Constraints
-* Add error handling for constraints for better errors
-* Extend constraints for <resource/>
-* Translated Paths
+* Translated Paths for resources
 * Generating Paths and URLs from code
 * Route Globbing
 * Namespaces, e.g. /admin/user/1/edit
@@ -601,6 +612,7 @@ If you are interested in any of these (or other) feature and don't want to wait 
 * Nested Resources
 * Restricting Resource(s) Routes
 * Make redirect-to flexible
+* Allows bound constraints containing / in the values (test exists)
 
 ### Known Limitations
 

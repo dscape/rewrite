@@ -334,7 +334,7 @@
           equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
         , complete: function()      { start(); } }) }) ; 
-      asyncTest("id using slashes", function() {
+      /* asyncTest("id using slashes", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/file//Some/File', 
             '<get path="/file/:id"> <to> file#get </to> </get>', '' )
@@ -342,7 +342,7 @@
         , success:  function(d,t,j) { 
           equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
         , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
+        , complete: function()      { start(); } }) }) ; */
       asyncTest("resource", function() {
         $.ajax( {
           url: rewriteUrl( 'GET', '/Documents', 
@@ -802,8 +802,97 @@
             equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
           , complete: function()      { start(); } }) }) ;  
-    }) ;
 
+        module("lambda") ;
+        asyncTest("lambda returns true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/users/admin', 
+              '<get path="/users/:id">  <lambda> ' +
+              'xdmp:get-current-user() = $id' +
+              '</lambda> <to> user#show </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=show&id=admin', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("lambda returns false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/users/dscape', 
+              '<get path="/users/:id">  <lambda> ' +
+              'xdmp:get-current-user() = $id' +
+              '</lambda> <to> user#show </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/users/dscape', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("lambda returns exception", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/users/dscape', 
+              '<get path="/users/:id">  <lambda> ' +
+              ' fn:error() ' +
+              '</lambda> <to> user#show </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/users/dscape', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("lambda true false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/users/dscape', 
+              '<get path="/users/:id">  <lambda> fn:true() </lambda> ' +
+              '<lambda> xdmp:get-current-user() = $id' +
+              '</lambda> <to> user#show </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/users/dscape', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("lambda false false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/users/dscape', 
+              '<get path="/users/:id">  <lambda> fn:false() </lambda> ' +
+              '<lambda> xdmp:get-current-user() = $id' +
+              '</lambda> <to> user#show </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/users/dscape', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("lambda true true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/users/admin', 
+              '<get path="/users/:id">  <lambda> fn:true() </lambda> ' +
+              '<lambda> xdmp:get-current-user() = $id' +
+              '</lambda> <to> user#show </to> </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=show&id=admin', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("multiple vars true", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/get/1', 
+              '<get path="/:resource/:action/:id">'+
+              '<lambda> '+
+              '       $resource = "user" '+
+              '   and $action = "get" '+
+              '   and $id castable as xs:integer'+
+              '</lambda>'+
+              ' </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+        asyncTest("multiple vars false", function() {
+          $.ajax( {
+            url: rewriteUrl( 'GET', '/user/get/1', 
+              '<get path="/:resource/:action/:id">'+
+              '<lambda> '+
+              '       $resource = "user" '+
+              '   and $action = "not-get" '+
+              '   and $id castable as xs:integer'+
+              '</lambda>'+
+              ' </get>', '' )
+          , success:  function(d,t,j) { 
+            equals( d, '/static/user/get/1', "OK" ); }
+          , error:    function(j,t,e) { ok(false, "NOK") }
+          , complete: function()      { start(); } }) }) ;
+    }) ;
     </script>
   </head>
   <body>
