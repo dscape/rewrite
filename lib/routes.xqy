@@ -169,7 +169,7 @@ declare function r:root( $node ) {
   r:mappingForHash( "GET /", $node, () ) } ;
 
 declare function r:verb( $verb, $node ) { 
-  let $req := fn:concat( $verb, " ", $node/@path )
+  let $req := fn:concat( $verb, " /", $node/@path )
   return 
     if ( $node/to ) (: if there's a place to go :)
     then r:mappingForHash( $req, $node/to, r:aditional( $node ) )
@@ -218,15 +218,14 @@ declare function r:resource( $node ) {
 
 declare function r:mappingForRedirect( $req, $node ) {
   let $redirect-to := fn:normalize-space( $node/redirect-to )
-  let $k           := fn:concat( 'GET ', $node/@path )
   let $aditional  := r:aditional( $node )
-  return r:mapping( $k, 
+  return r:mapping( $req, 
     fn:concat( r:redirectToBasePath(), xdmp:url-encode( $redirect-to ) ),  
     ( attribute url { $redirect-to }, attribute type { 'redirect' }, 
       $aditional ) ) };
 
 declare function  r:mappingForDynamicRoute( $node ) { 
-  let $path       := $node/@path
+  let $path       := fn:concat( "/", $node/@path )
   let $aditional  := r:aditional( $node )
   let $resource   := fn:matches($path, ":resource")
   let $action     := fn:matches($path, ":action")

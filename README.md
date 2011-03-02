@@ -8,7 +8,7 @@ The way we define the routes is with a XML domain specific language (DSL) intend
 
       <routes>
         <root> users#list </root>
-        <get path="/users/:id">
+        <get path="users/:id">
           <to> users#show </to>
         </get>
       </routes>
@@ -27,18 +27,19 @@ This project also allows you to make security part of this process by introducin
 2. Get the first that matched and redirect according to the rule
 3. If none matched redirect to a directory with static files. This way you can still serve your css and javascript files by placing them in the /static/ directory.
 
+### Routes are ordered
 Routes are matched in the order they are specified, so if you have these routes:
 
      <routes>
-       <get path="/:user">
-       <get path="/about">
+       <get path=":user">
+       <get path="about">
      </routes>
 
 the get route for the `/:user` will be matched before the get `/about`. To fix this, move the `/about` line above the `:user` so that it is matched first:
 
      <routes>
-       <get path="/about">
-       <get path="/:user">
+       <get path="about">
+       <get path=":user">
      </routes>
 
 `rewrite.xqy` can only do the mapping between URLs and internal files - gets a request and returns the invokable path of the file.
@@ -57,7 +58,7 @@ In your application `root` folder place a file named `rewrite.xqy` with the foll
      declare variable $routesCfg := 
        <routes>
          <root> users#list </root>
-         <get path="/users/:id">
+         <get path="users/:id">
            <to> users#show </to>
          </get>
        </routes> ;
@@ -174,7 +175,7 @@ If you think about a website like twitter.com the first level path is given to u
 
      Request       : GET /dscape
      routes.xml    : <routes> 
-                       <get path="/:user">
+                       <get path=":user">
                          <to> user#get </to>
                        </get>
                      </routes>
@@ -184,7 +185,7 @@ The colon in `:user` lets the routing algorithm know that `:user` shouldn't be e
 
      Request       : GET /user/dscape
      routes.xml    : <routes> 
-                       <get path="/user/:id">
+                       <get path="user/:id">
                          <to> user#get </to>
                        </get>
                      </routes>
@@ -197,7 +198,7 @@ The following example is a route with bound parameters that will match `/users/g
 
      Request       : GET /users/get/1
      routes.xml    : <routes> 
-                       <get path="/:resource/:action/:id"/>
+                       <get path=":resource/:action/:id"/>
                      </routes>
      Dispatches to : /resource/users.xqy?action=get&id=1
 
@@ -206,7 +207,7 @@ You can specify a redirect by using the `redirect-to` element inside your route:
 
      Request       : GET /google
      routes.xml    : <routes> 
-                       <get path="/google">
+                       <get path="google">
                          <redirect-to> http://www.google.com </redirect-to> 
                        </get>
                      </routes>
@@ -234,28 +235,28 @@ An alternative is to user a error handler as described in usage.
 ###  ✔ 1.2.2. get 
      Request       : GET /list
      routes.xml    : <routes> 
-                       <get path="/list"> <to> article#list </to> </get>
+                       <get path="list"> <to> article#list </to> </get>
                      </routes>
      Dispatches to : /resource/article.xqy?action=list
 
 ###  ✔ 1.2.3. put 
      Request       : PUT /upload
      routes.xml    : <routes>
-                       <put path="/upload"> <to> file#upload </to> </put>
+                       <put path="upload"> <to> file#upload </to> </put>
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
 ###  ✔ 1.2.4. post
      Request       : POST /upload
      routes.xml    : <routes>
-                       <post path="/upload"> <to> file#upload </to> </post>
+                       <post path="upload"> <to> file#upload </to> </post>
                      </routes>
      Dispatches to : /resource/file.xqy?action=upload
 
 ###  ✔ 1.2.5. delete 
      Request       : DELETE /all-dbs
      routes.xml    : <routes>
-                       <delete path="/all-dbs"> 
+                       <delete path="all-dbs"> 
                          <to> database#delete-all </to>
                        </delete>
                      </routes>
@@ -458,7 +459,7 @@ As with `get`, `put`, etc, you can also create a dynamic resource by prefixing t
 ###  ✔ 2.1. mixed paths
      Request       : GET /user/43
      routes.xml    : <routes> 
-                       <get path="/user/:id">
+                       <get path="user/:id">
                          <to> user#show </to>
                        </get>
                      </routes>
@@ -478,7 +479,7 @@ When you bound parameters you sometime need to validate that they are valid. For
 
      Request       : GET /user/dscape
      routes.xml    : <routes> 
-                       <get path="/user/:id">
+                       <get path="user/:id">
                          <constraints>
                            <id type="integer"/>
                          </constraints>
@@ -491,7 +492,7 @@ Regular Expression Example:
 
      Request       : GET /lost-username/bill@sample.com
      routes.xml    : <routes> 
-                       <get path="/lost-username/:email">
+                       <get path="lost-username/:email">
                          <constraints>
                            <email 
                              type="string"  match="[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}"/>
@@ -514,7 +515,7 @@ Privilege constraints make routes visible to the user if he is part of a role wi
                            http://marklogic.com/xdmp/triggers/
                          </uri>
                        </privileges>
-                       <get path="/list"> <to> article#list </to> </get>
+                       <get path="list"> <to> article#list </to> </get>
                      </routes>
      Dispatches to : /resource/article.xqy?action=list
 
@@ -527,7 +528,7 @@ Many applications use the same login do all accesses to the database. Hence it m
                            http://marklogic.com/xdmp/privileges/xdmp-eval
                          </execute>
                        </privileges>
-                       <get path="/list"> <to> article#list </to> </get>
+                       <get path="list"> <to> article#list </to> </get>
                      </routes>
      Dispatches to : /resource/article.xqy?action=list
 
@@ -538,7 +539,7 @@ The most flexible way of ensuring constraints is to run an XQuery lambda functio
 
      Request       : GET /user/admin
      routes.xml    : <routes> 
-                       <get path="/user/:id">
+                       <get path="user/:id">
                          <lambda>
                            xdmp:get-current-user() = $id
                          </lamda>
@@ -561,10 +562,10 @@ Scopes allow you to reuse your constraints for multiple routes:
                          <lambda>
                            xdmp:get-current-user() = $id
                          </lamda>
-                         <put path="/user/:id">
+                         <put path="user/:id">
                            <to> user#put </to>
                          </put>
-                         <get path="/user/:id">
+                         <get path="user/:id">
                            <to> user#get </to>
                          </get>
                        </scope>
