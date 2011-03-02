@@ -44,6 +44,10 @@ the get route for the `/:user` will be matched before the get `/about`. To fix t
 
 `rewrite.xqy` can only do the mapping between URLs and internal files - gets a request and returns the invokable path of the file.
 
+### Routes can be nested
+Explain difference between resources and resource, including dynamic.
+Document decisions on action names. really important.
+
 ## Usage
 
 Start by creating an HTTP Application Server in MarkLogic. Put `rewrite.xqy` in the `rewrite` input.
@@ -646,6 +650,7 @@ v0.2
 In this section we have the know limitations:
 
 * Bound parameters containing / are not supported.
+* Nested Sections don't propagate constraints between levels.
 
 ### Dynamic paths
 

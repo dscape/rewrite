@@ -48,6 +48,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
       and r:privilegeConstraints( $privileges )
       and r:lamdaConstraints( $labels, $labelValues, $lambdas )
     return $mapping ) [1]
+  let $_ := xdmp:log( $selected )
   return
     if ( $selected ) (: found a match, using the first :)
     then 
@@ -178,43 +179,52 @@ declare function r:verb( $verb, $node ) {
     else r:mappingForDynamicRoute( $node ) (: purely dynamic route we need to figure it out :) 
 } ;
 
-declare function r:resources( $node ) {
-  let $resource   := $node/@name
-  let $webservice := $node/@webservice
-  let $aditional  := r:aditional( $node )
-  let $index      := r:mapping( fn:concat('GET /', $resource),
-    r:resourceActionPath( $resource, 'index' ), $aditional )
-  let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
-    return r:mapping( fn:concat( $verb, ' /', $resource, '/:id' ), 
-      r:resourceActionPath( $resource, fn:lower-case($verb) ), $aditional )
-  let $post       := if ($webservice) then () else
-    r:mapping( fn:concat( 'POST /', $resource ), 
-      r:resourceActionPath( $resource, 'post' ), $aditional )
-  let $new        := if ($webservice) then () else
-    r:mapping( fn:concat( 'GET /', $resource, '/new' ), 
-      r:resourceActionPath( $resource, 'new' ), $aditional )
-  let $edit       := if ($webservice) then () else
-    r:mapping( fn:concat( 'GET /', $resource, '/:id/edit' ), 
-      r:resourceActionPath( $resource, 'edit' ), $aditional )
-  let $memberInc  := r:includes( $resource, $node/member, fn:true(), $aditional )
-  let $setInc     := r:includes( $resource, $node/set, fn:false(), $aditional )
-  return ( $edit, $new, $memberInc, $setInc, $verbs, $post, $index ) };
 
-declare function r:resource( $node ) {
+declare function r:resources( $node ) { r:resources( $node, '' ) } ;
+declare function r:resources( $node, $ac ) {
+  let $resource    := $node/@name
+  let $webservice  := $node/@webservice
+  let $aditional   := r:aditional( $node )
+  let $rpath       := fn:concat( $ac, '/', $resource )
+  let $ridpath     := fn:concat( $rpath,  '/:id' )
+  let $index       := r:mapping( fn:concat('GET ', $rpath ),
+    r:resourceActionPath( $resource, 'index' ), $aditional )
+  let $verbs       := for $verb in ('GET', 'PUT', 'DELETE')
+    return r:mapping( fn:concat( $verb, ' ', $ridpath ), 
+      r:resourceActionPath( $resource, fn:lower-case($verb) ), $aditional )
+  let $post        := if ($webservice) then () else
+    r:mapping( fn:concat( 'POST ', $rpath ), 
+      r:resourceActionPath( $resource, 'post' ), $aditional )
+  let $new         := if ($webservice) then () else
+    r:mapping( fn:concat( 'GET ', $rpath, '/new' ), 
+      r:resourceActionPath( $resource, 'new' ), $aditional )
+  let $edit        := if ($webservice) then () else
+    r:mapping( fn:concat( 'GET ', $ridpath, '/edit' ), 
+      r:resourceActionPath( $resource, 'edit' ), $aditional )
+  let $memberInc   := r:includes( $resource, $ridpath, $node/member, $aditional )
+  let $setInc      := r:includes( $resource, $rpath, $node/set, $aditional )
+  let $descendants := r:descendantResources( $node, $ridpath )
+  return ( $edit, $new, $memberInc, $setInc, $verbs, $post, $index, 
+           $descendants ) };
+
+declare function r:resource( $node ) { r:resource( $node, '' ) } ;
+declare function r:resource( $node, $ac ) {
   let $resource   := $node/@name
   let $webservice := $node/@webservice
   let $aditional  := r:aditional( $node )
+  let $rpath      := fn:concat( $ac, '/', $resource )
   let $verbs      := for $verb in ('GET', 'PUT', 'DELETE')
-    return r:mapping( fn:concat( $verb, ' /', $resource ), 
+    return r:mapping( fn:concat( $verb, ' ', $rpath ), 
       r:resourceActionPath( $resource, fn:lower-case($verb) ), $aditional )
   let $post       := if ($webservice) then () else
-    r:mapping( fn:concat( 'POST /', $resource ), 
+    r:mapping( fn:concat( 'POST ', $rpath ), 
       r:resourceActionPath( $resource, 'post' ), $aditional )
   let $edit       := if ($webservice) then () else
-    r:mapping( fn:concat( 'GET /', $resource, '/edit' ), 
+    r:mapping( fn:concat( 'GET ', $rpath, '/edit' ), 
       r:resourceActionPath( $resource, 'edit' ), $aditional )
-  let $memberInc  := r:includes( $resource, $node/member, fn:false(), $aditional )
-  return ( $edit, $memberInc, $verbs, $post ) };
+  let $memberInc  := r:includes( $resource, $rpath, $node/member, $aditional )
+  let $descendants := r:descendantResources( $node, $rpath )
+  return ( $edit, $memberInc, $verbs, $post, $descendants ) };
 
 declare function r:mappingForRedirect( $req, $node ) {
   let $redirect-to := fn:normalize-space( $node/redirect-to )
@@ -235,13 +245,12 @@ declare function  r:mappingForDynamicRoute( $node ) {
       r:mapping( fn:concat( 'GET ', $path ), (), $aditional )
     else () } ;
 
-declare function r:includes( $resource, $includes, $member, $aditional ){
+declare function r:includes( $resource, $rpath, $includes, $aditional ){
   for $include in $includes
     let $action := fn:data( $include/@action )
     let $verbs  := fn:tokenize($include/@for, ',')
     for $verb in (if($verbs) then $verbs else 'GET')
-      return r:mapping( fn:concat( $verb, " /", $resource, 
-        if( $member ) then "/:id/" else "/", $action ), 
+      return r:mapping( fn:concat( $verb, " ", $rpath, "/", $action ), 
         r:resourceActionPath( $resource, $action ), $aditional ) };
 
 declare function r:mappingForHash( $req, $node, $extraNodes ) { 
@@ -256,7 +265,8 @@ declare function r:resourceActionPair( $node ) {
 declare function r:resourceActionPath( $resource, $action ) {
   fn:concat( r:resourceDirectory(), 
     fn:replace( $resource, $dynamicRouteDelimiter, "" ), ".", 
-    r:xqyExtension(), "?action=", $action ) } ;
+    r:xqyExtension(), "?action=", 
+    fn:replace( $action, $dynamicRouteDelimiter, "" ) ) } ;
 
 declare function r:mapping( $k, $v ) { 
   r:mapping( $k, $v, r:generateRegularExpression( $k ), () ) };
@@ -303,6 +313,10 @@ declare function r:setDefaults( $defaultCfg ) {
 declare function r:redirectToBasePath() {
   fn:concat( r:resourceDirectory(), r:redirectResource(), ".", 
   r:xqyExtension(), '?url=' ) } ;
+
+declare function r:descendantResources( $node, $rpath ) { 
+  for $r in $node/resources return r:resources( $r, $rpath ),
+  for $r in $node/resource  return r:resource(  $r, $rpath ) };
 
 declare function r:resourceDirectory()   { $resourceDirectory } ;
 declare function r:staticDirectory()     { $staticDirectory   } ;

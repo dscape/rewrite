@@ -9,1058 +9,1157 @@
     <script type="text/javascript"
       src="static/rewrite-tests.js"></script>
     <script>
-    $(document).ready(function(){
+$(document).ready(function(){
       module("root") ;
-      asyncTest("simple root", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/server.xqy?action=status', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("shouldn't match root", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/foo.jpg', 
-            '<root>server#status</root>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/static/foo.jpg', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("root with arguments", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/?q=foo&foo=lander',
-            '<root>store#search</root>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/store.xqy?action=search&q=foo&foo=lander',
-            "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-        
-      module("get") ;
-      asyncTest("static get to", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/list', 
-            '<get path="list"> <to> article#list </to> </get>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/article.xqy?action=list', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-        
-      module("put") ;
-      asyncTest("static put to", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/upload', 
-            '<put path="upload"> <to> file#upload </to> </put>', '' )
-        , type: 'PUT'
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/file.xqy?action=upload', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      
-      module("post") ;
-      asyncTest("static post to", function() {
-        $.ajax( {
-          url: rewriteUrl( 'POST', '/upload', 
-            '<post path="upload"> <to> file#upload </to> </post>', '' )
-        , type: 'POST'
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/file.xqy?action=upload', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      
-      module("delete") ;
-      asyncTest("static delete to", function() {
-        $.ajax( {
-          url: rewriteUrl( 'DELETE', '/all-dbs', 
-            '<delete path="all-dbs"> <to> db#del </to> </delete>', '' )
-        , type: 'DELETE'
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/db.xqy?action=del', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      
-      module("head") ;
-      asyncTest("static head to", function() {
-        $.ajax( {
-          url: rewriteUrl( 'HEAD', '/', 
-            '<head> <to> server#ping </to> </head>', '' )
-        , type: 'GET' // head doesnt return body
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("static head to", function() {
-        $.ajax( {
-          url: rewriteUrl( 'HEAD', '/ping', 
-            '<head path="ping"> <to> server#ping </to> </head>', '' )
-        , type: 'GET' // head doesnt return body
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      
-      module("resources") ;
-      asyncTest("get", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/5', 
-            '<resources name="users"/>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=get&id=5', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("index", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users', 
-            '<resources name="users"/>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=index', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("index with trailing slash", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/', 
-            '<resources name="users"/>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=index', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("put", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/users/5', 
-            '<resources name="users"/>', '' )
-        , type: 'PUT' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=put&id=5', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("delete", function() {
-        $.ajax( {
-          url: rewriteUrl( 'DELETE', '/users/5', 
-            '<resources name="users"/>', '' )
-        , type: 'DELETE' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=delete&id=5', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("illegal post from webservice", function() {
-        $.ajax( {
-          url: rewriteUrl( 'POST', '/users', 
-            '<resources name="users" webservice="true"/>', '' )
-        , type: 'POST' 
-        , success:  function(d,t,j) { 
-          equals( d, '/static/users', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("post", function() {
-        $.ajax( {
-          url: rewriteUrl( 'POST', '/users', 
-            '<resources name="users"/>', '' )
-        , type: 'POST' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=post', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("new", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/new', 
-            '<resources name="users"/>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=new', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("edit", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/5/edit', 
-            '<resources name="users"/>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=edit&id=5', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("member include", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/5/enable', 
-            '<resources name="users">'+
-            '<member action="enable"/></resources>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("include with multiple verbs", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/users/5/enable', 
-            '<resources name="users">'+
-            '<member action="enable" for="DELETE,PUT"/>'+
-            '</resources>', '' )
-        , type: 'PUT' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("include with multiple verbs but none matches", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/users/5/enable', 
-            '<resources name="users">'+
-            '<member action="enable" for="DELETE,GET,POST"/>'+
-            '</resources>', '' )
-        , type: 'PUT' 
-        , success:  function(d,t,j) { 
-          notEqual( d, '/resource/users.xqy?action=enable&id=5', 
-            "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("include set", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/users/notify', 
-            '<resources name="users">'+
-            '<set action="notify" for="PUT"/></resources>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=notify', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      
-      module("resource") ;
-      asyncTest("get", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/about', 
-            '<resource name="about"/>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/about.xqy?action=get', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("put", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/ignition', 
-            '<resource name="ignition"/>', '' )
-        , type: 'PUT' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/ignition.xqy?action=put', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("delete", function() {
-        $.ajax( {
-          url: rewriteUrl( 'DELETE', '/ignition', 
-            '<resource name="ignition"/>', '' )
-        , type: 'DELETE' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/ignition.xqy?action=delete', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("illegal post from webservice", function() {
-        $.ajax( {
-          url: rewriteUrl( 'POST', '/about', 
-            '<resource name="about" webservice="true"/>', '' )
-        , type: 'POST' 
-        , success:  function(d,t,j) { 
-          equals( d, '/static/about', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("post", function() {
-        $.ajax( {
-          url: rewriteUrl( 'POST', '/about', 
-            '<resource name="about"/>', '' )
-        , type: 'POST' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/about.xqy?action=post', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("edit", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/about/edit', 
-            '<resource name="about"/>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/about.xqy?action=edit', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("include", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/car/ignition', 
-            '<resource name="car">'+
-            '<member action="ignition"/></resource>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/car.xqy?action=ignition', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("include with multiple verbs", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/car/ignition', 
-            '<resource name="car">'+
-            '<member action="ignition" for="DELETE,PUT"/>'+
-            '</resource>', '' )
-        , type: 'PUT' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/car.xqy?action=ignition', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("include with multiple verbs but none matches", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/car/ignition', 
-            '<resource name="car">'+
-            '<memberInclude action="ignition" for="DELETE,GET,POST"/>'+
-            '</resource>', '' )
-        , type: 'PUT' 
-        , success:  function(d,t,j) { 
-          notEqual( d, '/resource/car.xqy?action=ignition', 
-            "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-        
-      module("redirects") ;
-      asyncTest("changing redirect dispatcher", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/google', 
-            '<get path="google">' +
-            '<redirect-to> http://www.google.com </redirect-to> </get>', '',
-            '<resourceDirectory>/</resourceDirectory>'+
-            '<redirect>dispatcher</redirect>' )
-        , success:  function(d,t,j) { 
-          equal( d, '/dispatcher.xqy?url=http%3a//www.google.com', 
-            "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("simple redirect", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/google', 
-            '<get path="google">' +
-            '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com', 
-            "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
+asyncTest("simple root", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/server.xqy?action=status', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("shouldn't match root", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/foo.jpg', 
+      '<root>server#status</root>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/foo.jpg', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("root with arguments", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/?q=foo&foo=lander',
+      '<root>store#search</root>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/store.xqy?action=search&q=foo&foo=lander',
+      "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+  
+module("get") ;
+asyncTest("static get to", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/list', 
+      '<get path="list"> <to> article#list </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/article.xqy?action=list', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+  
+module("put") ;
+asyncTest("static put to", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/upload', 
+      '<put path="upload"> <to> file#upload </to> </put>', '' )
+  , type: 'PUT'
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=upload', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
 
-      module("dynamic") ;
-      asyncTest("search containing spaces", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/in love', 
-            '<get path=":q"> <to> story#search </to> </get>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ; 
-/*      asyncTest("id using slashes", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/file//Some/File', 
-            '<get path="file/:id"> <to> file#get </to> </get>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ; */
-      asyncTest("resource", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/Documents', 
-            '<resource name=":database"/>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/database.xqy?action=get&database=Documents',
-            "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("user id", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/user/43', 
-            '<get path="user/:id"> <to> user#show </to> </get>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/user.xqy?action=show&id=43', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest(":controller :action", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/user/get', 
-            '<get path=":resource/:action"/>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/user.xqy?action=get', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest(":controller ", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/user/get', 
-            '<get path=":resource"/>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/static/user/get', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest(":controller :action :id", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/user/get/1', 
-            '<get path=":resource/:action/:id"/>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest(":controller :id :action", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/user/1/edit', 
-            '<get path=":resource/:id/:action"/>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/user.xqy?action=edit&id=1', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-        asyncTest("static :controller :action :id", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/admin/user/get/1', 
-              '<get path="admin/:resource/:action/:id"/>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("static :controller :action  static :id static", 
-          function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/admin/user/get/detail/1/jpg/picture', 
-             '<get ' +
-             'path="admin/:resource/:action/detail/:id/:how/picture"/>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=get&id=1&how=jpg', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-      
-      module("complex") ;
-      asyncTest("route should match with and without trailing /", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/list/', 
-            '<get path="list"> <to> article#list </to> </get>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/article.xqy?action=list', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("complex set include", function() {
-        $.ajax( {
-          url: rewriteUrl( 'PUT', '/users/notify', 
-            '<resources name="users">'+
-            '<set action="notify" for="PUT"/>'+
-            '<member action="notify" for="GET,PUT"/>'+
-            '</resources>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=notify', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("include", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/5/enable', 
-            '<resources name="users">'+
-            '<set action="enable"/>' +
-            '<member action="enable"/></resources>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-        
-      module("paths") ;
-      asyncTest("Change resource directory to /controller/", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
-          '<resourceDirectory>/controller/</resourceDirectory>' )
-        , success:  function(d,t,j) { 
-          equals( d, '/controller/server.xqy?action=status', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("Change resource directory to /", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
-          '<resourceDirectory>/</resourceDirectory>' )
-        , success:  function(d,t,j) { 
-          equals( d, '/server.xqy?action=status', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("Change resource directory to ()", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
-          '<resourceDirectory/>' )
-        , success:  function(d,t,j) { 
-          equals( d, 'server.xqy?action=status', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("Change extension to .xq", function() {
-         $.ajax( {
-           url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
-           '<xqyExtension>xq</xqyExtension>' )
-         , success:  function(d,t,j) { 
-           equals( d, '/resource/server.xq?action=status', "OK" ); }
-         , error:    function(j,t,e) { ok(false, "NOK") }
-         , complete: function()      { start(); } }) }) ;
-      asyncTest("Change static to /public/", function() {
-         $.ajax( {
-           url: rewriteUrl( 'GET', '/css/style.css', 
-             '<root>server#status</root>', '',
-             '<staticDirectory>/public/</staticDirectory>' )
-         , success:  function(d,t,j) { 
-           equals( d, '/public/css/style.css', "OK" ); }
-         , error:    function(j,t,e) { ok(false, "NOK") }
-         , complete: function()      { start(); } }) }) ;
-      
-      module("bound parameter constraints") ;
-      asyncTest("castable type", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/45', 
-            '<get path="users/:id">' +
-            '<constraints> <id type="integer"/> </constraints>'+
-            '<to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/resource/users.xqy?action=show&id=45', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) })  ;
-      asyncTest("uncastable type", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/dscape', 
-            '<get path="users/:id">' +
-            '<constraints> <id type="integer"/> </constraints>'+
-            '<to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/static/users/dscape', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("match", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/john@doe.com', 
-            '<get path="users/:email"><constraints> '+
-            '<email match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
-            '</constraints> <to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/resource/users.xqy?action=show&email=john%40doe.com', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) })  ;
-      asyncTest("doesnt match", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/dscape', 
-            '<get path="users/:email"><constraints> '+
-            '<email match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
-            '</constraints> <to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/static/users/dscape', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("castable and matchable", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/john@doe.com', 
-            '<get path="users/:id">' +
-            '<constraints> <id type="string" '+
-            'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
-            '</constraints> <to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/resource/users.xqy?action=show&id=john%40doe.com', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) })  ;
-      asyncTest("uncastable and matchable", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/john@doe.com', 
-            '<get path="users/:id">' +
-            '<constraints> <id type="integer" '+
-            'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
-            '</constraints> <to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/static/users/john@doe.com', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) })  ;
-      asyncTest("uncastable and unmatchable", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/dscape', 
-            '<get path="users/:id">' +
-            '<constraints> <id type="integer" ' +
-            'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
-            '</constraints> <to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/static/users/dscape', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("castable and unmatchable", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/dscape', 
-            '<get path="users/:id">' +
-            '<constraints> <id type="string"/>'+
-            '<id match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
-            '</constraints> <to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/static/users/dscape', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("two bound / type and match", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/45/nuno', 
-            '<get path="users/:id/:name">' +
-            '<constraints> <id type="integer"/><name match="[a-z]"/></constraints>'+
-            '<to> users#show </to></get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/resource/users.xqy?action=show&id=45&name=nuno', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) })  ;
-      asyncTest("redirect ok", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/download/1', 
-            '<get path="download/:id">' +
-            '<constraints> <id type="integer"/> </constraints>'+
-            '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com&id=1', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("redirect fail", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/download/nop', 
-            '<get path="download/:id">' +
-            '<constraints> <id type="integer"/> </constraints>'+
-            '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
-        , success:  function(d,t,j) { 
-          equal( d, '/static/download/nop', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("dynamic resource ok", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/documents', 
-            '<resource name=":db">' +
-            '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
-            '</resource>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("dynamic resource fail", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/Documents', 
-            '<resource name=":db">' +
-            '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
-            '</resource>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/static/Documents', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("resources fail", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/dscape', 
-            '<resources name="users">'+
-            '<constraints> <id type="integer"/> </constraints> </resources>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/static/users/dscape', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("resources ok", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/users/dscape', 
-            '<resources name="users">'+
-            '<constraints> <id match="[a-z]"/> </constraints> </resources>', '' )
-        , type: 'GET' 
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/users.xqy?action=get&id=dscape', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("default route ok", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/user/get/1', 
-            '<get path=":resource/:action/:id">'+
-            '<constraints> <id type="integer"/> <action match="[a-z]"/>' +
-            '<resource match="[a-z]"/> </constraints> </get>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ;
-      asyncTest("default route fail", function() {
-        $.ajax( {
-          url: rewriteUrl( 'GET', '/user/get/1', 
-            '<get path=":resource/:action/:id">'+
-            '<constraints> <resource type="integer"/> </constraints> </get>', '' )
-        , success:  function(d,t,j) { 
-          equals( d, '/static/user/get/1', "OK" ); }
-        , error:    function(j,t,e) { ok(false, "NOK") }
-        , complete: function()      { start(); } }) }) ; 
-        
-        module("privileges") ;
-        /* should have setup and teardown for privileges but im 
-         * just using defaults for now - lazy bum */
-        asyncTest("privilege doesn't exist", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get>  <privileges>' +
-              '<execute>  i-dont-exist </execute>' +
-              '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) })  ;
-        asyncTest("user doesn't exist", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get>  <privileges for="idontexist">' +
-              '<execute>  ' +
-              ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
-              '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("current user has execute privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get>  <privileges>' +
-              '<execute>  ' +
-              ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
-              '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("current user doesn't have execute privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-            '<get>  <privileges>' +
-            '<execute>  ' +
-            ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
-            '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("current user doesnt have uri privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-            '<get>  <privileges>' +
-            '<uri>  ' +
-            ' http://marklogic.com/cpf/pipelines/ </uri>' +
-            '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("admin has execute privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get>  <privileges for="admin">' +
-              '<execute>  ' +
-              ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
-              '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("infostudio-admin has uri privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get>  <privileges for="infostudio-admin">' +
-              '<uri>  ' +
-              ' http://marklogic.com/cpf/pipelines/ </uri>' +
-              '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/server.xqy?action=ping', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("admin doesn't have execute privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get>  <privileges for="admin">' +
-              '<execute>  ' +
-              ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
-              '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("admin doesn't have uri privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/', 
-              '<get>  <privileges for="admin">' +
-              '<uri>  ' +
-              ' http://marklogic.com/cpf/pipelines/ </uri> ' +
-              '</privileges> <to> server#ping </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("dynamic resource has privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/documents', 
-              '<resource name=":db">' +
-              '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints> <privileges for="admin">' +
-              '<execute>  ' +
-              ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
-              '</privileges> </resource>', '' )
-          , type: 'GET' 
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("dynamic resource no privileges", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/documents', 
-              '<resource name=":db">' +
-              '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints><privileges>' +
-              '<execute>  ' +
-              ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
-              '</privileges></resource>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/documents', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("dynamic resource privilege doesn't exist", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/documents', 
-              '<resource name=":db">' +
-              '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints><privileges>' +
-              '<execute>  i-dont-exist </execute>' +
-              '</privileges> </resource>', '' )
-          , type: 'GET' 
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;  
+module("post") ;
+asyncTest("static post to", function() {
+  $.ajax( {
+    url: rewriteUrl( 'POST', '/upload', 
+      '<post path="upload"> <to> file#upload </to> </post>', '' )
+  , type: 'POST'
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=upload', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
 
-        module("lambda") ;
-        asyncTest("lambda returns true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/users/admin', 
-              '<get path="users/:id">  <lambda> ' +
-              'xdmp:get-current-user() = $id' +
-              '</lambda> <to> user#show </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=show&id=admin', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("lambda returns false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/users/dscape', 
-              '<get path="users/:id">  <lambda> ' +
-              'xdmp:get-current-user() = $id' +
-              '</lambda> <to> user#show </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/users/dscape', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("lambda returns exception", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/users/dscape', 
-              '<get path="users/:id">  <lambda> ' +
-              ' fn:error() ' +
-              '</lambda> <to> user#show </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/users/dscape', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("lambda true false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/users/dscape', 
-              '<get path="users/:id">  <lambda> fn:true() </lambda> ' +
-              '<lambda> xdmp:get-current-user() = $id' +
-              '</lambda> <to> user#show </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/users/dscape', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("lambda false false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/users/dscape', 
-              '<get path="users/:id">  <lambda> fn:false() </lambda> ' +
-              '<lambda> xdmp:get-current-user() = $id' +
-              '</lambda> <to> user#show </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/users/dscape', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("lambda true true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/users/admin', 
-              '<get path="users/:id">  <lambda> fn:true() </lambda> ' +
-              '<lambda> xdmp:get-current-user() = $id' +
-              '</lambda> <to> user#show </to> </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=show&id=admin', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("multiple vars true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/get/1', 
-              '<get path=":resource/:action/:id">'+
-              '<lambda> '+
-              '       $resource = "user" '+
-              '   and $action = "get" '+
-              '   and $id castable as xs:integer'+
-              '</lambda>'+
-              ' </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("multiple vars false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/get/1', 
-              '<get path="/:resource/:action/:id">'+
-              '<lambda> '+
-              '       $resource = "user" '+
-              '   and $action = "not-get" '+
-              '   and $id castable as xs:integer'+
-              '</lambda>'+
-              ' </get>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/user/get/1', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        
-        module("scopes") ;
-        asyncTest("false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/admin', 
-              '<scope> <constraints> <id type="integer"/> </constraints> ' +
-              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
-              ' <put path="user/:id"> <to> user#put </to> </put> ' +
-              ' <get path="user/:id"> <to> user#get </to> </get> </scope>'
-              , '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/user/admin', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/admin', 
-              '<scope> <constraints> <id type="string"/> </constraints> ' +
-              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
-              ' <put path="user/:id"> <to> user#put </to> </put> ' +
-              ' <get path="user/:id"> <to> user#get </to> </get> </scope>'
-              , '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=get&id=admin', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("resources false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/admin', 
-              '<scope> <constraints> <id type="integer"/> </constraints> ' +
-              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
-              ' <resources name="user"/> </scope>'
-              , '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/user/admin', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("resources true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/admin', 
-              '<scope> <constraints> <id type="string"/> </constraints> ' +
-              ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
-              '  <resources name="user"/> </scope>'
-              , '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=get&id=admin', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("resource false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/docs', 
-              '<scope> <constraints> <db type="integer"/> </constraints> ' +
-              ' <lambda> $db castable as xs:string </lambda> ' +
-              ' <resource name=":db"/> </scope>'
-              , '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/docs', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("resource true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/docs', 
-              '<scope> <constraints> <db type="string"/> </constraints> ' +
-              ' <lambda> $db castable as xs:string </lambda> ' +
-              ' <resource name=":db"/> </scope>'
-              , '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/db.xqy?action=get&db=docs', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("redirect true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/google', 
-              '<scope> <lambda> fn:true() </lambda> <get path="google">  ' +
-              '<redirect-to> http://www.google.com </redirect-to> </get>' +
-              ' </scope>', '' )
-          , success:  function(d,t,j) { 
-            equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com', 
-              "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("redirect fail", function() {
-            $.ajax( {
-              url: rewriteUrl( 'GET', '/google', 
-              '<scope> <lambda> fn:false() </lambda> <get path="google">  ' +
-              '<redirect-to> http://www.google.com </redirect-to> </get>' +
-              ' </scope>', '' )
-            , success:  function(d,t,j) { 
-              equal( d, '/static/google', "OK" ); }
-            , error:    function(j,t,e) { ok(false, "NOK") }
-            , complete: function()      { start(); } }) }) ;
-        asyncTest("multiple vars true", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/get/1', 
-              '<scope> <lambda> '+
-              '       $resource = "user" '+
-              '   and $action = "get" '+
-              '   and $id castable as xs:integer'+
-              '</lambda> <get path=":resource/:action/:id"/> </scope>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-        asyncTest("multiple vars false", function() {
-          $.ajax( {
-            url: rewriteUrl( 'GET', '/user/get/1', 
-              '<scope> <lambda> '+
-              '       $resource = "user" '+
-              '   and $action = "notget" '+
-              '   and $id castable as xs:integer'+
-              '</lambda> <get path=":resource/:action/:id"/> </scope>', '' )
-          , success:  function(d,t,j) { 
-            equals( d, '/static/user/get/1', "OK" ); }
-          , error:    function(j,t,e) { ok(false, "NOK") }
-          , complete: function()      { start(); } }) }) ;
-    /*
-    Nested Resources Test Plan
+module("delete") ;
+asyncTest("static delete to", function() {
+  $.ajax( {
+    url: rewriteUrl( 'DELETE', '/all-dbs', 
+      '<delete path="all-dbs"> <to> db#del </to> </delete>', '' )
+  , type: 'DELETE'
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/db.xqy?action=del', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
 
-      - Resources Inside Resources
-        /user/:id/:album/:picture 
-        /user/dscape/thailand/man-eating-burger.jpg
-        user.xqy?action=get-album-picture
+module("head") ;
+asyncTest("static head to", function() {
+  $.ajax( {
+    url: rewriteUrl( 'HEAD', '/', 
+      '<head> <to> server#ping </to> </head>', '' )
+  , type: 'GET' // head doesnt return body
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("static head to", function() {
+  $.ajax( {
+    url: rewriteUrl( 'HEAD', '/ping', 
+      '<head path="ping"> <to> server#ping </to> </head>', '' )
+  , type: 'GET' // head doesnt return body
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
 
-    <routes>
-      <resources name="users">
-        <resource name=":album">
-          <member action=":picture"/>
-        </resource>
-      </resources>
-    </routes>
+module("resources") ;
+asyncTest("get", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/5', 
+      '<resources name="users"/>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=get&id=5', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("index", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users', 
+      '<resources name="users"/>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=index', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("index with trailing slash", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/', 
+      '<resources name="users"/>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=index', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("put", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/users/5', 
+      '<resources name="users"/>', '' )
+  , type: 'PUT' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=put&id=5', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("delete", function() {
+  $.ajax( {
+    url: rewriteUrl( 'DELETE', '/users/5', 
+      '<resources name="users"/>', '' )
+  , type: 'DELETE' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=delete&id=5', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("illegal post from webservice", function() {
+  $.ajax( {
+    url: rewriteUrl( 'POST', '/users', 
+      '<resources name="users" webservice="true"/>', '' )
+  , type: 'POST' 
+  , success:  function(d,t,j) { 
+    equals( d, '/static/users', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("post", function() {
+  $.ajax( {
+    url: rewriteUrl( 'POST', '/users', 
+      '<resources name="users"/>', '' )
+  , type: 'POST' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=post', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("new", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/new', 
+      '<resources name="users"/>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=new', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("edit", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/5/edit', 
+      '<resources name="users"/>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=edit&id=5', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("member include", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/5/enable', 
+      '<resources name="users">'+
+      '<member action="enable"/></resources>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("include with multiple verbs", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/users/5/enable', 
+      '<resources name="users">'+
+      '<member action="enable" for="DELETE,PUT"/>'+
+      '</resources>', '' )
+  , type: 'PUT' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("include with multiple verbs but none matches", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/users/5/enable', 
+      '<resources name="users">'+
+      '<member action="enable" for="DELETE,GET,POST"/>'+
+      '</resources>', '' )
+  , type: 'PUT' 
+  , success:  function(d,t,j) { 
+    notEqual( d, '/resource/users.xqy?action=enable&id=5', 
+      "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("include set", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/users/notify', 
+      '<resources name="users">'+
+      '<set action="notify" for="PUT"/></resources>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=notify', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
 
-    <!-- github like routes for testing -->
-    <routes>
-      <root> dashboard#show </root>
-      <resource name="inbox"> <!-- no users named inbox -->
-        <member action="sent"/>
-      </resource>
-      <resources name=":user">
-        <constraints> 
-          <user type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/>
-        </constraints>
-        <resources name=":repo">
-          <constraints> 
-            <repo type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/>
-          </constraints>
-          <member action="/commits/:commit">
-            <constraints> 
-              <commit type="string" match="[a-zA-Z0-9]+"/>
-            </constraints>
-          </member>
-          <member action="/tree/:tag" />
-          <member action="forks" />
-          <member action="pulls" />
-          <member action="/graphs/impact" />
-          <member action="/graphs/language" />
-        </resources>
-        <set action="followers"/> <!-- no repo named followers -->
-      </resources>
-    </routes>
-    */
+module("resource") ;
+asyncTest("get", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/about', 
+      '<resource name="about"/>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/about.xqy?action=get', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("put", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/ignition', 
+      '<resource name="ignition"/>', '' )
+  , type: 'PUT' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/ignition.xqy?action=put', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("delete", function() {
+  $.ajax( {
+    url: rewriteUrl( 'DELETE', '/ignition', 
+      '<resource name="ignition"/>', '' )
+  , type: 'DELETE' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/ignition.xqy?action=delete', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("illegal post from webservice", function() {
+  $.ajax( {
+    url: rewriteUrl( 'POST', '/about', 
+      '<resource name="about" webservice="true"/>', '' )
+  , type: 'POST' 
+  , success:  function(d,t,j) { 
+    equals( d, '/static/about', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("post", function() {
+  $.ajax( {
+    url: rewriteUrl( 'POST', '/about', 
+      '<resource name="about"/>', '' )
+  , type: 'POST' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/about.xqy?action=post', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("edit", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/about/edit', 
+      '<resource name="about"/>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/about.xqy?action=edit', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("include", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/car/ignition', 
+      '<resource name="car">'+
+      '<member action="ignition"/></resource>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/car.xqy?action=ignition', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("include with multiple verbs", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/car/ignition', 
+      '<resource name="car">'+
+      '<member action="ignition" for="DELETE,PUT"/>'+
+      '</resource>', '' )
+  , type: 'PUT' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/car.xqy?action=ignition', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("include with multiple verbs but none matches", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/car/ignition', 
+      '<resource name="car">'+
+      '<memberInclude action="ignition" for="DELETE,GET,POST"/>'+
+      '</resource>', '' )
+  , type: 'PUT' 
+  , success:  function(d,t,j) { 
+    notEqual( d, '/resource/car.xqy?action=ignition', 
+      "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+  
+module("redirects") ;
+asyncTest("changing redirect dispatcher", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/google', 
+      '<get path="google">' +
+      '<redirect-to> http://www.google.com </redirect-to> </get>', '',
+      '<resourceDirectory>/</resourceDirectory>'+
+      '<redirect>dispatcher</redirect>' )
+  , success:  function(d,t,j) { 
+    equal( d, '/dispatcher.xqy?url=http%3a//www.google.com', 
+      "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("simple redirect", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/google', 
+      '<get path="google">' +
+      '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com', 
+      "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+
+module("dynamic") ;
+asyncTest("search containing spaces", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/in love', 
+      '<get path=":q"> <to> story#search </to> </get>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ; 
+  /* asyncTest("id using slashes", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/file//Some/File', 
+      '<get path="file/:id"> <to> file#get </to> </get>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ; */ 
+asyncTest("resource", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/Documents', 
+      '<resource name=":database"/>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/database.xqy?action=get&database=Documents',
+      "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("user id", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/43', 
+      '<get path="user/:id"> <to> user#show </to> </get>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=show&id=43', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest(":controller :action", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get', 
+      '<get path=":resource/:action"/>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest(":controller ", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get', 
+      '<get path=":resource"/>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/user/get', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest(":controller :action :id", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get/1', 
+      '<get path=":resource/:action/:id"/>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest(":controller :id :action", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/1/edit', 
+      '<get path=":resource/:id/:action"/>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=edit&id=1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+  asyncTest("static :controller :action :id", function() {
+    $.ajax( {
+      url: rewriteUrl( 'GET', '/admin/user/get/1', 
+        '<get path="admin/:resource/:action/:id"/>', '' )
+    , success:  function(d,t,j) { 
+      equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+    , error:    function(j,t,e) { ok(false, "NOK") }
+    , complete: function()      { start(); } }) }) ;
+  asyncTest("static :controller :action  static :id static", 
+    function() {
+    $.ajax( {
+      url: rewriteUrl( 'GET', '/admin/user/get/detail/1/jpg/picture', 
+       '<get ' +
+       'path="admin/:resource/:action/detail/:id/:how/picture"/>', '' )
+    , success:  function(d,t,j) { 
+      equals( d, '/resource/user.xqy?action=get&id=1&how=jpg', "OK" ); }
+    , error:    function(j,t,e) { ok(false, "NOK") }
+    , complete: function()      { start(); } }) }) ;
+
+module("complex") ;
+asyncTest("route should match with and without trailing /", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/list/', 
+      '<get path="list"> <to> article#list </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/article.xqy?action=list', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("complex set include", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/users/notify', 
+      '<resources name="users">'+
+      '<set action="notify" for="PUT"/>'+
+      '<member action="notify" for="GET,PUT"/>'+
+      '</resources>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=notify', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("include", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/5/enable', 
+      '<resources name="users">'+
+      '<set action="enable"/>' +
+      '<member action="enable"/></resources>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=enable&id=5', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+  
+module("paths") ;
+asyncTest("Change resource directory to /controller/", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
+    '<resourceDirectory>/controller/</resourceDirectory>' )
+  , success:  function(d,t,j) { 
+    equals( d, '/controller/server.xqy?action=status', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("Change resource directory to /", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
+    '<resourceDirectory>/</resourceDirectory>' )
+  , success:  function(d,t,j) { 
+    equals( d, '/server.xqy?action=status', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("Change resource directory to ()", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
+    '<resourceDirectory/>' )
+  , success:  function(d,t,j) { 
+    equals( d, 'server.xqy?action=status', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("Change extension to .xq", function() {
+   $.ajax( {
+     url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
+     '<xqyExtension>xq</xqyExtension>' )
+   , success:  function(d,t,j) { 
+     equals( d, '/resource/server.xq?action=status', "OK" ); }
+   , error:    function(j,t,e) { ok(false, "NOK") }
+   , complete: function()      { start(); } }) }) ;
+asyncTest("Change static to /public/", function() {
+   $.ajax( {
+     url: rewriteUrl( 'GET', '/css/style.css', 
+       '<root>server#status</root>', '',
+       '<staticDirectory>/public/</staticDirectory>' )
+   , success:  function(d,t,j) { 
+     equals( d, '/public/css/style.css', "OK" ); }
+   , error:    function(j,t,e) { ok(false, "NOK") }
+   , complete: function()      { start(); } }) }) ;
+
+module("bound parameter constraints") ;
+asyncTest("castable type", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/45', 
+      '<get path="users/:id">' +
+      '<constraints> <id type="integer"/> </constraints>'+
+      '<to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/resource/users.xqy?action=show&id=45', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) })  ;
+asyncTest("uncastable type", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:id">' +
+      '<constraints> <id type="integer"/> </constraints>'+
+      '<to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("match", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/john@doe.com', 
+      '<get path="users/:email"><constraints> '+
+      '<email match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
+      '</constraints> <to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/resource/users.xqy?action=show&email=john%40doe.com', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) })  ;
+asyncTest("doesnt match", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:email"><constraints> '+
+      '<email match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
+      '</constraints> <to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("castable and matchable", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/john@doe.com', 
+      '<get path="users/:id">' +
+      '<constraints> <id type="string" '+
+      'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
+      '</constraints> <to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/resource/users.xqy?action=show&id=john%40doe.com', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) })  ;
+asyncTest("uncastable and matchable", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/john@doe.com', 
+      '<get path="users/:id">' +
+      '<constraints> <id type="integer" '+
+      'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
+      '</constraints> <to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/static/users/john@doe.com', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) })  ;
+asyncTest("uncastable and unmatchable", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:id">' +
+      '<constraints> <id type="integer" ' +
+      'match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
+      '</constraints> <to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("castable and unmatchable", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:id">' +
+      '<constraints> <id type="string"/>'+
+      '<id match="[A-Za-z0-9._%-]%2B@[A-Za-z0-9.-]%2B\\.[A-Za-z]{2,4}" />'+
+      '</constraints> <to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("two bound / type and match", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/45/nuno', 
+      '<get path="users/:id/:name">' +
+      '<constraints> <id type="integer"/><name match="[a-z]"/></constraints>'+
+      '<to> users#show </to></get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/resource/users.xqy?action=show&id=45&name=nuno', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) })  ;
+asyncTest("redirect ok", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/download/1', 
+      '<get path="download/:id">' +
+      '<constraints> <id type="integer"/> </constraints>'+
+      '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com&id=1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("redirect fail", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/download/nop', 
+      '<get path="download/:id">' +
+      '<constraints> <id type="integer"/> </constraints>'+
+      '<redirect-to> http://www.google.com </redirect-to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/static/download/nop', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("dynamic resource ok", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/documents', 
+      '<resource name=":db">' +
+      '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
+      '</resource>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("dynamic resource fail", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/Documents', 
+      '<resource name=":db">' +
+      '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints>'+
+      '</resource>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/static/Documents', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("resources fail", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<resources name="users">'+
+      '<constraints> <id type="integer"/> </constraints> </resources>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("resources ok", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<resources name="users">'+
+      '<constraints> <id match="[a-z]"/> </constraints> </resources>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=get&id=dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("default route ok", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get/1', 
+      '<get path=":resource/:action/:id">'+
+      '<constraints> <id type="integer"/> <action match="[a-z]"/>' +
+      '<resource match="[a-z]"/> </constraints> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("default route fail", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get/1', 
+      '<get path=":resource/:action/:id">'+
+      '<constraints> <resource type="integer"/> </constraints> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/user/get/1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ; 
+  
+module("privileges") ;
+asyncTest("privilege doesn't exist", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+      '<get>  <privileges>' +
+      '<execute>  i-dont-exist </execute>' +
+      '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) })  ;
+asyncTest("user doesn't exist", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+      '<get>  <privileges for="idontexist">' +
+      '<execute>  ' +
+      ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+      '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("current user has execute privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+      '<get>  <privileges>' +
+      '<execute>  ' +
+      ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
+      '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("current user doesn't have execute privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+    '<get>  <privileges>' +
+    '<execute>  ' +
+    ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+    '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("current user doesnt have uri privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+    '<get>  <privileges>' +
+    '<uri>  ' +
+    ' http://marklogic.com/cpf/pipelines/ </uri>' +
+    '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("admin has execute privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+      '<get>  <privileges for="admin">' +
+      '<execute>  ' +
+      ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
+      '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("infostudio-admin has uri privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+      '<get>  <privileges for="infostudio-admin">' +
+      '<uri>  ' +
+      ' http://marklogic.com/cpf/pipelines/ </uri>' +
+      '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/server.xqy?action=ping', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("admin doesn't have execute privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+      '<get>  <privileges for="admin">' +
+      '<execute>  ' +
+      ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+      '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("admin doesn't have uri privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', 
+      '<get>  <privileges for="admin">' +
+      '<uri>  ' +
+      ' http://marklogic.com/cpf/pipelines/ </uri> ' +
+      '</privileges> <to> server#ping </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("dynamic resource has privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/documents', 
+      '<resource name=":db">' +
+      '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints> <privileges for="admin">' +
+      '<execute>  ' +
+      ' http://marklogic.com/xdmp/privileges/admin-ui </execute>' +
+      '</privileges> </resource>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("dynamic resource no privileges", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/documents', 
+      '<resource name=":db">' +
+      '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints><privileges>' +
+      '<execute>  ' +
+      ' http://marklogic.com/xdmp/privileges/xdmp-eval </execute>' +
+      '</privileges></resource>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/documents', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("dynamic resource privilege doesn't exist", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/documents', 
+      '<resource name=":db">' +
+      '<constraints> <db type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> </constraints><privileges>' +
+      '<execute>  i-dont-exist </execute>' +
+      '</privileges> </resource>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/db.xqy?action=get&db=documents', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;  
+
+module("lambda") ;
+asyncTest("lambda returns true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/admin', 
+      '<get path="users/:id">  <lambda> ' +
+      'xdmp:get-current-user() = $id' +
+      '</lambda> <to> user#show </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=show&id=admin', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("lambda returns false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:id">  <lambda> ' +
+      'xdmp:get-current-user() = $id' +
+      '</lambda> <to> user#show </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("lambda returns exception", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:id">  <lambda> ' +
+      ' fn:error() ' +
+      '</lambda> <to> user#show </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("lambda true false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:id">  <lambda> fn:true() </lambda> ' +
+      '<lambda> xdmp:get-current-user() = $id' +
+      '</lambda> <to> user#show </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("lambda false false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/dscape', 
+      '<get path="users/:id">  <lambda> fn:false() </lambda> ' +
+      '<lambda> xdmp:get-current-user() = $id' +
+      '</lambda> <to> user#show </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/users/dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("lambda true true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/users/admin', 
+      '<get path="users/:id">  <lambda> fn:true() </lambda> ' +
+      '<lambda> xdmp:get-current-user() = $id' +
+      '</lambda> <to> user#show </to> </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=show&id=admin', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("multiple vars true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get/1', 
+      '<get path=":resource/:action/:id">'+
+      '<lambda> '+
+      '       $resource = "user" '+
+      '   and $action = "get" '+
+      '   and $id castable as xs:integer'+
+      '</lambda>'+
+      ' </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("multiple vars false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get/1', 
+      '<get path="/:resource/:action/:id">'+
+      '<lambda> '+
+      '       $resource = "user" '+
+      '   and $action = "not-get" '+
+      '   and $id castable as xs:integer'+
+      '</lambda>'+
+      ' </get>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/user/get/1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+
+module("scopes") ;
+asyncTest("false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/admin', 
+      '<scope> <constraints> <id type="integer"/> </constraints> ' +
+      ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+      ' <put path="user/:id"> <to> user#put </to> </put> ' +
+      ' <get path="user/:id"> <to> user#get </to> </get> </scope>'
+      , '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/user/admin', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/admin', 
+      '<scope> <constraints> <id type="string"/> </constraints> ' +
+      ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+      ' <put path="user/:id"> <to> user#put </to> </put> ' +
+      ' <get path="user/:id"> <to> user#get </to> </get> </scope>'
+      , '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get&id=admin', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("resources false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/admin', 
+      '<scope> <constraints> <id type="integer"/> </constraints> ' +
+      ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+      ' <resources name="user"/> </scope>'
+      , '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/user/admin', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("resources true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/admin', 
+      '<scope> <constraints> <id type="string"/> </constraints> ' +
+      ' <lambda> xdmp:get-current-user() = $id </lambda> ' +
+      '  <resources name="user"/> </scope>'
+      , '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get&id=admin', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("resource false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/docs', 
+      '<scope> <constraints> <db type="integer"/> </constraints> ' +
+      ' <lambda> $db castable as xs:string </lambda> ' +
+      ' <resource name=":db"/> </scope>'
+      , '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/docs', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("resource true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/docs', 
+      '<scope> <constraints> <db type="string"/> </constraints> ' +
+      ' <lambda> $db castable as xs:string </lambda> ' +
+      ' <resource name=":db"/> </scope>'
+      , '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/db.xqy?action=get&db=docs', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("redirect true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/google', 
+      '<scope> <lambda> fn:true() </lambda> <get path="google">  ' +
+      '<redirect-to> http://www.google.com </redirect-to> </get>' +
+      ' </scope>', '' )
+  , success:  function(d,t,j) { 
+    equal( d, '/resource/redirect.xqy?url=http%3a//www.google.com', 
+      "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("redirect fail", function() {
+    $.ajax( {
+      url: rewriteUrl( 'GET', '/google', 
+      '<scope> <lambda> fn:false() </lambda> <get path="google">  ' +
+      '<redirect-to> http://www.google.com </redirect-to> </get>' +
+      ' </scope>', '' )
+    , success:  function(d,t,j) { 
+      equal( d, '/static/google', "OK" ); }
+    , error:    function(j,t,e) { ok(false, "NOK") }
+    , complete: function()      { start(); } }) }) ;
+asyncTest("multiple vars true", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get/1', 
+      '<scope> <lambda> '+
+      '       $resource = "user" '+
+      '   and $action = "get" '+
+      '   and $id castable as xs:integer'+
+      '</lambda> <get path=":resource/:action/:id"/> </scope>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get&id=1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("multiple vars false", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/user/get/1', 
+      '<scope> <lambda> '+
+      '       $resource = "user" '+
+      '   and $action = "notget" '+
+      '   and $id castable as xs:integer'+
+      '</lambda> <get path=":resource/:action/:id"/> </scope>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/static/user/get/1', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+
+module("nested resources") ;
+album = '<resources name="u"> \
+    <resource name=":album"> \
+      <member action=":picture"/> \
+    </resource> \
+  </resources>' ;
+github = '<root> dashboard#show </root> \
+  <resource name="inbox"> <!-- no users named inbox --> \
+    <member action="sent"/> \
+  </resource> \
+  <resource name=":user"> \
+    <constraints>  \
+      <user type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> \
+    </constraints> \
+    <member action="followers"/> <!-- no repo named followers --> \
+    <resource name=":repo"> \
+      <constraints>  \
+        <repo type="string" match="^[a-z]([a-z]|[0-9]|_|-|\.)*$"/> \
+      </constraints> \
+      <member action="commit/:commit"> \
+        <constraints>  \
+          <commit type="string" match="[a-zA-Z0-9]+"/> \
+        </constraints> \
+      </member> \
+      <member action="tree/:tag" /> \
+      <member action="forks" /> \
+      <member action="pulls" /> \
+      <member action="graphs/impact" /> \
+      <member action="graphs/language" /> \
+    </resource> \
+  </resource>' ;
+asyncTest("one burger coming up", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/u/dscape/thailand/burger.jpg', album, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/album.xqy?action=picture&id=dscape&album=thailand' +  
+               '&picture=burger.jpg', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;  
+asyncTest("get the user", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/u/dscape', album, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/u.xqy?action=get&id=dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("update the user", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/u/dscape', album, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/u.xqy?action=put&id=dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("get one album", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/u/dscape/thailand', album, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/album.xqy?action=get&id=dscape&album=thailand', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("show me the dashboard", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/dashboard.xqy?action=show', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("get me my emails", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/inbox', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/inbox.xqy?action=get', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;    
+asyncTest("get me my sent emails", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/inbox/sent', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/inbox.xqy?action=sent', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("send an email to mom", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/inbox?subject=hi%2bmom&body=hi', github, '' )
+  , type: 'PUT' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/inbox.xqy?action=put&subject=hi%2bmom&body=hi', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("get mikeals users info", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/mikeal', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=get&user=mikeal', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("hey thats a bad username", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/_BadUser', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/static/_BadUser', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("what about my devoted followers", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/dscape/followers', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/user.xqy?action=followers&user=dscape', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("show me my mustache", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/dscape/mustache.xq', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/repo.xqy?action=get&user=dscape&repo=mustache.xq', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("show me that commit I love", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/dscape/rewrite/commit/one', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/repo.xqy?action=commit&user=dscape&repo=rewrite&commit=one', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("top languages for rewrite", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/dscape/rewrite/graphs/language', github, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/repo.xqy?action=graphs-language&user=dscape&repo=rewrite&commit=one', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+
     }) ;
     </script>
   </head>
