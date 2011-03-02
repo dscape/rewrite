@@ -1016,6 +1016,51 @@
             equals( d, '/static/user/get/1', "OK" ); }
           , error:    function(j,t,e) { ok(false, "NOK") }
           , complete: function()      { start(); } }) }) ;
+    /*
+    Nested Resources Test Plan
+
+      - Resources Inside Resources
+        /user/:id/:album/:picture 
+        /user/dscape/thailand/man-eating-burger.jpg
+        user.xqy?action=get-album-picture
+
+    <routes>
+      <resources name="users">
+        <resource name=":album">
+          <member action=":picture"/>
+        </resource>
+      </resources>
+    </routes>
+
+    <!-- github like routes for testing -->
+    <routes>
+      <root> dashboard#show </root>
+      <resource name="inbox"> <!-- no users named inbox -->
+        <member action="sent"/>
+      </resource>
+      <resources name=":user">
+        <constraints> 
+          <user type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/>
+        </constraints>
+        <resources name=":repo">
+          <constraints> 
+            <repo type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/>
+          </constraints>
+          <member action="/commits/:commit">
+            <constraints> 
+              <commit type="string" match="[a-zA-Z0-9]+"/>
+            </constraints>
+          </member>
+          <member action="/tree/:tag" />
+          <member action="forks" />
+          <member action="pulls" />
+          <member action="/graphs/impact" />
+          <member action="/graphs/language" />
+        </resources>
+        <set action="followers"/> <!-- no repo named followers -->
+      </resources>
+    </routes>
+    */
     }) ;
     </script>
   </head>
