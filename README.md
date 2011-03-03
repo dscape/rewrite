@@ -96,71 +96,7 @@ to where they should be dispatched. This is meant to give you overall understand
      Dispatches to : /resource/server.xqy?action=ping
 
 ###  ✔ 1.2. verbs
-Some properties that are common amongst all verbs: get, put, post, delete, and head. For information regarding these properties refer the wiki section on [How Verbs Work][22] 
-
-### 1.2.1.1. dynamic paths
-If you think about a website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that we need to route all our first levels display user information.
-
-`rewrite` exposes that functionality with dynamic paths. For the twitter example we would have something like:
-
-     Request       : GET /dscape
-     routes.xml    : <routes> 
-                       <get path=":user">
-                         <to> user#get </to>
-                       </get>
-                     </routes>
-     Dispatches to : /resource/user.xqy?action=get&user=dscape
-
-The colon in `:user` lets the routing algorithm know that `:user` shouldn't be evaluated as a string but rather as a dynamic resource. You can even combine dynamic resources with static paths:
-
-     Request       : GET /user/dscape
-     routes.xml    : <routes> 
-                       <get path="user/:id">
-                         <to> user#get </to>
-                       </get>
-                     </routes>
-     Dispatches to : /resource/user.xqy?action=get&id=dscape
-
-###  1.2.1.2. bound parameters
-There are two symbols that are special `:resource` maps to the name of a controller in your application, and `:action` maps to the name of an action within that controller. When you supply both in a route it will be evaluated by calling that action on the specified resource. Everything else will be passed as field values and can be retrieve by invoking the [xdmp:get-request-field][12] function.
-
-The following example is a route with bound parameters that will match `/users/get/1` to resource `users`, action `get`, id `1`:
-
-     Request       : GET /users/get/1
-     routes.xml    : <routes> 
-                       <get path=":resource/:action/:id"/>
-                     </routes>
-     Dispatches to : /resource/users.xqy?action=get&id=1
-
-###  1.2.1.3 redirect-to
-You can specify a redirect by using the `redirect-to` element inside your route:
-
-     Request       : GET /google
-     routes.xml    : <routes> 
-                       <get path="google">
-                         <redirect-to> http://www.google.com </redirect-to> 
-                       </get>
-                     </routes>
-     paths.xml     : <paths>
-                       <resourceDirectory>/</resourceDirectory>
-                       <redirect>dispatcher</redirect>
-                     </paths>
-     Dispatches to : /dispatcher.xqy?url=http%3a//www.google.com
-
-The `rewriter` script cannot process re-directs natively in MarkLogic Server 4.2, as the output of any rewrite script must be a xs:string.
-
-The current implementation of `rewrite` sends all redirects to a `redirect` dispatcher with an url-encoded option `url` that contains the url. 
-
-The dispatcher can have any logic you like. Here is an example of a possible `redirect.xqy` dispatcher:
-
-     let $url := xdmp:get-request-field( "url" )
-     return if ( $url )
-            then xdmp:redirect-response( xdmp:url-decode( $url ) )
-            else fn:error()
-
-If you are using `redirect-to` don't forget to place a `redirect.xqy` in the resource directory.
-
-An alternative is to user a error handler as described in usage.
+Some properties that are common amongst all verbs: get, put, post, delete, and head. For information regarding these properties refer the wiki section on [How Verbs Work][22].
 
 ###  ✔ 1.2.2. get 
      Request       : GET /list
