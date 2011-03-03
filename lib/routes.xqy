@@ -11,6 +11,7 @@ declare variable $redirectResource    := 'redirect' ;
 
 declare variable $resourceActionSeparator       := "#" ;
 declare variable $dynamicRouteDelimiter         := ':' ;
+declare variable $methodSeparator               := "-" ;
 declare variable $dynamicRouteRegExp            := 
   fn:concat( $dynamicRouteDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
 declare variable $dynamicRouteRegExpReplacement := "([\\w|\\-|_|\\s|:|\\.|@]+)" ;
@@ -48,7 +49,6 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
       and r:privilegeConstraints( $privileges )
       and r:lamdaConstraints( $labels, $labelValues, $lambdas )
     return $mapping ) [1]
-  let $_ := xdmp:log( $selected )
   return
     if ( $selected ) (: found a match, using the first :)
     then 
@@ -265,8 +265,7 @@ declare function r:resourceActionPair( $node ) {
 declare function r:resourceActionPath( $resource, $action ) {
   fn:concat( r:resourceDirectory(), 
     fn:replace( $resource, $dynamicRouteDelimiter, "" ), ".", 
-    r:xqyExtension(), "?action=", 
-    fn:replace( $action, $dynamicRouteDelimiter, "" ) ) } ;
+    r:xqyExtension(), "?action=", r:determineAction( $action ) ) } ;
 
 declare function r:mapping( $k, $v ) { 
   r:mapping( $k, $v, r:generateRegularExpression( $k ), () ) };
@@ -317,6 +316,14 @@ declare function r:redirectToBasePath() {
 declare function r:descendantResources( $node, $rpath ) { 
   for $r in $node/resources return r:resources( $r, $rpath ),
   for $r in $node/resource  return r:resource(  $r, $rpath ) };
+
+declare function r:determineAction ( $action ) {
+  let $paths       := fn:tokenize( $action, "/" )
+  let $firstAction := fn:replace( $paths [ 1 ], $dynamicRouteDelimiter, '' )
+  let $rest        := 
+    $paths [ 2 to fn:last() ] 
+      [ fn:not( fn:matches( . , $dynamicRouteRegExp ) ) ]
+  return fn:string-join( ( $firstAction, $rest ), $methodSeparator ) } ;
 
 declare function r:resourceDirectory()   { $resourceDirectory } ;
 declare function r:staticDirectory()     { $staticDirectory   } ;

@@ -1156,7 +1156,7 @@ asyncTest("top languages for rewrite", function() {
     url: rewriteUrl( 'GET', '/dscape/rewrite/graphs/language', github, '' )
   , type: 'GET' 
   , success:  function(d,t,j) { 
-    equals( d, '/resource/repo.xqy?action=graphs-language&user=dscape&repo=rewrite&commit=one', "OK" ); }
+    equals( d, '/resource/repo.xqy?action=graphs-language&user=dscape&repo=rewrite', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
   , complete: function()      { start(); } }) }) ;
 
