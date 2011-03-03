@@ -35,13 +35,9 @@ Routes are [matched in the order you specified][17] and they can be [nested][18]
 
 ## Usage
 
-In your HTTP Application Server configuration make `rewrite.xqy` the default rewriter script.
+In your HTTP Application Server configuration make `rewrite.xqy` the default rewriter script. This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
 
-<small>
-  This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
-</small>
-
-Place the `/lib` folder of `rewrite` in your application `root`. Still in the `root`  create a new file named `rewrite.xqy` with the following contents:
+Place the `lib` folder of `rewrite` in your application `root`. Still in the `root`  create a new file named `rewrite.xqy` with the following contents:
 
      xquery version "1.0-ml" ;
      
@@ -74,11 +70,9 @@ Now you need to create your resource XQuery files. Here's an example of how your
      try          { xdmp:apply( h:function() ) } 
      catch ( $e ) { h:error( $e ) }
 
-A centralized [error handler][14] can also be used removing the need for a `try catch` statement. Refer to the wiki for instructions.
+A centralized [error handler][14] can also be used removing the need for a `try catch` statement. Refer to the wiki section on [using an error handler][21] for instructions.
 
-<small>
-  This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.
-</small>
+*This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.*
 
 ## paths.xml
 You can use a `paths.xml` file to override the defaults for:
@@ -643,3 +637,4 @@ On previous versions of `rewrite` dynamic paths where prefixed by `_`, so `user`
 [18]: https://github.com/dscape/rewrite/wiki/Nested-Routes
 [19]: https://github.com/dscape/rewrite/wiki/Customize-File-Path
 [20]: https://github.com/dscape/rewrite/wiki/Loading-Configuration-from-Files
+[21]: https://github.com/dscape/rewrite/wiki/Using-an-Error-Handler
