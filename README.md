@@ -1,7 +1,5 @@
 # rewrite
-`rewrite` is an implementation of [MarkLogic's URL Rewriter for HTTP Application Servers][11]: an XQuery script that eliminates 1-to-1 mapping between files and HTTP requests, e.g. map route `/users/17` to an internal file `/users.xqy?action=show&id=17`.
-
-The objective of `rewrite` is to provide an expressive language that allows you to specify REST applications. This is intended to make your routing logic simple and easy to maintain:
+`rewrite` is an implementation of [MarkLogic's URL Rewriter for HTTP Application Servers][11]. `rewrite` aims to provide an expressive language that allows you to specify REST applications. This is intended to make your routing logic simple and easy to maintain:
 
       <routes>
         <root> dashboard#show </root> 
@@ -31,38 +29,9 @@ The objective of `rewrite` is to provide an expressive language that allows you 
         </resource>
       </routes>
 
-`rewrite` also enables you to hide specific routes from users given specific constraints.
+`rewrite` also enables you to hide specific routes from users given specific constraints. Routes are [matched in the order you specified][17] and they can be [nested][18].
 
 `rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities. `rewrite` is heavily inspired in the [Rails 3.0 routing][4].
-
-## Basics
-
-`rewrite` algorithm is:
-
-1. Check the routes that match a specific request
-2. Get the first that matched and redirect according to the rule
-3. If none matched redirect to a directory with static files. This way you can still serve your css and javascript files by placing them in the /static/ directory.
-
-### Routes are ordered
-Routes are matched in the order they are specified, so if you have these routes:
-
-     <routes>
-       <get path=":user">
-       <get path="about">
-     </routes>
-
-the get route for the `/:user` will be matched before the get `/about`. To fix this, move the `/about` line above the `:user` so that it is matched first:
-
-     <routes>
-       <get path="about">
-       <get path=":user">
-     </routes>
-
-`rewrite.xqy` can only do the mapping between URLs and internal files - gets a request and returns the invokable path of the file.
-
-### Routes can be nested
-Explain difference between resources and resource, including dynamic.
-Document decisions on action names. really important.
 
 ## Usage
 
@@ -707,3 +676,5 @@ On previous versions of `rewrite` dynamic paths where prefixed by `_`, so `user`
 [14]: http://docs.marklogic.com/4.2doc/docapp.xqy#display.xqy?fname=http://pubs/4.2doc/xml/dev_guide/appserver-control.xml
 [15]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 [16]: http://www.w3.org/TR/xmlschema-2
+[17]: https://github.com/dscape/rewrite/wiki/Routes-are-ordered
+[18]: https://github.com/dscape/rewrite/wiki/Nested-Routes
