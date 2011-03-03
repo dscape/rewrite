@@ -60,7 +60,7 @@ Now with the `rewrite` in place:
 * Request `/` will be dispatched to `/resource/users.xqy?action=list`
 * Request `/users/dscape`  will be dispatched to `/resource/users.xqy?action=show&id=dscape`
 
-You can [customize the file path][19] and  [store configurations in a file][20]. If you are curious on how the translation from path to file is done refer to "Supported Features". 
+You can [customize the file path][19] and / or  [store configurations in a file][20]. If you are curious on how the translation from path to file is done refer to "Supported Features". 
 
 Here's an example of how your `users.xqy` might look like:
 
@@ -96,7 +96,7 @@ to where they should be dispatched. This is meant to give you overall understand
      Dispatches to : /resource/server.xqy?action=ping
 
 ###  ✔ 1.2. verbs
-Let's start by defining some properties that are common amongst all verbs: get, put, post, delete, and head.
+Some properties that are common amongst all verbs: get, put, post, delete, and head. For information regarding these properties refer the wiki section on [How Verbs Work][22] 
 
 ### 1.2.1.1. dynamic paths
 If you think about a website like twitter.com the first level path is given to users, e.g. `twitter.com/dscape`. This means that we need to route all our first levels display user information.
@@ -622,3 +622,4 @@ On previous versions of `rewrite` dynamic paths where prefixed by `_`, so `user`
 [19]: https://github.com/dscape/rewrite/wiki/Customize-File-Path
 [20]: https://github.com/dscape/rewrite/wiki/Loading-Configuration-from-Files
 [21]: https://github.com/dscape/rewrite/wiki/Using-an-Error-Handler
+[22]: https://github.com/dscape/rewrite/wiki/How-Verbs-Work
