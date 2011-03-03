@@ -29,19 +29,22 @@
         </resource>
       </routes>
 
-`rewrite` also enables you to hide specific routes from users given specific constraints. Routes are [matched in the order you specified][17] and they can be [nested][18].
+Routes are [matched in the order you specified][17] and they can be [nested][18]. `rewrite` also enables you to hide specific routes from users given specific constraints.
 
 `rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities. `rewrite` is heavily inspired in the [Rails 3.0 routing][4].
 
 ## Usage
 
-Start by creating an HTTP Application Server in MarkLogic. Put `rewrite.xqy` in the `rewrite` input.
+In your HTTP Application Server configuration make `rewrite.xqy` the default rewriter script.
 
-In your application `root` folder place a file named `rewrite.xqy` with the following contents:
+<small>
+  This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
+</small>
+
+Place the `/lib` folder of `rewrite` in your application `root`. Still in the `root`  create a new file named `rewrite.xqy` with the following contents:
 
      xquery version "1.0-ml" ;
      
-     (: assuming you stored the routes.xqy library in /lib/ :)
      import module namespace r = "routes.xqy" at "/lib/routes.xqy" ;
      
      declare variable $routesCfg := 
@@ -52,34 +55,13 @@ In your application `root` folder place a file named `rewrite.xqy` with the foll
          </get>
        </routes> ;
      
-     declare variable $pathsCfg :=
-       <paths>
-         <resourceDirectory>/</resourceDirectory>
-         <xqyExtension>xq</xqyExtension>
-         <staticDirectory>/public/</staticDirectory>
-         <redirect>dispatcher</redirect>
-       </paths> ;
-     
-     r:selectedRoute( $routesCfg, $pathsCfg )
-
-If you do a request against your server for `/` your will de redirected to `/users.xqy?action=list`. If you request `/users/dscape` you will be dispatched to `/users.xqy?action=show&id=dscape`.
-
-If you want to save your routing & path configuration in a file you can use the [xdmp:document-get][9] function to retrieve the file:
-
-     xquery version "1.0-ml" ;
-     
-     import module namespace r = "routes.xqy" at "/lib/routes.xqy" ;
-     
-     declare function local:documentGet( $path ) { 
-       xdmp:document-get( fn:concat( xdmp:modules-root(), $path ) ) } ;
-     
-     declare variable $routesCfg := local:documentGet( "config/routes.xml" ) ;
-     
      r:selectedRoute( $routesCfg )
 
-You're done. Check "Supported Features" for a description of what the `routes.xml` file translates to. 
+If you do a request against your server for `/` your will de redirected to `/resource/users.xqy?action=list`. If you request `/users/dscape` you will be dispatched to `/resource/users.xqy?action=show&id=dscape`. If you are curious on how the translation of paths to file is done refer to "Supported Features".
 
-Just don't forget to create your resource XQuery files. Here's an example of how your `users.xqy` might look like:
+You can use [customize the file path][19] by setting a $pathsCfg variable. You can optionally [store both configurations in a file][20].
+
+Now you need to create your resource XQuery files. Here's an example of how your `users.xqy` might look like:
 
      xquery version "1.0-ml";
      
@@ -92,30 +74,11 @@ Just don't forget to create your resource XQuery files. Here's an example of how
      try          { xdmp:apply( h:function() ) } 
      catch ( $e ) { h:error( $e ) }
 
-This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. 
+A centralized [error handler][14] can also be used removing the need for a `try catch` statement. Refer to the wiki for instructions.
 
-It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.
-
-### Using an Error Handler
-In the above example error handling is done at the `users.xqy` level. A centralized [error handler][14] can also be used removing the need for a `try catch` statement in each XQuery main module and allowing you to control exception handling consistently.
-
-If you have set an error handler you can configure `rewrite` to use it by adding:
-
-     <routes useErrorHandler="Yes">
-
-By doing so `rewrite` will raise the following `fn:error` exceptions:
-
-1. Redirect will raise a [301 - Moved Permantly][15] `fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', $urlToRedirectTo )`. (**default behavior** invokes a redirect handler as described in section 1.2.1.3 redirect-to)
-
-Here is a sample of how the error handler `error.xqy` might look like:
-
-     xquery version "1.0-ml";
-     import module namespace h = "helper.xqy" at "/lib/helper.xqy";
-     declare variable $error:errors as node()* external;
-     
-     h:error( $error:errors )
-
-This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
+<small>
+  This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.
+</small>
 
 ## paths.xml
 You can use a `paths.xml` file to override the defaults for:
@@ -678,3 +641,5 @@ On previous versions of `rewrite` dynamic paths where prefixed by `_`, so `user`
 [16]: http://www.w3.org/TR/xmlschema-2
 [17]: https://github.com/dscape/rewrite/wiki/Routes-are-ordered
 [18]: https://github.com/dscape/rewrite/wiki/Nested-Routes
+[19]: https://github.com/dscape/rewrite/wiki/Customize-File-Path
+[20]: https://github.com/dscape/rewrite/wiki/Loading-Configuration-from-Files
