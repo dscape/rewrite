@@ -1,23 +1,39 @@
 # rewrite
+`rewrite` is an implementation of [MarkLogic's URL Rewriter for HTTP Application Servers][11]: an XQuery script that eliminates 1-to-1 mapping between files and HTTP requests, e.g. map route `/users/17` to an internal file `/users.xqy?action=show&id=17`.
 
-The purpose of `rewrite` is to eliminate the 1-to-1 mapping between files and MarkLogic App Servers by introducing an intermediate layer that recognizes URLs and dispatches them to application code.
-
-This way you can map a route like `/users/17` to an internal file uri like `/users.xqy?action=show&id=17`.
-
-The way we define the routes is with a XML domain specific language (DSL) intended to make routing logic simple and easy to maintain:
+The objective of `rewrite` is to provide an expressive language that allows you to specify REST applications. This is intended to make your routing logic simple and easy to maintain:
 
       <routes>
-        <root> users#list </root>
-        <get path="users/:id">
-          <to> users#show </to>
-        </get>
+        <root> dashboard#show </root> 
+        <resource name="inbox"> <!-- no users named inbox --> 
+          <member action="sent"/> 
+        </resource> 
+        <resource name=":user"> 
+          <constraints>  
+            <user type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> 
+          </constraints> 
+          <member action="followers"/> <!-- no repo named followers --> 
+          <resource name=":repo"> 
+            <constraints>  
+              <repo match="^[a-z]([a-z]|[0-9]|_|-|\.)*$"/> 
+            </constraints> 
+            <member action="commit/:commit"> 
+              <constraints>  
+                <commit type="string" match="[a-zA-Z0-9]+"/> 
+              </constraints> 
+            </member> 
+            <member action="tree/:tag" /> 
+            <member action="forks" /> 
+            <member action="pulls" /> 
+            <member action="graphs/impact" /> 
+            <member action="graphs/language" /> 
+          </resource> 
+        </resource>
       </routes>
 
-This project also allows you to make security part of this process by introducing XQuery constraints in the DSL.
+`rewrite` also enables you to hide specific routes from users given specific constraints.
 
-`rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities.
-
-`rewrite` is heavily inspired in the [Rails 3.0 routing][4]. For a brief introduction to how rewriting works in MarkLogic please refer to MarkLogic's official guide on [Setting Up URL Rewriting for an HTTP App Server][11]
+`rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities. `rewrite` is heavily inspired in the [Rails 3.0 routing][4].
 
 ## Basics
 
