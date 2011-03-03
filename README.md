@@ -35,7 +35,9 @@ Routes are [matched in the order you specified][17] and they can be [nested][18]
 
 ## Usage
 
-In your HTTP Application Server configuration make `rewrite.xqy` the default rewriter script. This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].
+In your HTTP Application Server configuration make `rewrite.xqy` the default rewriter script.
+
+*This section doesn't cover how to set up an HTTP Application Server in MarkLogic. If you are a beginner I suggest you start by browsing the [MarkLogic Developer Community site][7] or sign up for some [training][8].*
 
 Place the `lib` folder of `rewrite` in your application `root`. Still in the `root`  create a new file named `rewrite.xqy` with the following contents:
 
@@ -53,11 +55,14 @@ Place the `lib` folder of `rewrite` in your application `root`. Still in the `ro
      
      r:selectedRoute( $routesCfg )
 
-If you do a request against your server for `/` your will de redirected to `/resource/users.xqy?action=list`. If you request `/users/dscape` you will be dispatched to `/resource/users.xqy?action=show&id=dscape`. If you are curious on how the translation of paths to file is done refer to "Supported Features".
+Now with the `rewrite` in place:
 
-You can use [customize the file path][19] by setting a $pathsCfg variable. You can optionally [store both configurations in a file][20].
+* Request `/` will be dispatched to `/resource/users.xqy?action=list`. 
+* Request `/users/dscape`  will be dispatched to `/resource/users.xqy?action=show&id=dscape`. 
 
-Now you need to create your resource XQuery files. Here's an example of how your `users.xqy` might look like:
+If you are curious on how the translation of paths to file is done refer to "Supported Features". You can use [customize the file path][19] by setting a $pathsCfg variable. Optionally you can store [store both configurations in a file][20].
+
+Here's an example of how your `users.xqy` might look like:
 
      xquery version "1.0-ml";
      
