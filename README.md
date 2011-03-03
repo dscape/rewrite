@@ -57,10 +57,10 @@ Place the `lib` folder of `rewrite` in your application `root`. Still in the `ro
 
 Now with the `rewrite` in place:
 
-* Request `/` will be dispatched to `/resource/users.xqy?action=list`. 
-* Request `/users/dscape`  will be dispatched to `/resource/users.xqy?action=show&id=dscape`. 
+* Request `/` will be dispatched to `/resource/users.xqy?action=list`
+* Request `/users/dscape`  will be dispatched to `/resource/users.xqy?action=show&id=dscape`
 
-If you are curious on how the translation of paths to file is done refer to "Supported Features". You can use [customize the file path][19] by setting a $pathsCfg variable. Optionally you can store [store both configurations in a file][20].
+You can [customize the file path][19] and  [store configurations in a file][20]. If you are curious on how the translation from path to file is done refer to "Supported Features". 
 
 Here's an example of how your `users.xqy` might look like:
 
@@ -78,27 +78,6 @@ Here's an example of how your `users.xqy` might look like:
 A centralized [error handler][14] can also be used removing the need for a `try catch` statement. Refer to the wiki section on [using an error handler][21] for instructions.
 
 *This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.*
-
-## paths.xml
-You can use a `paths.xml` file to override the defaults for:
-
-1. Resource path (which defaults to /resource/), 
-2. xqy extension (which defaults to xqy)
-3. Static path (defaults to /static/). 
-4. Redirect resource name (defaults to redirect)
-
-To do so you can simply call the `r:selectedRoute\2` function:
-
-     r:selectedRoute( $routesCfg, $defaultCfg )
-
-Here's an example of what a `paths.xml` might look like:
-
-     <paths>
-       <resourceDirectory>/lib/</resourceDirectory>
-       <xqyExtension>xq</xqyExtension>
-       <staticDirectory>/public/</staticDirectory>
-       <redirect>dispatcher</redirect>
-     </paths>
 
 ## Sample Application
 
