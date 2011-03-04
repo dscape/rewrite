@@ -442,6 +442,17 @@ asyncTest("complex set include", function() {
     equals( d, '/resource/users.xqy?action=notify', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
   , complete: function()      { start(); } }) }) ;
+asyncTest("complex set include with wild whitespace", function() {
+  $.ajax( {
+    url: rewriteUrl( 'PUT', '/users/notify', 
+      '<resources name="users">'+
+      '<set action="notify" for="PUT"/>'+
+      '<member action="notify" for=" GET , PUT "/>'+
+      '</resources>', '' )
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/users.xqy?action=notify', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
 asyncTest("include", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/users/5/enable', 
