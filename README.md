@@ -81,10 +81,6 @@ A centralized [error handler][14] can also be used removing the need for a `try 
 
 *This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.*
 
-## Sample Application
-
-Not yet. Include redirect-to because it can't be proven without an extra file. Include errors.xqy as well!
-
 ## Supported Functionality
 
 <table>
@@ -184,6 +180,10 @@ Not yet. Include redirect-to because it can't be proven without an extra file. I
   </tr>
 </table>
 
+## Sample Application
+
+Not yet. Include redirect-to because it can't be proven without an extra file. Include errors.xqy as well!
+
 ## Contribute
 
 Everyone is welcome to contribute. 
@@ -223,13 +223,7 @@ This is not the actual test that we run (you can see a list of those in test/ind
 
 If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. I'm also very inclined to implement these features myself so it might be that a simple email is enough to motivation for me to get it done.
 
-v0.1
-
-* Improve read-me, re-factor all notes to wiki
-* Sample app
-
-v0.2
-
+* Sample Application
 * Translated Paths for resources
 * Generating Paths and URLs from code
 * Route Globbing
@@ -238,7 +232,7 @@ v0.2
 * Restricting Resource(s) Routes
 * Make redirect-to flexible
 * Allows bound constraints containing / in the values (test exists)
-* Allow further customization of file path
+* Allow further customization of file path, e.g. user-get.xqy
 
 ### Known Limitations
 
