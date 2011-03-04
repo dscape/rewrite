@@ -233,6 +233,7 @@ If you are interested in any of these (or other) feature and don't want to wait 
 * Make redirect-to flexible
 * Allows bound constraints containing / in the values (test exists)
 * Allow further customization of file path, e.g. user-get.xqy
+* Flexible decisions on what action to call (nested resources)
 
 ### Known Limitations
 
