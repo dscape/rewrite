@@ -221,7 +221,7 @@ This is not the actual test that we run (you can see a list of those in test/ind
 
 ## Roadmap
 
-If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code. I'm also very inclined to implement these features myself so it might be that a simple email is enough to motivation for me to get it done.
+If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code.
 
 * Sample Application
 * Translated Paths for resources
