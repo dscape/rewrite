@@ -29,7 +29,9 @@
         </resource>
       </routes>
 
-Routes are [matched in the order you specified][17] and they can be [nested][18]. Then they are dispatched to a action according to what's described in [Mapping to Function][26]. `rewrite` also enables you to hide specific routes from users given specific constraints.
+Routes are [matched in the order you specified][17] and they can be [nested][18]. They are dispatched dispatched to a resource XQuery file [providing the action as a request field][26]. 
+
+`rewrite` also enables you to hide specific routes from users given specific constraints.
 
 `rewrite` is designed to work with [MarkLogic][2] Server only. However it can easily be ported to another product that understands XQuery and has similar capabilities. `rewrite` is heavily inspired in the [Rails 3.0 routing][4].
 
@@ -55,12 +57,12 @@ Place the `lib` folder of `rewrite` in your application `root`. Still in the `ro
      
      r:selectedRoute( $routesCfg )
 
-Now with the `rewrite` in place:
+With the `rewrite` in place:
 
 * Request `/` will be dispatched to `/resource/users.xqy?action=list`
 * Request `/users/dscape`  will be dispatched to `/resource/users.xqy?action=show&id=dscape`
 
-You can [customize the file path][19] and / or  [store configurations in a file][20]. If you are curious on how the translation from path to file is done refer to "Supported Features". 
+You can [customize the file path][19] and/or  [store configurations in a file][20]. If you are curious on how the translation from path to file is done refer to "Supported Features". 
 
 Here's an example of how your `users.xqy` might look like:
 
@@ -99,67 +101,89 @@ to where they should be dispatched. This is meant to give you overall understand
     <td>Root</td>
     <td>Route</td>
     <td>Responds to GET requests to the root of the application</td>
-    <td>[Wiki][23]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Simple-Routes">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Get</td>
     <td>Route</td>
     <td>Responds to GET requests for a given path</td>
-    <td>[Wiki][23]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Simple-Routes">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Put</td>
     <td>Route</td>
     <td>Responds to PUT requests for a given path</td>
-    <td>[Wiki][23]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Simple-Routes">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Delete</td>
     <td>Route</td>
     <td>Responds to DELETE requests for a given path</td>
-    <td>[Wiki][23]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Simple-Routes">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Post</td>
     <td>Route</td>
     <td>Responds to POST requests for a given path</td>
-    <td>[Wiki][23]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Simple-Routes">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Head</td>
     <td>Route</td>
     <td>Responds to HEAD requests for a given path</td>
-    <td>[Wiki][23]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Simple-Routes">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Resources</td>
     <td>Multiple Routes</td>
     <td>Creates a RESTful Resource addressable by :id</td>
-    <td>[Wiki][24]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Resources">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Resource</td>
     <td>Multiple Routes</td>
     <td>Creates a singleton RESTful Resource</td>
-    <td>[Wiki][25]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Resource">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Static Files</td>
     <td>Static</td>
     <td>Serving static files</td>
-    <td>[Wiki][27]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Static-Files">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Constraints</td>
     <td>Constraint</td>
     <td>Makes rules invisible given constraints</td>
-    <td>[Wiki][28]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Constraints">Wiki</a>
+    </td>
   </tr>
   <tr>
     <td>Scopes</td>
     <td>Scope</td>
     <td>Propagates environment, e.g. constraints.</td>
-    <td>[Wiki][29]</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Scopes">Wiki</a>
+    </td>
   </tr>
 </table>
 
