@@ -87,12 +87,9 @@ Not yet. Include redirect-to because it can't be proven without an extra file. I
 
 ## Supported Functionality
 
-In this section we describe the rules that you can use to map your routes
-to where they should be dispatched. This is meant to give you overall understanding of the functionality without having to read the code.
-
 <table>
   <tr>
-    <th>Element</th>
+    <th>Name</th>
     <th>Type</th>
     <th>Meaning</th>
     <th>More Info</th>
