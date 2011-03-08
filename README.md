@@ -79,7 +79,7 @@ Here's an example of how your `users.xqy` might look like:
 
 A centralized [error handler][14] can also be used removing the need for a `try catch` statement. Refer to the wiki section on [using an error handler][21] for instructions.
 
-*This assumes a hypothetical `users.xqy` XQuery library that actually does the work of listing users and retrieving information about a user. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.*
+*This assumes a hypothetical `users.xqy` XQuery library that models users. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.*
 
 ## Supported Functionality
 
@@ -190,10 +190,11 @@ Everyone is welcome to contribute.
 
 1. Fork rewrite in github
 2. Create a new branch - `git checkout -b my-branch`
-3. Test your changes
-4. Commit your changes
-5. Push to your branch - `git push origin my-branch`
-6. Create an pull request
+3. Develop/fix the functionality
+4. Test your changes
+5. Commit your changes
+6. Push to your branch - `git push origin my-branch`
+7. Create an pull request
 
 ### Running the tests
 
@@ -215,13 +216,9 @@ the following information:
 * routes.xml
 * paths.xml (if relevant)
 
-This will help us be faster fixing the problem.
-
-This is not the actual test that we run (you can see a list of those in test/index.html) but it's all the information we need from a bug report.
-
 ## Roadmap
 
-If you are interested in any of these (or other) feature and don't want to wait just read the instructions on "Contribute" and send in your code.
+If you are interested in any of these (or other) feature and don't want to wait follow the instructions on "Contribute" to contribute with your changes.
 
 * Sample Application
 * Translated Paths for resources
