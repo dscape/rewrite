@@ -515,15 +515,34 @@ asyncTest("Change defaultPath to be /:action/index.xqy", function() {
      equals( d, '/server/status.xqy', "OK" ); }
    , error:    function(j,t,e) { ok(false, "NOK") }
    , complete: function()      { start(); } }) }) ;
+asyncTest("Change defaultPath to be /:resource-:action", function() {
+   $.ajax( {
+     url: rewriteUrl( 'GET', '/', 
+       '<root>server#status</root>', '',
+       '<defaultPath>/:resource-:action.xqy</defaultPath>' )
+   , success:  function(d,t,j) { 
+     equals( d, '/server-status.xqy', "OK" ); }
+   , error:    function(j,t,e) { ok(false, "NOK") }
+   , complete: function()      { start(); } }) }) ;
 asyncTest("Change defaultPath to be /:action/index.xqy with ?id=5", function() {
    $.ajax( {
      url: rewriteUrl( 'GET', '/?id=5', 
        '<root>server#status</root>', '',
-       '<defaultPath>/:action/:index.xqy</defaultPath>' )
+       '<defaultPath>/:action/index.xqy</defaultPath>' )
    , success:  function(d,t,j) { 
-     equals( d, '/status/:index.xqy?id=5', "OK" ); }
+     equals( d, '/status/index.xqy?id=5', "OK" ); }
    , error:    function(j,t,e) { ok(false, "NOK") }
    , complete: function()      { start(); } }) }) ;
+asyncTest("Change defaultPath to be /:action/:resource/index.xqy ", function() {
+   $.ajax( {
+     url: rewriteUrl( 'GET', '/?id=5', 
+       '<root>server#status</root>', '',
+       '<defaultPath>/:action/:resource/index.xqy</defaultPath>' )
+   , success:  function(d,t,j) { 
+     equals( d, '/status/server/index.xqy?id=5', "OK" ); }
+   , error:    function(j,t,e) { ok(false, "NOK") }
+   , complete: function()      { start(); } }) }) ;
+
 
 module("bound parameter constraints") ;
 asyncTest("castable type", function() {
