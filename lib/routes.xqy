@@ -14,12 +14,12 @@ declare variable $defaultPath         :=
   '/:dir/:resource.:ext?action=:action' ;
 
 
-declare variable $resourceActionSeparator       := "#" ;
-declare variable $dynamicRouteDelimiter         := ':' ;
-declare variable $methodSeparator               := "-" ;
-declare variable $dynamicRouteRegExp            := 
+declare variable $resourceActionSeparator          := "#" ;
+declare variable $dynamicRouteDelimiter            := ':' ;
+declare variable $methodSeparator                  := "-" ;
+declare variable $dynamicRouteRegExp               := 
   fn:concat( $dynamicRouteDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
-declare variable $dynamicRouteRegExpReplacement := 
+declare variable $dynamicRouteRegExpReplacement    := 
   "([\\w|\\-|_|\\s|:|\\.|@]+)" ;
 
 declare function r:selectedRoute( $routesCfg ) {

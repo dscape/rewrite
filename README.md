@@ -222,14 +222,13 @@ If you are interested in any of these (or other) feature and don't want to wait 
 
 * Sample Application
 * Translated Paths for resources
-* Generating Paths and URLs from code
 * Route Globbing
 * Namespaces, e.g. /admin/user/1/edit
 * Make singular resources map to plural controllers
 * Restricting Resource(s) Routes
 * Make redirect-to flexible
 * Allows bound constraints containing / in the values (test exists)
-* Allow further customization of file path, e.g. user-get.xqy
+* Generating Paths and URLs from code
 * Flexible decisions on what action to call (nested resources)
 
 ### Known Limitations

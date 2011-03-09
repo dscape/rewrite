@@ -344,15 +344,15 @@ asyncTest("search containing spaces", function() {
     equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
   , complete: function()      { start(); } }) }) ; 
-  /* asyncTest("id using slashes", function() {
+asyncTest("id using slashes", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/file//Some/File', 
-      '<get path="file/:id"> <to> file#get </to> </get>', '' )
+      '<get path="file/{:id}"> <to> file#get </to> </get>', '' )
   , type: 'GET' 
   , success:  function(d,t,j) { 
     equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
-  , complete: function()      { start(); } }) }) ; */ 
+  , complete: function()      { start(); } }) }) ; 
 asyncTest("resource", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/Documents', 
