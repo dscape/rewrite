@@ -8,16 +8,19 @@ declare variable $resourceDirectory   := 'resource' ;
 declare variable $staticDirectory     := 'static' ;
 declare variable $xqyExtension        := 'xqy' ;
 declare variable $redirectResource    := 'redirect' ;
-declare variable $defaultPath         := '/:dir/:resource.:ext?action=:action' ;
 declare variable $staticPath          := '/:static/:remainder' ;
 declare variable $redirectPath        := '/:dir/:redirect.:ext?url=:url' ;
+declare variable $defaultPath         := 
+  '/:dir/:resource.:ext?action=:action' ;
+
 
 declare variable $resourceActionSeparator       := "#" ;
 declare variable $dynamicRouteDelimiter         := ':' ;
 declare variable $methodSeparator               := "-" ;
 declare variable $dynamicRouteRegExp            := 
   fn:concat( $dynamicRouteDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
-declare variable $dynamicRouteRegExpReplacement := "([\\w|\\-|_|\\s|:|\\.|@]+)" ;
+declare variable $dynamicRouteRegExpReplacement := 
+  "([\\w|\\-|_|\\s|:|\\.|@]+)" ;
 
 declare function r:selectedRoute( $routesCfg ) {
   r:selectedRoute( $routesCfg, xdmp:get-request-url(), 
@@ -56,7 +59,8 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
     if ( $selected ) (: found a match, using the first :)
     then 
       if ( $errorHandler and $selected/@type = 'redirect' )
-      then fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', $selected/@url/fn:string() )
+      then fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', 
+        $selected/@url/fn:string() )
       else
         let $route       := $selected/@key
         let $regexp      := $selected/@regexp
@@ -90,7 +94,8 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
         ":remainder", fn:replace( $route, "^/", "" ) ) } ;
 
 declare function r:boundParameterConstraints($keys, $values, $constraints) { 
-  every $c in $constraints/* satisfies r:singleBPConstraint($keys, $values, $c) };
+  every $c in $constraints/* 
+  satisfies r:singleBPConstraint($keys, $values, $c) };
 
 declare function r:singleBPConstraint( $keys, $values, $constraint ) {
   let $name  := fn:name( $constraint )
@@ -103,7 +108,8 @@ declare function r:singleBPConstraint( $keys, $values, $constraint ) {
       let $value := $values [ $pos ]
       return 
         if ( $type and $match )
-        then ( fn:matches( $value, $match ) and r:castableAs( $value, $type ) )
+        then ( fn:matches( $value, $match ) 
+               and r:castableAs( $value, $type ) )
         else if ($type)
         then r:castableAs( $value, $type )
         else if ($match)
@@ -116,13 +122,17 @@ declare function r:privilegeConstraints( $privileges ) {
     if ( $privileges/@for )
     then fn:normalize-space( $privileges/@for )
     else xdmp:get-current-user()
-  let $executes := for $e in  $privileges/execute return fn:normalize-space( $e )
-  let $uris     := for $u in  $privileges/uri return fn:normalize-space( $u )
+  let $executes := for $e in  $privileges/execute 
+                   return fn:normalize-space( $e )
+  let $uris     := for $u in  $privileges/uri 
+                   return fn:normalize-space( $u )
   return 
     ( 
-      ( every $e in $executes satisfies r:singlePrivilegeConstraint( $e, $user, 'execute' ) )
+      ( every $e in $executes 
+        satisfies r:singlePrivilegeConstraint( $e, $user, 'execute' ) )
     and 
-      ( every $u in $uris satisfies r:singlePrivilegeConstraint( $u, $user, 'uri' ) ) ) };
+      ( every $u in $uris 
+        satisfies r:singlePrivilegeConstraint( $u, $user, 'uri' ) ) ) } ;
 
 declare function r:singlePrivilegeConstraint( $action, $user, $type ) {
   let $userRoles  := xdmp:user-roles( $user )
@@ -145,8 +155,10 @@ declare function r:lamdaConstraints( $labels, $labelValues, $lambdas ) {
       return 
         fn:concat("declare variable $", $label, ' := "', $match, '" ; ' )  
     , "&#x0a;" )
-  return every $l in $lambdas 
-    satisfies r:singleLambdaConstraint( fn:concat( $prolog, " &#x0a;", $l ) ) };
+  return 
+    every $l in $lambdas 
+    satisfies r:singleLambdaConstraint( 
+      fn:concat( $prolog, " &#x0a;", $l ) ) };
 
 declare function r:singleLambdaConstraint( $lambda ) {
   try { xdmp:eval( $lambda ) } catch ( $e ) { fn:false() } } ;
@@ -184,8 +196,8 @@ declare function r:verb( $verb, $node ) {
     then r:mappingForHash( $req, $node/to, r:aditional( $node ) )
     else if ( $node/redirect-to ) (: if theres a redirect :) 
     then r:mappingForRedirect( $req, $node )
-    else r:mappingForDynamicRoute( $node ) (: purely dynamic route we need to figure it out :) 
-} ;
+    (: purely dynamic route we need to figure it out :) 
+    else r:mappingForDynamicRoute( $node ) } ;
 
 
 declare function r:resources( $node ) { r:resources( $node, '' ) } ;
@@ -209,7 +221,8 @@ declare function r:resources( $node, $ac ) {
   let $edit        := if ($webservice) then () else
     r:mapping( fn:concat( 'GET ', $ridpath, '/edit' ), 
       r:resourceActionPath( $resource, 'edit' ), $aditional )
-  let $memberInc   := r:includes( $resource, $ridpath, $node/member, $aditional )
+  let $memberInc   := 
+    r:includes( $resource, $ridpath, $node/member, $aditional )
   let $setInc      := r:includes( $resource, $rpath, $node/set, $aditional )
   let $descendants := r:descendantResources( $node, $ridpath )
   return ( $edit, $new, $memberInc, $setInc, $verbs, $post, $index, 
@@ -264,7 +277,8 @@ declare function r:mappingForHash( $req, $node, $extraNodes ) {
   let $resource   := r:resourceActionPair( $node ) [1]
   let $action     := r:resourceActionPair( $node ) [2]
   return 
-    r:mapping( $req, r:resourceActionPath( $resource, $action ), $extraNodes ) } ;
+    r:mapping( $req, 
+      r:resourceActionPath( $resource, $action ), $extraNodes ) } ;
 
 declare function r:resourceActionPair( $node ) {
   fn:tokenize ( fn:normalize-space( $node ), $resourceActionSeparator )  } ;
@@ -293,12 +307,16 @@ declare function r:generateRegularExpression( $node ) {
   let $path := fn:normalize-space($node)
   return 
     fn:concat(
-      fn:replace( $path ,  $dynamicRouteRegExp, $dynamicRouteRegExpReplacement ), 
+      fn:replace( $path , 
+        $dynamicRouteRegExp, $dynamicRouteRegExpReplacement ), 
       (: Fixing trailing slashes for everything but root node, args are in :)
-      if ( fn:tokenize( $path, " " ) [2] = "/" ) then "(\?.*)?$" else "/?(\?.*)?$" ) };
+      if ( fn:tokenize( $path, " " ) [2] = "/" ) 
+      then "(\?.*)?$" 
+      else "/?(\?.*)?$" ) };
 
 declare function r:extractLabels( $node ) {
-  fn:analyze-string($node,  $dynamicRouteRegExp) //s:match/s:group/fn:string(.) } ;
+  fn:analyze-string($node,  $dynamicRouteRegExp) 
+    //s:match/s:group/fn:string(.) } ;
 
 declare function r:setDefaults( $defaultCfg ) { 
   let $resourceDirectoryOverride   := $defaultCfg //resourceDirectory   [1]
@@ -308,28 +326,29 @@ declare function r:setDefaults( $defaultCfg ) {
   let $defaultPathOverride         := $defaultCfg //pathFormat          [1]
   let $redirectPathOverride        := $defaultCfg //redirectPathFormat  [1]
   let $staticPathOverride          := $defaultCfg //staticPathFormat    [1]
-  return 
-    ( if ( $redirectResourceOverride ) 
-      then xdmp:set( $redirectResource, $redirectResourceOverride/fn:string() )
-      else (),
-      if ( $redirectPathOverride ) 
-      then xdmp:set( $redirectPath, $redirectPathOverride/fn:string() )
-      else (),
-      if ( $staticPathOverride ) 
-      then xdmp:set( $staticPath, $staticPathOverride/fn:string() )
-      else (),
-      if ( $defaultPathOverride ) 
-      then xdmp:set( $defaultPath, $defaultPathOverride/fn:string() )
-      else (),
-      if ( $resourceDirectoryOverride ) 
-      then xdmp:set( $resourceDirectory, $resourceDirectoryOverride/fn:string() )
-      else (),
-      if ( $staticDirectoryOverride ) 
-      then xdmp:set( $staticDirectory, $staticDirectoryOverride/fn:string() )
-      else (),
-      if ( $xqyExtensionOverride ) 
-      then xdmp:set( $xqyExtension, $xqyExtensionOverride/fn:string() )
-      else () ) } ;
+  return ( 
+    if ( $redirectResourceOverride ) 
+    then xdmp:set( $redirectResource, $redirectResourceOverride/fn:string() )
+    else (),
+    if ( $redirectPathOverride ) 
+    then xdmp:set( $redirectPath, $redirectPathOverride/fn:string() )
+    else (),
+    if ( $staticPathOverride ) 
+    then xdmp:set( $staticPath, $staticPathOverride/fn:string() )
+    else (),
+    if ( $defaultPathOverride ) 
+    then xdmp:set( $defaultPath, $defaultPathOverride/fn:string() )
+    else (),
+    if ( $resourceDirectoryOverride ) 
+    then xdmp:set( $resourceDirectory, $resourceDirectoryOverride/fn:string())
+    else (),
+    if ( $staticDirectoryOverride ) 
+    then xdmp:set( $staticDirectory, $staticDirectoryOverride/fn:string() )
+    else (),
+    if ( $xqyExtensionOverride ) 
+    then xdmp:set( $xqyExtension, $xqyExtensionOverride/fn:string() )
+    else () ) } ;
+
 declare function r:redirectToBasePath( $redirectTo ) {
   fn:replace( fn:replace( fn:replace( fn:replace( r:redirectPath(),
     ":dir",      r:resourceDirectory() ),
