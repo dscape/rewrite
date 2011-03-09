@@ -4,11 +4,13 @@ module  namespace r  = "routes.xqy" ;
 declare namespace 
   s  = "http://www.w3.org/2009/xpath-functions/analyze-string" ;
 
-declare variable $resourceDirectory   := '/resource/' ;
-declare variable $staticDirectory     := '/static/' ;
+declare variable $resourceDirectory   := 'resource' ;
+declare variable $staticDirectory     := 'static' ;
 declare variable $xqyExtension        := 'xqy' ;
 declare variable $redirectResource    := 'redirect' ;
-declare variable $defaultPath         := ':dir:resource.:ext?action=:action' ;
+declare variable $defaultPath         := '/:dir/:resource.:ext?action=:action' ;
+declare variable $staticPath          := '/:static/:remainder' ;
+declare variable $redirectPath        := '/:dir/:redirect.:ext?url=:url' ;
 
 declare variable $resourceActionSeparator       := "#" ;
 declare variable $dynamicRouteDelimiter         := ':' ;
@@ -83,7 +85,9 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
         return fn:concat( $dispatchTo, 
           if ($params) then fn:concat($separator, $params) else "")
     else (: didn't find a match so let's try the static folder :)
-      fn:concat( fn:replace($staticDirectory, "/$", ""), $route ) } ;
+      fn:replace( fn:replace( r:staticPath(), 
+        ":static",      r:staticDirectory() ),
+        ":remainder", fn:replace( $route, "^/", "" ) ) } ;
 
 declare function r:boundParameterConstraints($keys, $values, $constraints) { 
   every $c in $constraints/* satisfies r:singleBPConstraint($keys, $values, $c) };
@@ -233,8 +237,7 @@ declare function r:resource( $node, $ac ) {
 declare function r:mappingForRedirect( $req, $node ) {
   let $redirect-to := fn:normalize-space( $node/redirect-to )
   let $aditional  := r:aditional( $node )
-  return r:mapping( $req, 
-    fn:concat( r:redirectToBasePath(), xdmp:url-encode( $redirect-to ) ),  
+  return r:mapping( $req, r:redirectToBasePath( $redirect-to ),  
     ( attribute url { $redirect-to }, attribute type { 'redirect' }, 
       $aditional ) ) };
 
@@ -302,10 +305,18 @@ declare function r:setDefaults( $defaultCfg ) {
   let $staticDirectoryOverride     := $defaultCfg //staticDirectory     [1]
   let $xqyExtensionOverride        := $defaultCfg //xqyExtension        [1]
   let $redirectResourceOverride    := $defaultCfg //redirect            [1]
-  let $defaultPathOverride         := $defaultCfg //defaultPath            [1]
+  let $defaultPathOverride         := $defaultCfg //pathFormat          [1]
+  let $redirectPathOverride        := $defaultCfg //redirectPathFormat  [1]
+  let $staticPathOverride          := $defaultCfg //staticPathFormat    [1]
   return 
     ( if ( $redirectResourceOverride ) 
       then xdmp:set( $redirectResource, $redirectResourceOverride/fn:string() )
+      else (),
+      if ( $redirectPathOverride ) 
+      then xdmp:set( $redirectPath, $redirectPathOverride/fn:string() )
+      else (),
+      if ( $staticPathOverride ) 
+      then xdmp:set( $staticPath, $staticPathOverride/fn:string() )
       else (),
       if ( $defaultPathOverride ) 
       then xdmp:set( $defaultPath, $defaultPathOverride/fn:string() )
@@ -319,9 +330,12 @@ declare function r:setDefaults( $defaultCfg ) {
       if ( $xqyExtensionOverride ) 
       then xdmp:set( $xqyExtension, $xqyExtensionOverride/fn:string() )
       else () ) } ;
-declare function r:redirectToBasePath() {
-  fn:concat( r:resourceDirectory(), r:redirectResource(), ".", 
-  r:xqyExtension(), '?url=' ) } ;
+declare function r:redirectToBasePath( $redirectTo ) {
+  fn:replace( fn:replace( fn:replace( fn:replace( r:redirectPath(),
+    ":dir",      r:resourceDirectory() ),
+    ":redirect", r:redirectResource() ),
+    ":ext",      r:xqyExtension() ),
+    ":url",   xdmp:url-encode( $redirectTo ) ) } ;
 
 declare function r:descendantResources( $node, $rpath ) { 
   for $r in $node/resources return r:resources( $r, $rpath ),
@@ -335,7 +349,9 @@ declare function r:determineAction ( $action ) {
       [ fn:not( fn:matches( . , $dynamicRouteRegExp ) ) ]
   return fn:string-join( ( $firstAction, $rest ), $methodSeparator ) } ;
 
-declare function r:defaultPath()         { $defaultPath } ;
+declare function r:redirectPath()        { $redirectPath      } ;
+declare function r:staticPath()          { $staticPath        } ; 
+declare function r:defaultPath()         { $defaultPath       } ;
 declare function r:resourceDirectory()   { $resourceDirectory } ;
 declare function r:staticDirectory()     { $staticDirectory   } ;
 declare function r:xqyExtension()        { $xqyExtension      } ;
