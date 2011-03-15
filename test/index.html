@@ -347,7 +347,7 @@ asyncTest("search containing spaces", function() {
 asyncTest("id using slashes", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/file//Some/File', 
-      '<get path="file/{:id}"> <to> file#get </to> </get>', '' )
+      '<get path="file/*id"> <to> file#get </to> </get>', '' )
   , type: 'GET' 
   , success:  function(d,t,j) { 
     equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }

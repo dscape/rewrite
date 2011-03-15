@@ -16,11 +16,17 @@ declare variable $defaultPath         :=
 
 declare variable $resourceActionSeparator          := "#" ;
 declare variable $dynamicRouteDelimiter            := ':' ;
+declare variable $globbingDelimiter                := '\*' ;
 declare variable $methodSeparator                  := "-" ;
+
 declare variable $dynamicRouteRegExp               := 
   fn:concat( $dynamicRouteDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
 declare variable $dynamicRouteRegExpReplacement    := 
   "([\\w|\\-|_|\\s|:|\\.|@]+)" ;
+declare variable $globbingRegExp := 
+  fn:concat( $globbingDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
+declare variable $globbingRegExpReplacement    := 
+  "(.*?)" ;
 
 declare function r:selectedRoute( $routesCfg ) {
   r:selectedRoute( $routesCfg, xdmp:get-request-url(), 
@@ -110,10 +116,10 @@ declare function r:singleBPConstraint( $keys, $values, $constraint ) {
         if ( $type and $match )
         then ( fn:matches( $value, $match ) 
                and r:castableAs( $value, $type ) )
-        else if ($type)
+        else if ( $type )
         then r:castableAs( $value, $type )
-        else if ($match)
-        then fn:matches($value, $match) 
+        else if ( $match )
+        then fn:matches( $value, $match )
         else fn:true() (: no type or match? then its ok! :)
     else fn:true() (: if :key is not in the route then its valid :) };
 
@@ -307,8 +313,9 @@ declare function r:generateRegularExpression( $node ) {
   let $path := fn:normalize-space($node)
   return 
     fn:concat(
-      fn:replace( $path , 
-        $dynamicRouteRegExp, $dynamicRouteRegExpReplacement ), 
+      fn:replace( fn:replace( $path , 
+        $dynamicRouteRegExp, $dynamicRouteRegExpReplacement ),
+        $globbingRegExp, $globbingRegExpReplacement), 
       (: Fixing trailing slashes for everything but root node, args are in :)
       if ( fn:tokenize( $path, " " ) [2] = "/" ) 
       then "(\?.*)?$" 
