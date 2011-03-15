@@ -330,9 +330,9 @@ declare function r:setDefaults( $defaultCfg ) {
   let $staticDirectoryOverride     := $defaultCfg //staticDirectory     [1]
   let $xqyExtensionOverride        := $defaultCfg //xqyExtension        [1]
   let $redirectResourceOverride    := $defaultCfg //redirect            [1]
-  let $defaultPathOverride         := $defaultCfg //pathFormat          [1]
-  let $redirectPathOverride        := $defaultCfg //redirectPathFormat  [1]
-  let $staticPathOverride          := $defaultCfg //staticPathFormat    [1]
+  let $defaultPathOverride         := $defaultCfg //resourceFormat      [1]
+  let $redirectPathOverride        := $defaultCfg //redirectFormat      [1]
+  let $staticPathOverride          := $defaultCfg //staticFormat        [1]
   return ( 
     if ( $redirectResourceOverride ) 
     then xdmp:set( $redirectResource, $redirectResourceOverride/fn:string() )

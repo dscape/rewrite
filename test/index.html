@@ -315,9 +315,8 @@ asyncTest("changing redirect dispatcher", function() {
     url: rewriteUrl( 'GET', '/google', 
       '<get path="google">' +
       '<redirect-to> http://www.google.com </redirect-to> </get>', '',
-      '<resourceDirectory>/</resourceDirectory>'+
       '<redirect>dispatcher</redirect>' +
-      '<redirectPathFormat>/:redirect.:ext?url=:url</redirectPathFormat>' )
+      '<redirectFormat>/:redirect.:ext?url=:url</redirectFormat>' )
   , success:  function(d,t,j) { 
     equal( d, '/dispatcher.xqy?url=http%3a//www.google.com', 
       "OK" ); }
@@ -477,7 +476,7 @@ asyncTest("Change resource directory to /controller/", function() {
 asyncTest("Change resource directory to /", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
-    '<pathFormat>/:resource.:ext?action=:action</pathFormat>' )
+    '<resourceFormat>/:resource.:ext?action=:action</resourceFormat>' )
   , success:  function(d,t,j) { 
     equals( d, '/server.xqy?action=status', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
@@ -486,7 +485,7 @@ asyncTest("Change resource directory to ()", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/', '<root>server#status</root>', '',
     '<resourceDirectory/>' +
-    '<pathFormat>:dir:resource.:ext?action=:action</pathFormat>' )
+    '<resourceFormat>:resource.:ext?action=:action</resourceFormat>' )
   , success:  function(d,t,j) { 
     equals( d, 'server.xqy?action=status', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
@@ -503,16 +502,17 @@ asyncTest("Change static to public", function() {
    $.ajax( {
      url: rewriteUrl( 'GET', '/css/style.css', 
        '<root>server#status</root>', '',
-       '<staticDirectory>public</staticDirectory>' )
+       '<staticDirectory>public</staticDirectory>' +
+       '<staticFormat>/foo/:static/:remainder</staticFormat> ' )
    , success:  function(d,t,j) { 
-     equals( d, '/public/css/style.css', "OK" ); }
+     equals( d, '/foo/public/css/style.css', "OK" ); }
    , error:    function(j,t,e) { ok(false, "NOK") }
    , complete: function()      { start(); } }) }) ;
 asyncTest("Change defaultPath to be /:resource/:action.xqy", function() {
    $.ajax( {
      url: rewriteUrl( 'GET', '/', 
        '<root>server#status</root>', '',
-       '<pathFormat>/:resource/:action.xqy</pathFormat>' )
+       '<resourceFormat>/:resource/:action.xqy</resourceFormat>' )
    , success:  function(d,t,j) { 
      equals( d, '/server/status.xqy', "OK" ); }
    , error:    function(j,t,e) { ok(false, "NOK") }
@@ -521,7 +521,7 @@ asyncTest("Change defaultPath to be /:resource-:action", function() {
    $.ajax( {
      url: rewriteUrl( 'GET', '/', 
        '<root>server#status</root>', '',
-       '<pathFormat>/:resource-:action.xqy</pathFormat>' )
+       '<resourceFormat>/:resource-:action.:ext</resourceFormat>' )
    , success:  function(d,t,j) { 
      equals( d, '/server-status.xqy', "OK" ); }
    , error:    function(j,t,e) { ok(false, "NOK") }
@@ -530,7 +530,7 @@ asyncTest("Change defaultPath to be /:action/index.xqy with ?id=5", function() {
    $.ajax( {
      url: rewriteUrl( 'GET', '/?id=5', 
        '<root>server#status</root>', '',
-       '<pathFormat>/:action/index.xqy</pathFormat>' )
+       '<resourceFormat>/:action/index.xqy</resourceFormat>' )
    , success:  function(d,t,j) { 
      equals( d, '/status/index.xqy?id=5', "OK" ); }
    , error:    function(j,t,e) { ok(false, "NOK") }
@@ -539,7 +539,7 @@ asyncTest("Change defaultPath to be :dir:resource.:ext?action=:action", function
    $.ajax( {
      url: rewriteUrl( 'GET', '/?id=5', 
        '<root>server#status</root>', '',
-       '<pathFormat>/:dir/:resource.:ext?action=:action</pathFormat>' )
+       '<resourceFormat>/:dir/:resource.:ext?action=:action</resourceFormat>' )
    , success:  function(d,t,j) { 
      equals( d, '/resource/server.xqy?action=status&id=5', "OK" ); }
    , error:    function(j,t,e) { ok(false, "NOK") }
@@ -548,7 +548,7 @@ asyncTest("Change defaultPath to be /:action/:resource/index.xqy ", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/?id=5', 
       '<root>server#status</root>', '',
-      '<pathFormat>/:action/:resource/index.xqy</pathFormat>' )
+      '<resourceFormat>/:action/:resource/index.xqy</resourceFormat>' )
   , success:  function(d,t,j) { 
     equals( d, '/status/server/index.xqy?id=5', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
