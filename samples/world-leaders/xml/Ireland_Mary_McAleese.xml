@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Mary_McAleese.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Mary</firstname>
+        <lastname>McAleese</lastname>
+    </name>
+    <country>Ireland</country>
+    <dob location="Northern Ireland">1951-06-27</dob>
+    <gender>female</gender>
+    <positions>
+        <position hos="true">
+            <title>President</title>
+            <startdate>1997-11-11</startdate>
+            <enddate>present</enddate>
+        </position>
+    </positions>
+    <summary>
+        Mary Patricia McAleese is the eighth and current President of Ireland. Prior to becoming president she was a barrister, journalist and academic.
+        McAleese is Ireland's second female president and the world's first woman to succeed another woman as an elected head of state. She was first elected president in 1997 and won a second term, without a contest, in 2004. Her birth in Belfast means she is the first President to have come from Northern Ireland. She is a member of the Council of Women World Leaders. In 2009, Forbes named her among the 100 Most Powerful Women in the world.
+    </summary>
+</leader>

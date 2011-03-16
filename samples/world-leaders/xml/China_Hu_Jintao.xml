@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Hu_Jintao.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Hu</firstname>
+        <lastname>Jintao</lastname>
+    </name>
+    <country>China</country>
+    <dob location="China">1942-12-25</dob>
+    <gender>male</gender>
+    <positions>
+        <position hos="true">
+            <title>President</title>
+            <startdate>2003-03-15</startdate>
+            <enddate>present</enddate>
+        </position>
+    </positions>
+    <summary>
+        Hu Jintao is the current Paramount Leader of the People's Republic of China. He has held the titles of General Secretary of the Communist Party of China since 2002, President of the People's Republic of China since 2003, and Chairman of the Central Military Commission since 2004, succeeding Jiang Zemin as the top leader of fourth generation leadership of the People's Republic of China.     
+        Hu possesses a low-key and reserved leadership style. His rise to the presidency represents China's transition of leadership from old, hard-core communists to younger, more pragmatic technocrats. Since his ascendancy, Hu has reinstated certain controls on the economy relaxed by the previous administration, and has been highly conservative in his attitude to political reforms. In foreign policy, Hu advocates for an approach termed "China's peaceful development", pursuing soft power in international relations. Through Hu's tenure, China's global influence in Africa, Latin America, and other developing countries has increased.
+    </summary>
+</leader>

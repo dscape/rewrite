@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Fran%C3%A7ois_Fillon.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>François</firstname>
+        <lastname>Fillon</lastname>
+    </name>
+    <country>France</country>
+    <dob location="France">1954-03-04</dob>
+    <gender>male</gender>
+    <positions>
+        <position hog="true">
+            <title>Prime Minister</title>
+            <startdate>2007-05-17</startdate>
+            <enddate>present</enddate>
+        </position>
+        <position>
+            <title>Minister of National Education</title>
+            <startdate>2004-03-31</startdate>
+            <enddate>2005-06-02</enddate>
+        </position>
+    </positions>
+    <summary>
+        François Charles Amand Fillon is the current Prime Minister of France, having been appointed to that office by President Nicolas Sarkozy on 17 May 2007.
+        As a member of the UMP party, Fillon became Jean-Pierre Raffarin's Minister of Labour in 2002 and undertook controversial reforms of the 35-hour working week law and of the French retirement system (Lois Fillon). He became Minister of Education and Research in 2004 and proposed the much debated Fillon law on Education. In 2005, he was not included in the new government headed by Dominique de Villepin, but was elected senator for the Sarthe département. His role as a political advisor in Nicolas Sarkozy's successful race for president led to his current post.
+    </summary>
+</leader>

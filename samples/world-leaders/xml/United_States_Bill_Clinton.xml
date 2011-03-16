@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Bill_Clinton.         
+        Modified in August 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Bill</firstname>
+        <lastname>Clinton</lastname>
+    </name>
+    <country>United States</country>
+    <dob location="United States">1946-08-19</dob>
+    <gender>male</gender>
+    <positions>
+        <position hos="true" hog="true">
+            <title>President</title>
+            <startdate>1993-01-20</startdate>
+            <enddate>2001-01-20</enddate>
+        </position>
+        <position>
+            <title>Governor of Arkansas</title>
+            <startdate>1979-01-09</startdate>
+            <enddate>1981-01-19</enddate>
+        </position>
+        <position>
+            <title>Arkansas Attorney General</title>
+            <startdate>1977-01-03</startdate>
+            <enddate>1979-01-09</enddate>
+        </position>
+    </positions>
+    <summary>
+        William Jefferson "Bill" Clinton (born William Jefferson Blythe III) was the 42nd President of the United States from 1993 to 2001. At 46 he was the third-youngest president. He became president at the end of the Cold War, and was the first baby boomer president. His wife, Hillary Rodham Clinton, is currently the United States Secretary of State. Each received a Juris Doctor (J.D.) from Yale Law School.
+        Clinton has been described as a New Democrat. Some of his policies, such as the North American Free Trade Agreement and welfare reform, have been attributed to a centrist Third Way philosophy of governance, while on other issues his stance was left of center. Clinton presided over the continuation of an economic expansion that would later become the longest period of peace-time economic expansion in American history. The Congressional Budget Office reported a budget surplus in 2000, the last full year of Clinton's presidency. After a failed attempt at health care reform, Republicans won control of the House of Representatives in 1994, for the first time in forty years. Two years later, in 1996, Clinton was re-elected and became the first member of the Democratic Party since Franklin D. Roosevelt to win a second full term as president. Later he was impeached for perjury and obstruction of justice in connection with a scandal involving a White House intern, but was subsequently acquitted by the U.S. Senate.
+    </summary>
+</leader>

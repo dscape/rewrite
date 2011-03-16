@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Manmohan_Singh.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Manmohan</firstname>
+        <lastname>Singh</lastname>
+    </name>
+    <country>India</country>
+    <dob location="India">1932-09-26</dob>
+    <gender>male</gender>
+    <positions>
+        <position hog="true">
+            <title>Prime Minister</title>
+            <startdate>2004-11-22</startdate>
+            <enddate>present</enddate>
+        </position>
+        <position>
+            <title>Minister of External Affairs</title>
+            <startdate>2005-11-06</startdate>
+            <enddate>2006-10-24</enddate>
+        </position>
+    </positions>
+    <summary>
+        Manmohan Singh is the 14th and current Prime Minister of the Republic of India. He is the first Indian Prime Minister since Jawaharlal Nehru to return to power after completing a full five-year term. He is the first Sikh to hold the post. Singh is also the 12th Prime Minister under an Indian National Congress Government.
+        Singh previously carried out economic reforms in India during his tenure as the Finance Minister from 1991 to 1996. These reforms resulted in the end of the Licence Raj system, helping to open the Indian economy to greater international trade and investment.
+        In 2010, TIME magazine listed him among the 100 most influential people in the world. Newsweek magazine also lists him as one of 10 world leaders who have won respect and was described as "the leader other leaders love".
+    </summary>
+</leader>

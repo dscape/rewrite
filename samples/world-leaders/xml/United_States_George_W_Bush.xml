@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/George_W._Bush.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>George W</firstname>
+        <lastname>Bush</lastname>
+    </name>
+    <country>United States</country>
+    <dob location="United States">1946-07-06</dob>
+    <gender>male</gender>
+    <positions>
+        <position hos="true" hog="true">
+            <title>President</title>
+            <startdate>2001-01-20</startdate>
+            <enddate>2009-01-20</enddate>
+        </position>
+        <position>
+            <title>Governor of Texas</title>
+            <startdate>1995-01-17</startdate>
+            <enddate>2000-12-21</enddate>
+        </position>
+    </positions>
+    <summary>
+        George Walker Bush was the 43rd President of the United States, serving from 2001 to 2009, and the 46th Governor of Texas, serving from 1995 to 2000.
+        Bush is the eldest son of President George H. W. Bush, who served as the 41st President, and Barbara Bush, making him one of only two American presidents to be the son of a preceding president. After graduating from Yale University in 1968 and Harvard Business School in 1975, Bush worked in oil businesses. He married Laura Welch in 1977 and unsuccessfully ran for the House of Representatives shortly thereafter. He later co-owned the Texas Rangers baseball team before defeating Ann Richards in the 1994 Texas gubernatorial election. In a close and controversial election, Bush was elected President in 2000 as the Republican candidate, defeating then-Vice President Al Gore in the Electoral College.
+        Eight months into Bush's first term as president, the September 11, 2001, terrorist attacks occurred. In response, Bush announced a global War on Terrorism, ordered an invasion of Afghanistan that same year and an invasion of Iraq in 2003. In addition to national security issues, Bush promoted policies on the economy, health care, education, and social security reform. He signed into law broad tax cuts, the No Child Left Behind Act, the Partial-Birth Abortion Ban Act, and Medicare prescription drug benefits for seniors. His tenure saw national debates on immigration and Social Security.
+        Bush successfully ran for re-election against Democratic Senator John Kerry in 2004, in another relatively close election. After his re-election, Bush received increasingly heated criticism from conservatives and liberals. In 2005, the Bush Administration dealt with widespread criticism over its handling of Hurricane Katrina. In December 2007, the United States entered its longest post-World War II recession. This prompted the Bush Administration to take more direct control of the economy, enacting multiple economic programs intended to preserve the country's financial system. Though Bush was popular within the U.S. for much of his first term, his popularity declined sharply during his second term.
+        After leaving office, Bush returned to Texas and purchased a home in a suburban area of Dallas, Texas. He is currently a public speaker and is writing a book about his presidency.
+    </summary>
+</leader>

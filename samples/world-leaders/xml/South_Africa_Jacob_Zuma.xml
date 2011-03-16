@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Jacob_Zuma.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Jacob</firstname>
+        <lastname>Zuma</lastname>
+    </name>
+    <country>South Africa</country>
+    <dob location="South Africa">1942-04-12</dob>
+    <gender>male</gender>
+    <positions>
+        <position hos="true" hog="true">
+            <title>President</title>
+            <startdate>2009-05-09</startdate>
+            <enddate>present</enddate>
+        </position>
+    </positions>
+    <summary>
+        Jacob Gedleyihlekisa Zuma (born 12 April 1942) is the President of South Africa, elected by parliament following his party's victory in the 2009 general election.
+        Zuma is the President of the African National Congress (ANC), the governing political party, and was Deputy President of South Africa from 1999 to 2005. Zuma is also referred to by his initials JZ and his clan name Msholozi. Zuma became the President of the ANC on 18 December 2007 after defeating incumbent Thabo Mbeki at the ANC conference in Polokwane. Zuma was also a member of the South African Communist Party (SACP), briefly serving on the party's Politburo until he left the party in 1990. On 20 September 2008, Thabo Mbeki announced his resignation after being recalled by the African National Congress's National Executive Committee, following a conclusion by Judge Nicholson of improper interference in the National Prosecuting Authority (NPA), including the prosecution of Jacob Zuma for corruption.
+        Zuma has faced significant legal challenges. He was charged with rape in 2005, but was acquitted. In addition, he fought a long legal battle over allegations of racketeering and corruption, resulting from his financial advisor Schabir Shaik's conviction for corruption and fraud. On 6 April 2009, the National Prosecuting Authority decided to drop the charges citing political interference.
+    </summary>
+</leader>

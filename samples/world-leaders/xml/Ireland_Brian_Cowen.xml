@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Brian_Cowen.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Brian</firstname>
+        <lastname>Cowen</lastname>
+    </name>
+    <country>Ireland</country>
+    <dob location="Ireland">1960-01-10</dob>
+    <gender>male</gender>
+    <positions>
+        <position hog="true">
+            <title>Taoiseach</title>
+            <startdate>2008-05-07</startdate>
+            <enddate>present</enddate>
+        </position>
+    </positions>
+    <summary>
+        Brian Cowen is the current Taoiseach of Ireland. He took office on 7 May 2008, and heads a coalition government led by his Fianna Fáil party that includes the Green Party and has the support of independent TDs.
+        He has been a Teachta Dála (TD) for the constituency of Laois–Offaly since 1984. He previously served as Minister for Labour (1992–1993), Minister for Energy (1993), Minister for Transport, Energy and Communications (1993–1994), Minister for Health and Children (1997–2000), Minister for Foreign Affairs (2000–2004) and Minister for Finance (2004–2008). He served as Tánaiste from 2007 to 2008. He became leader of Fianna Fáil on the resignation of Bertie Ahern. On 7 May 2008, following the resignation of Bertie Ahern as Taoiseach, Cowen was nominated by Dáil Éireann to replace him and was appointed by the President later that day.
+    </summary>
+</leader>

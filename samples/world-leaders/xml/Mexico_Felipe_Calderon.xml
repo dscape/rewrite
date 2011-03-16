@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Felipe_Calder%C3%B3n.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Felipe</firstname>
+        <lastname>Calderón</lastname>
+    </name>
+    <country>Mexico</country>
+    <dob location="Mexico">1962-08-18</dob>
+    <gender>male</gender>
+    <positions>
+        <position hos="true" hog="true">
+            <title>President</title>
+            <startdate>2006-12-01</startdate>
+            <enddate>present</enddate>
+        </position>
+    </positions>
+    <summary>
+        Felipe de Jesús Calderón Hinojosa is the current President of Mexico. He assumed office on December 1, 2006, and was elected for a single six-year term through 2012. He is a member of the National Action Party (PAN), one of the three major Mexican political parties.
+        Calderón was elected in the 2006 presidential elections. The results were contested by his closest opponent, Andrés Manuel López Obrador, who started what he called a "pacific civil resistance". Calderon's victory was confirmed on September 5, 2006 by the Federal Electoral Tribunal.
+        Prior to the presidency, Calderón actively participated in PAN politics. He has served as National President of the Party, Federal Deputy, and Secretary of Energy in Vicente Fox's cabinet.
+    </summary>
+</leader>

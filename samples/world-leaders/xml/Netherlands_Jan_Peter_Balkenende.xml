@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Jan_Peter_Balkenende.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Jan Peter</firstname>
+        <lastname>Balkenende</lastname>
+    </name>
+    <country>Netherlands</country>
+    <dob location="Netherlands">1956-05-07</dob>
+    <gender>male</gender>
+    <positions>
+        <position hog="true">
+            <title>Prime Minister</title>
+            <startdate>2002-07-22</startdate>
+            <enddate>present</enddate>
+        </position>
+    </positions>
+    <summary>
+        Jan Pieter "Jan Peter" Balkenende is a Dutch politician of the party Christian Democratic Appeal (CDA). He is the Prime Minister of the Netherlands and has been since 22 July 2002, leading four coalition governments so far, cabinets Balkenende I, II, III and IV, none of which served a full 4-year term. On 9 June 2010, Balkenende resigned his position as party leader of the CDA as well as his seat in the newly-elected parliament, taking political responsibility for the CDA's disappointing election results in the Dutch general election in June, 2010. He's currently the caretaker Prime Minister of the Netherlands pending the outcome of the 2010 Dutch cabinet formation.
+    </summary>
+</leader>

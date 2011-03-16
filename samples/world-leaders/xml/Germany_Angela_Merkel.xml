@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Angela_Merkel.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Angela</firstname>
+        <lastname>Merkel</lastname>
+    </name>
+    <country>Germany</country>
+    <dob location="Germany">1954-07-17</dob>
+    <gender>female</gender>
+    <positions>
+        <position hog="true">
+            <title>Chancellor</title>
+            <startdate>2005-11-22</startdate>
+            <enddate>present</enddate>
+        </position>
+        <position>
+            <title>Minister for the Environment, Nature Conservation and Nuclear Safety</title>
+            <startdate>1994-11-17</startdate>
+            <enddate>1998-10-26</enddate>
+        </position>
+    </positions>
+    <summary>
+        Angela Dorothea Merkel, is the current Chancellor of Germany. Merkel, elected to the Bundestag (German Parliament) from Mecklenburg-Vorpommern, has been the chairman of the Christian Democratic Union (CDU) since 10 April 2000, and Chairman of the CDU-CSU (Christian Social Union) parliamentary coalition from 2002 to 2005.
+        From 2005 to 2009 she led a grand coalition with the Christian Social Union (CSU), its Bavarian sister party, and the Social Democratic Party of Germany (SPD), formed after the 2005 federal election on 22 November 2005. In the elections of 27 September 2009, her party, the CDU, obtained the largest share of the votes, and formed a coalition government with the CSU and the Free Democratic Party (FDP). Her government was sworn in on 28 October 2009.
+        In 2007, Merkel was also President of the European Council and chaired the G8. She played a central role in the negotiation of the Treaty of Lisbon and the Berlin Declaration. In domestic policy, health care reform and problems concerning future energy development have thus far been major issues of her tenure.
+        Merkel is the first female Chancellor of Germany. In 2007 she became the second woman to chair the G8, after Margaret Thatcher.
+    </summary>
+</leader>

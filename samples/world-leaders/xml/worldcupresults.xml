@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcresults>
+    <wcresult id="1">
+        <year>1930</year>
+        <location>Uruguay</location>
+        <region>South America</region>
+        <winner>Uruguay</winner>
+        <runnerup>Argentina</runnerup>
+        <third>USA</third>
+        <fourth>Yugoslavia</fourth>
+    </wcresult>
+    <wcresult id="2">
+        <year>1934</year>
+        <location>Italy</location>
+        <region>Europe</region>
+        <winner>Italy</winner>
+        <runnerup>Czechoslovakia</runnerup>
+        <third>West Germany</third>
+        <fourth>Austria</fourth>
+    </wcresult>
+    <wcresult id="3">
+        <year>1938</year>
+        <location>France</location>
+        <region>Europe</region>
+        <winner>Italy</winner>
+        <runnerup>Hungary</runnerup>
+        <third>Brazil</third>
+        <fourth>Sweden</fourth>
+    </wcresult>
+    <wcresult id="4">
+        <year>1950</year>
+        <location>Brazil</location>
+        <region>South America</region>
+        <winner>Uruguay</winner>
+        <runnerup>Brazil</runnerup>
+        <third>Sweden</third>
+        <fourth>Spain</fourth>
+    </wcresult>
+    <wcresult id="5">
+        <year>1954</year>
+        <location>Switzerland</location>
+        <region>Europe</region>
+        <winner>West Germany</winner>
+        <runnerup>Hungary</runnerup>
+        <third>Austria</third>
+        <fourth>Uruguay</fourth>
+    </wcresult>
+    <wcresult id="6">
+        <year>1958</year>
+        <location>Sweden</location>
+        <region>Europe</region>
+        <winner>Brazil</winner>
+        <runnerup>Sweden</runnerup>
+        <third>France</third>
+        <fourth>West Germany</fourth>
+    </wcresult>
+    <wcresult id="7">
+        <year>1962</year>
+        <location>Chile</location>
+        <region>South America</region>
+        <winner>Brazil</winner>
+        <runnerup>Czechoslovakia</runnerup>
+        <third>Chile</third>
+        <fourth>Yugoslavia</fourth>
+    </wcresult>
+    <wcresult id="8">
+        <year>1966</year>
+        <location>England</location>
+        <region>Europe</region>
+        <winner>England</winner>
+        <runnerup>West Germany</runnerup>
+        <third>Portugal</third>
+        <fourth>Soviet Union</fourth>
+    </wcresult>
+    <wcresult id="9">
+        <year>1970</year>
+        <location>Mexico</location>
+        <region>North America</region>
+        <winner>Brazil</winner>
+        <runnerup>Italy</runnerup>
+        <third>West Germany</third>
+        <fourth>Uruguay</fourth>
+    </wcresult>
+    <wcresult id="10">
+        <year>1974</year>
+        <location>West Germany</location>
+        <region>Europe</region>
+        <winner>West Germany</winner>
+        <runnerup>Netherlands</runnerup>
+        <third>Poland</third>
+        <fourth>Brazil</fourth>
+    </wcresult>
+    <wcresult id="11">
+        <year>1978</year>
+        <location>Argentina</location>
+        <region>South America</region>
+        <winner>Argentina</winner>
+        <runnerup>Netherlands</runnerup>
+        <third>Brazil</third>
+        <fourth>Italy</fourth>
+    </wcresult>
+    <wcresult id="12">
+        <year>1982</year>
+        <location>Spain</location>
+        <region>Europe</region>
+        <winner>Italy</winner>
+        <runnerup>West Germany</runnerup>
+        <third>Poland</third>
+        <fourth>France</fourth>
+    </wcresult>
+    <wcresult id="13">
+        <year>1986</year>
+        <location>Mexico</location>
+        <region>North America</region>
+        <winner>Argentina</winner>
+        <runnerup>West Germany</runnerup>
+        <third>France</third>
+        <fourth>Belgium</fourth>
+    </wcresult>
+    <wcresult id="14">
+        <year>1990</year>
+        <location>Italy</location>
+        <region>Europe</region>
+        <winner>West Germany</winner>
+        <runnerup>Argentina</runnerup>
+        <third>Italy</third>
+        <fourth>England</fourth>
+    </wcresult>
+    <wcresult id="15">
+        <year>1994</year>
+        <location>United States</location>
+        <region>North America</region>
+        <winner>Brazil</winner>
+        <runnerup>Italy</runnerup>
+        <third>Sweden</third>
+        <fourth>Bulgaria</fourth>
+    </wcresult>
+    <wcresult id="16">
+        <year>1998</year>
+        <location>France</location>
+        <region>Europe</region>
+        <winner>France</winner>
+        <runnerup>Brazil</runnerup>
+        <third>Croatia</third>
+        <fourth>Netherlands</fourth>
+    </wcresult>
+    <wcresult id="17">
+        <year>2002</year>
+        <location>Korea/Japan</location>
+        <region>Asia</region>
+        <winner>Brazil</winner>
+        <runnerup>Germany</runnerup>
+        <third>Turkey</third>
+        <fourth>Korea</fourth>
+    </wcresult>
+    <wcresult id="18">
+        <year>2006</year>
+        <location>Germany</location>
+        <region>Europe</region>
+        <winner>Italy</winner>
+        <runnerup>France</runnerup>
+        <third>Germany</third>
+        <fourth>Portugal</fourth>
+    </wcresult>
+    <wcresult id="19">
+        <year>2010</year>
+        <location>South Africa</location>
+        <region>Africa</region>
+        <winner>Spain</winner>
+        <runnerup>Netherlands</runnerup>
+        <third>Germany</third>
+        <fourth>Uruguay</fourth>
+    </wcresult>
+</wcresults>

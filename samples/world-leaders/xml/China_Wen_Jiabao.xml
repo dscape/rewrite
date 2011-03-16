@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<leader xmlns="http://marklogic.com/mlu/world-leaders">
+    <!--Copyright (c) 2010 Mark Logic Corporation. Permission is
+        granted to copy, distribute and/or modify this document under the terms of the
+        GNU Free Documentation License, Version 1.2 or any later version published by
+        the Free Software Foundation. Content derived from 
+        http://en.wikipedia.org/wiki/Wen_Jiabao.         
+        Modified in September 2010 by Mark Logic Corporation under the terms of the 
+        GNU Free Documentation License.-->
+    <name>
+        <firstname>Wen</firstname>
+        <lastname>Jiabao</lastname>
+    </name>
+    <country>China</country>
+    <dob location="China">1942-09-15</dob>
+    <gender>male</gender>
+    <positions>
+        <position hog="true">
+            <title>Premier</title>
+            <startdate>2003-03-16</startdate>
+            <enddate>present</enddate>
+        </position>
+    </positions>
+    <summary>
+        Wen Jiabao is the sixth and current Premier of the State Council of the People's Republic of China, serving as China's head of government and leading its cabinet. In his capacity as Premier, Wen is regarded as the leading figure behind China's economic policy. He also holds membership in the Politburo Standing Committee of the Communist Party of China, the country's de facto top power organ, where he is ranked third out of nine members.
+        Wen has a professional background in geology and engineering. He holds a postgraduate degree from the Beijing Institute of Geology, where he graduated from in 1968. He was subsequently sent to Gansu province for geological work, and remained in China's hinterland regions during his climb up the bureaucratic ladder. He was transferred to Beijing to work as the head of the Party General Office between 1986 and 1993, and accompanied General Secretary Zhao Ziyang to the Tiananmen Square during the 1989 Tiananmen Square Protests. In 1998, he was promoted to the post of Vice Premier under Zhu Rongji, his mentor, and oversaw the broad portfolios of agriculture and finance.
+        Since taking office as Premier in 2003, Wen, along with President Hu Jintao, has been a key part of the fourth generation of leadership in the Communist Party of China. Soft-spoken and known for his strong work ethic, Wen has been one of the most visible members of the incumbent Chinese administration, and has been dubbed "the people's premier" by both domestic and foreign media.
+        Described as having a commoner background and a populist approach to policy, Wen's domestic agenda marked a considerable shift from the previous administration. Instead of concentrating on GDP growth in large cities and rich coastal areas, Wen advocated for a more balanced approach in developing China's hinterland regions, and advancing policies considered more favourable towards farmers and migrant workers. Internationally, Wen played a key role in China's response to the global financial crisis and subsequent stimulus program.
+    </summary>
+</leader>
