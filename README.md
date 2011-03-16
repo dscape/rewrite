@@ -182,7 +182,7 @@ A centralized [error handler][14] can also be used removing the need for a `try 
 
 ## Sample Application
 
-Not yet. Include redirect-to because it can't be proven without an extra file. Include errors.xqy as well!
+You can find a sample application in the `samples` folder. Just follow the instructions in the read me file to deploy. If you used rewrite and want to contribute a sample application read the section on `Contribute` and send a pull request.
 
 ## Contribute
 
@@ -230,6 +230,7 @@ If you are interested in any of these (or other) feature and don't want to wait 
 * Allows bound constraints containing / in the values (test exists)
 * Generating Paths and URLs from code
 * Flexible decisions on what action to call (nested resources)
+* Add sample application with redirect-to and errors.xqy
 
 ### Known Limitations
 
