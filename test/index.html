@@ -343,15 +343,6 @@ asyncTest("search containing spaces", function() {
     equals( d, '/resource/story.xqy?action=search&q=in+love', "OK" ); }
   , error:    function(j,t,e) { ok(false, "NOK") }
   , complete: function()      { start(); } }) }) ; 
-asyncTest("id using slashes", function() {
-  $.ajax( {
-    url: rewriteUrl( 'GET', '/file//Some/File', 
-      '<get path="file/*id"> <to> file#get </to> </get>', '' )
-  , type: 'GET' 
-  , success:  function(d,t,j) { 
-    equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
-  , error:    function(j,t,e) { ok(false, "NOK") }
-  , complete: function()      { start(); } }) }) ; 
 asyncTest("resource", function() {
   $.ajax( {
     url: rewriteUrl( 'GET', '/Documents', 
@@ -1218,6 +1209,54 @@ asyncTest("top languages for rewrite", function() {
   , error:    function(j,t,e) { ok(false, "NOK") }
   , complete: function()      { start(); } }) }) ;
 
+module("globbing") ;
+db = '<resource name=":database">' +
+  '<resource name="*file"/>' +
+'</resource>' ;
+asyncTest("id using slashes", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/file//Some/File', 
+      '<get path="file/*id"> <to> file#get </to> </get>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=get&id=/Some/File', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("on first level", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/test/some/info', 
+      '<get path="*id/info"> <to> file#get </to> </get>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=get&id=test/some', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("in between with arg", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/foo/some/bar?q=test', 
+      '<get path="*foo/some/*bar"> <to> file#get </to> </get>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=get&foo=foo&bar=bar&q=test', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("in between", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/foo/some/bar', 
+      '<get path="*foo/some/*bar"> <to> file#get </to> </get>', '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=get&foo=foo&bar=bar', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
+asyncTest("get file from database", function() {
+  $.ajax( {
+    url: rewriteUrl( 'GET', '/Documents/songs/one.xml', db, '' )
+  , type: 'GET' 
+  , success:  function(d,t,j) { 
+    equals( d, '/resource/file.xqy?action=get&database=Documents&file=songs/one.xml', "OK" ); }
+  , error:    function(j,t,e) { ok(false, "NOK") }
+  , complete: function()      { start(); } }) }) ;
     }) ;
     </script>
   </head>

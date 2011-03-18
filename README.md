@@ -178,6 +178,14 @@ A centralized [error handler][14] can also be used removing the need for a `try 
       <a href="https://github.com/dscape/rewrite/wiki/Scopes">Wiki</a>
     </td>
   </tr>
+  <tr>
+    <td>Route Globbing</td>
+    <td>Globbing</td>
+    <td>Allows wildcard routes</td>
+    <td>
+      <a href="https://github.com/dscape/rewrite/wiki/Globbing">Wiki</a>
+    </td>
+  </tr>
 </table>
 
 ## Sample Application
@@ -186,15 +194,16 @@ You can find a sample application in the `samples` folder. Just follow the instr
 
 ## Contribute
 
-Everyone is welcome to contribute. 
+Think the documentation sucks? Think the performance is crap? Think `rewrite` is cool but is missing feature X? This is your change to shine: contribute to the project.
 
-1. Fork rewrite in github
-2. Create a new branch - `git checkout -b my-branch`
-3. Develop/fix the functionality
-4. Test your changes
-5. Commit your changes
-6. Push to your branch - `git push origin my-branch`
-7. Create an pull request
+1. Message `dscape` on github talking about what you want to accomplish.
+2. Fork rewrite in github
+3. Create a new branch - `git checkout -b my-branch`
+4. Develop/fix the functionality
+5. Test your changes
+6. Commit your changes
+7. Push to your branch - `git push origin my-branch`
+8. Create an pull request
 
 ### Running the tests
 
@@ -220,9 +229,7 @@ the following information:
 
 If you are interested in any of these (or other) feature and don't want to wait follow the instructions on "Contribute" to contribute with your changes.
 
-* Sample Application
 * Translated Paths for resources
-* Route Globbing
 * Namespaces, e.g. /admin/user/1/edit
 * Make singular resources map to plural controllers
 * Restricting Resource(s) Routes
@@ -231,6 +238,7 @@ If you are interested in any of these (or other) feature and don't want to wait 
 * Generating Paths and URLs from code
 * Flexible decisions on what action to call (nested resources)
 * Add sample application with redirect-to and errors.xqy
+* Start caring about performance, e.g. when you calculate the file that you invoke for a path you put it in a map. Subsequence requests to the same URL get immediately server (nothing has changed).
 
 ### Known Limitations
 

@@ -17,7 +17,10 @@ declare variable $defaultPath         :=
 declare variable $resourceActionSeparator          := "#" ;
 declare variable $dynamicRouteDelimiter            := ':' ;
 declare variable $globbingDelimiter                := '\*' ;
+declare variable $globOrDynDelimiter               :=
+  fn:concat( "[", $globbingDelimiter, "|",$dynamicRouteDelimiter,"]" ) ;
 declare variable $methodSeparator                  := "-" ;
+declare variable $seqSeparator                     := "&amp;" ;
 
 declare variable $dynamicRouteRegExp               := 
   fn:concat( $dynamicRouteDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
@@ -27,6 +30,8 @@ declare variable $globbingRegExp :=
   fn:concat( $globbingDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
 declare variable $globbingRegExpReplacement    := 
   "(.*?)" ;
+declare variable $globOrDynRegExp := 
+    fn:concat( $globOrDynDelimiter, "([\w|\-|_|\s|:|@]+)" ) ;
 
 declare function r:selectedRoute( $routesCfg ) {
   r:selectedRoute( $routesCfg, xdmp:get-request-url(), 
@@ -50,17 +55,19 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
   let $selected     := (
     for $mapping in $mappings //mapping [ fn:matches( $req, @regexp ) ] 
     let $regexp      := $mapping/@regexp
-    let $labels      := fn:tokenize( $mapping/@labels, ";" )
+    let $labels      := fn:tokenize( $mapping/@labels, $seqSeparator )
     let $labelValues := fn:analyze-string( $req, $regexp ) 
       //s:match/s:group/fn:string(.)
     let $constraints := $mapping/constraints
     let $privileges  := $mapping/privileges
     let $lambdas     := $mapping/lambda
-    where 
+    where
       r:boundParameterConstraints( $labels, $labelValues, $constraints)
       and r:privilegeConstraints( $privileges )
       and r:lamdaConstraints( $labels, $labelValues, $lambdas )
-    return $mapping ) [1]
+    return element { fn:node-name( $mapping ) } 
+      { attribute labelValues { fn:string-join( $labelValues, $seqSeparator ) },
+        $mapping/@*, $mapping/* } ) [1]
   return
     if ( $selected ) (: found a match, using the first :)
     then 
@@ -70,9 +77,8 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
       else
         let $route       := $selected/@key
         let $regexp      := $selected/@regexp
-        let $labels      := fn:tokenize( $selected/@labels, ";" )
-        let $labelValues := fn:analyze-string( $req, $regexp ) 
-          //s:match/s:group/fn:string(.)   
+        let $labels      := fn:tokenize( $selected/@labels, $seqSeparator )
+        let $labelValues := fn:tokenize( $selected/@labelValues, $seqSeparator )
         let $dispatchTo  := 
           if ( $selected/@value = "" ) (: dynamic route, couldn't calculate :)
           then
@@ -292,7 +298,7 @@ declare function r:resourceActionPair( $node ) {
 declare function r:resourceActionPath( $resource, $action ) {
   fn:replace( fn:replace( fn:replace( fn:replace( r:defaultPath() ,
     ":dir",        r:resourceDirectory() ), 
-    ":resource", fn:replace( $resource, $dynamicRouteDelimiter, "" ) ), 
+    ":resource", fn:replace( $resource, $globOrDynDelimiter, "" ) ), 
     ":ext",       r:xqyExtension() ), 
     ":action",    r:determineAction( $action ) ) } ;
 
@@ -306,7 +312,7 @@ declare function r:mapping( $k, $v, $r, $extraNodes ) {
   element mapping {
     attribute key    { $k },   attribute regexp { $r },
     attribute value  { $v }, 
-    attribute labels { fn:string-join( r:extractLabels( $k ), ";" ) },
+    attribute labels { fn:string-join( r:extractLabels( $k ), $seqSeparator ) },
     $extraNodes } } ;
 
 declare function r:generateRegularExpression( $node ) {
@@ -322,7 +328,7 @@ declare function r:generateRegularExpression( $node ) {
       else "/?(\?.*)?$" ) };
 
 declare function r:extractLabels( $node ) {
-  fn:analyze-string($node,  $dynamicRouteRegExp) 
+  fn:analyze-string( $node, $globOrDynRegExp ) 
     //s:match/s:group/fn:string(.) } ;
 
 declare function r:setDefaults( $defaultCfg ) { 
@@ -369,10 +375,10 @@ declare function r:descendantResources( $node, $rpath ) {
 
 declare function r:determineAction ( $action ) {
   let $paths       := fn:tokenize( $action, "/" )
-  let $firstAction := fn:replace( $paths [ 1 ], $dynamicRouteDelimiter, '' )
+  let $firstAction := fn:replace( $paths [ 1 ], $globOrDynDelimiter, '' )
   let $rest        := 
     $paths [ 2 to fn:last() ] 
-      [ fn:not( fn:matches( . , $dynamicRouteRegExp ) ) ]
+      [ fn:not( fn:matches( . , $globOrDynRegExp ) ) ]
   return fn:string-join( ( $firstAction, $rest ), $methodSeparator ) } ;
 
 declare function r:redirectPath()        { $redirectPath      } ;
