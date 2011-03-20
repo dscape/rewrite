@@ -18,6 +18,10 @@ declare function h:noCache() {
   xdmp:add-response-header('Expires', 'Fri, 01 Jan 1990 00:00:00 GMT'),
   h:etag( xdmp:request() ) } ;
 
+declare function h:addCurrentDateToResponseHeaders() {
+  xdmp:add-response-header( "Date", 
+    xdmp:strftime( "%a, %d %b %Y %H:%M:%S %Z", fn:current-dateTime() ) ) } ;
+
 declare function h:etag ( $id ) {
   h:etag( $id, fn:true() ) };
 
@@ -73,30 +77,33 @@ declare function h:function() {
 declare function h:function( $name ) {
   xdmp:function( xs:QName( fn:concat( "local:", $name ) ) ) } ;
 
-declare function h:error( $exception ) { 
-  h:error( $exception, '/static/404.xqy' ) } ;
-
-declare function h:error ( $exception, $notFoundXqy ) { 
-  if ( $exception//*:code = 'XDMP-UNDFUN' )
-  then h:redirect-to( 404, 'Not Found', $notFoundXqy )
-  else if ( $exception//*:code = '301' and $exception//*:name = 'REWRITE-REDIRECT' )
-  then h:redirect-to( 301, 'Moved Permantly', $e/*:data/*:datum/fn:string() )
-  else if ( $exception//*:code = '406' and $exception//*:name = 'REWRITE-CNFAILED' )
+declare function h:error ( $e ) { 
+  if ( $e//*:code = 'XDMP-UNDFUN' )
+  then h:error( 404, 'Not Found' )
+  else if ( $e//*:code = '301' and $e//*:name = 'REWRITE-REDIRECT' )
+  then h:redirectTo( 301, 'Moved Permantly', $e/*:data/*:datum/fn:string() )
+  else if ( $e//*:code = '406' and $e//*:name = 'REWRITE-CNFAILED' )
   then h:error( 406, 'Not Acceptable', $e/*:data/*:datum/fn:string() )
   else ( h:error( 500, 'Internal Server Error', $e//error:message/fn:string() ), 
-  xdmp:log( $exception ) ) } ;
+  xdmp:log( $e ) ) } ;
 
 declare function h:error( $code, $msg ) {
   h:error( $code, $msg, () ) } ;
 
 declare function h:error( $code, $msg, $reason ) {
   ( xdmp:set-response-code( $code, $msg )
-  , xdmp:add-response-header( "Date", fn:string(fn:current-dateTime() ) )
+  , h:addCurrentDateToResponseHeaders()
   , if ( $reason ) 
     then xdmp:add-response-header( "X-rewriteExceptionMessage", $reason )
     else () ) } ;
 
-declare function h:redirect-to( $code, $msg, $url ) {
+declare function h:redirectTo( $code, $msg, $url ) {
   ( xdmp:set-response-code( $code, $msg )
-  , xdmp:add-response-header( "Date", fn:string(fn:current-dateTime() ) )
-  , xdmp:redirect-to( $url ) ) } ;
+  , xdmp:add-response-header( "Date", fn:string( fn:current-dateTime() ) )
+  , xdmp:redirect-response( $url ) ) } ;
+
+declare function h:render( $view, $params ) {
+  ( xdmp:set-response-content-type( "text/plain" )
+  , h:addCurrentDateToResponseHeaders()
+  , xdmp:invoke( fn:concat( "/views/", $view, ".xqy" ), 
+      ( xs:QName("params"), $params ) ) ) };
