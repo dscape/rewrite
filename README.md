@@ -190,7 +190,7 @@ A centralized [error handler][14] can also be used removing the need for a `try 
 
 ## Sample Application
 
-You can find a sample application in the `samples` folder. Just follow the instructions in the read me file to deploy. If you used rewrite and want to contribute a sample application read the section on `Contribute` and send a pull request.
+You can find a sample applications in the [[Samples]] wiki page. Just follow the instructions in the read me file to deploy. If you used rewrite and want to contribute a sample application read the section on `Contribute` and send a pull request.
 
 ## Contribute
 
