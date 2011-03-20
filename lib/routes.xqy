@@ -49,6 +49,12 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
   let $tokens       := fn:tokenize( $url, '\?' )
   let $route        := $tokens [1]
   let $args         := $tokens [2]
+  let $static       := fn:replace( fn:replace( r:staticPath(), 
+    ":static",      r:staticDirectory() ),
+    ":remainder", fn:replace( $route, "^/", "" ) )
+  return
+    if ( r:fileExists( $static ) or r:fileExists( fn:concat( $static, "/index.html" ) ) )
+    then $static else
   let $req          := fn:string-join( ( $method, $route ), " " )
   let $mappings     := r:mappings ( $routesCfg )
   let $errorHandler := $routesCfg /@useErrorHandler = 'Yes'
@@ -101,9 +107,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
         return fn:concat( $dispatchTo, 
           if ($params) then fn:concat($separator, $params) else "")
     else (: didn't find a match so let's try the static folder :)
-      fn:replace( fn:replace( r:staticPath(), 
-        ":static",      r:staticDirectory() ),
-        ":remainder", fn:replace( $route, "^/", "" ) ) } ;
+      $static } ;
 
 declare function r:boundParameterConstraints($keys, $values, $constraints) { 
   every $c in $constraints/* 
@@ -393,3 +397,12 @@ declare function r:aditional( $node ) {
 
 declare function r:castableAs( $value, $type ) {
   xdmp:castable-as( "http://www.w3.org/2001/XMLSchema", $type, $value ) } ;
+
+declare function r:fileExists( $path ) {
+  try { let $uri := fn:concat( xdmp:modules-root(), $path )
+    return if ( fn:exists( $uri ) )
+    then xdmp:filesystem-directory( xdmp:modules-root() )
+      //*:entry [ *:type = "file" ] /*:pathname = $uri 
+    else fn:false() } 
+  catch ( $e ) { if ($e/*:code eq 'SVC-FILOPN') then fn:false() 
+    else xdmp:rethrow() } };
