@@ -53,7 +53,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
     ":static",      r:staticDirectory() ),
     ":remainder", fn:replace( $route, "^/", "" ) )
   return
-    if ( r:fileExists( $static ) or r:fileExists( fn:concat( $static, "/index.html" ) ) )
+    if ( r:fileExists( $static ) )
     then $static else
   let $req          := fn:string-join( ( $method, $route ), " " )
   let $mappings     := r:mappings ( $routesCfg )
@@ -106,8 +106,7 @@ declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
            else (), $args ), "&amp;" )
         return fn:concat( $dispatchTo, 
           if ($params) then fn:concat($separator, $params) else "")
-    else (: didn't find a match so let's try the static folder :)
-      $static } ;
+    else $static } ;
 
 declare function r:boundParameterConstraints($keys, $values, $constraints) { 
   every $c in $constraints/* 
@@ -398,11 +397,16 @@ declare function r:aditional( $node ) {
 declare function r:castableAs( $value, $type ) {
   xdmp:castable-as( "http://www.w3.org/2001/XMLSchema", $type, $value ) } ;
 
-declare function r:fileExists( $path ) {
-  try { let $uri := fn:concat( xdmp:modules-root(), $path )
-    return if ( fn:exists( $uri ) )
-    then xdmp:filesystem-directory( xdmp:modules-root() )
-      //*:entry [ *:type = "file" ] /*:pathname = $uri 
-    else fn:false() } 
-  catch ( $e ) { if ($e/*:code eq 'SVC-FILOPN') then fn:false() 
+declare function r:fileExists( $path ) { 
+  r:fileExists( $path, xdmp:modules-root() ) };
+
+declare function r:fileExists( $path, $root ) {
+  let $dir  := fn:concat( $root, $path )
+  return try {   
+    fn:exists( xdmp:document-get( $dir ) ) } 
+  catch ( $e ) { 
+    if ($e/*:code eq 'SVC-FILOPN') 
+    then if ($e//*:datum = 'Is a directory')
+         then r:fileExists( fn:concat( $dir, "/index.html" ), () )
+         else fn:false()
     else xdmp:rethrow() } };
