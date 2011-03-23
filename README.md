@@ -239,6 +239,8 @@ If you are interested in any of these (or other) feature and don't want to wait 
 * Flexible decisions on what action to call (nested resources)
 * Add sample application with redirect-to and errors.xqy
 * Start caring about performance, e.g. when you calculate the file that you invoke for a path you put it in a map. Subsequence requests to the same URL get immediately server (nothing has changed).
+* LDAP Integration. Security propagation.
+* MarkLogic Credentials Check: Route only available for role, or user list.
 
 ### Known Limitations
 
