@@ -81,7 +81,7 @@ A centralized [error handler][14] can also be used removing the need for a `try 
 
 *This assumes a hypothetical `users.xqy` XQuery library that models users. It also contains a `helper.xqy` module. The `helper.xqy` module is contained in lib as an example but is not part of `rewrite`, so you can/should modify it to fit your needs; or even create your fully fledged [MVC][10] framework.*
 
-## Supported Functionality
+## Supported Elements
 
 <table>
   <tr>
@@ -153,6 +153,17 @@ A centralized [error handler][14] can also be used removing the need for a `try 
     <td>
       <a href="https://github.com/dscape/rewrite/wiki/Resource">Wiki</a>
     </td>
+  </tr>
+</table>
+
+## Supported Functionality
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Meaning</th>
+    <th>More Info</th>
   </tr>
   <tr>
     <td>Static Files</td>
