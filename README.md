@@ -236,13 +236,6 @@ the following information:
 * routes.xml
 * paths.xml (if relevant)
 
-### Known Limitations
-
-In this section we have the know limitations:
-
-* Bound parameters containing / are not supported.
-* Nested Sections don't propagate constraints between levels.
-
 ## Meta
 
 * Code: `git clone git://github.com/dscape/rewrite.git`
