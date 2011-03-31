@@ -236,23 +236,6 @@ the following information:
 * routes.xml
 * paths.xml (if relevant)
 
-## Roadmap
-
-If you are interested in any of these (or other) feature and don't want to wait follow the instructions on "Contribute" to contribute with your changes.
-
-* Translated Paths for resources
-* Namespaces, e.g. /admin/user/1/edit
-* Make singular resources map to plural controllers
-* Restricting Resource(s) Routes
-* Make redirect-to flexible
-* Allows bound constraints containing / in the values (test exists)
-* Generating Paths and URLs from code
-* Flexible decisions on what action to call (nested resources)
-* Add sample application with redirect-to and errors.xqy
-* Start caring about performance, e.g. when you calculate the file that you invoke for a path you put it in a map. Subsequence requests to the same URL get immediately server (nothing has changed).
-* LDAP Integration. Security propagation.
-* MarkLogic Credentials Check: Route only available for role, or user list.
-
 ### Known Limitations
 
 In this section we have the know limitations:
