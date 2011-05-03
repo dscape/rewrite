@@ -18,7 +18,7 @@ then
   let $r-xml := <routes> { xdmp:unquote( $routes ) } </routes>
   let $r-uri := $uri
   return 
-    if ($paths and fn:not($paths="undefined")) 
+    if ( $paths and fn:not( $paths = "undefined" ) ) 
     then
       let $p-xml := <paths>  { xdmp:unquote( $paths )  } </paths> 
       return r:selectedRoute( $r-xml, $r-uri, $method, $p-xml )

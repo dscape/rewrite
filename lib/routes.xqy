@@ -4,6 +4,7 @@ module  namespace r  = "routes.xqy" ;
 declare namespace 
   s  = "http://www.w3.org/2009/xpath-functions/analyze-string" ;
 
+declare variable $cacheNs             := 'rewrite::' ;
 declare variable $resourceDirectory   := 'resource' ;
 declare variable $staticDirectory     := 'static' ;
 declare variable $xqyExtension        := 'xqy' ;
@@ -12,7 +13,6 @@ declare variable $staticPath          := '/:static/:remainder' ;
 declare variable $redirectPath        := '/:dir/:redirect.:ext?url=:url' ;
 declare variable $defaultPath         := 
   '/:dir/:resource.:ext?action=:action' ;
-
 
 declare variable $resourceActionSeparator          := "#" ;
 declare variable $dynamicRouteDelimiter            := ':' ;
@@ -41,72 +41,81 @@ declare function r:selectedRoute( $routesCfg, $defaultCfg ) {
   r:selectedRoute( $routesCfg, xdmp:get-request-url(), 
     xdmp:get-request-method(), $defaultCfg ) };
 
-declare function r:selectedRoute( $routesCfg, $url, $method ) { 
- r:selectedRoute( $routesCfg, $url, $method, () ) };
+declare function r:selectedRoute( $routesCfg, $url, $method ) {
+  r:selectedRoute( $routesCfg, $url, $method, () ) };
 
 declare function r:selectedRoute( $routesCfg, $url, $method, $defaultCfg ) {
-  let $_            := r:setDefaults( $defaultCfg )
-  let $tokens       := fn:tokenize( $url, '\?' )
-  let $route        := $tokens [1]
-  let $args         := $tokens [2]
-  let $static       := fn:replace( fn:replace( r:staticPath(), 
-    ":static",      r:staticDirectory() ),
-    ":remainder", fn:replace( $route, "^/", "" ) )
-  return
-    if ( r:fileExists( $static ) )
-    then $static else
-  let $req          := fn:string-join( ( $method, $route ), " " )
-  let $mappings     := r:mappings ( $routesCfg )
-  let $errorHandler := $routesCfg /@useErrorHandler = 'Yes'
-  let $selected     := (
-    for $mapping in $mappings //mapping [ fn:matches( $req, @regexp ) ] 
-    let $regexp      := $mapping/@regexp
-    let $labels      := fn:tokenize( $mapping/@labels, $seqSeparator )
-    let $labelValues := fn:analyze-string( $req, $regexp ) 
-      //s:match/s:group/fn:string(.)
-    let $constraints := $mapping/constraints
-    let $privileges  := $mapping/privileges
-    let $lambdas     := $mapping/lambda
-    where
-      r:boundParameterConstraints( $labels, $labelValues, $constraints)
-      and r:privilegeConstraints( $privileges )
-      and r:lamdaConstraints( $labels, $labelValues, $lambdas )
-    return element { fn:node-name( $mapping ) } 
-      { attribute labelValues { fn:string-join( $labelValues, $seqSeparator ) },
-        $mapping/@*, $mapping/* } ) [1]
-  return
-    if ( $selected ) (: found a match, using the first :)
-    then 
-      if ( $errorHandler and $selected/@type = 'redirect' )
-      then fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', 
-        $selected/@url/fn:string() )
-      else
-        let $route       := $selected/@key
-        let $regexp      := $selected/@regexp
-        let $labels      := fn:tokenize( $selected/@labels, $seqSeparator )
-        let $labelValues := fn:tokenize( $selected/@labelValues, $seqSeparator )
-        let $dispatchTo  := 
-          if ( $selected/@value = "" ) (: dynamic route, couldn't calculate :)
-          then
-            let $r := fn:index-of($labels, 'resource')
-            let $a := fn:index-of($labels, 'action')
-            return r:resourceActionPath( $labelValues[$r], $labelValues[$a] )
-          else $selected/@value 
-        let $separator := 
-          if( fn:contains($dispatchTo, "?" ) )
-          then "&amp;" else "?"
-        let $params := fn:string-join( (
-          if ( $labelValues ) 
-          then
-            for $match at $p in $labelValues
-            let $label := $labels[$p]
-            where $label != 'resource' and $label != 'action'
-            return 
-              fn:concat( $label, "=", xdmp:url-encode( $match ) )
-           else (), $args ), "&amp;" )
-        return fn:concat( $dispatchTo, 
-          if ($params) then fn:concat($separator, $params) else "")
-    else $static } ;
+  let $md5   := xdmp:md5( fn:concat( 
+    xdmp:quote($routesCfg), xdmp:quote($defaultCfg), $url, $method ) )
+  let $cache := r:cachedRoute( $md5 )
+  return 
+    if ( $cache )
+    then $cache
+    else 
+      let $_            := r:setDefaults( $defaultCfg )
+      let $tokens       := fn:tokenize( $url, '\?' )
+      let $route        := $tokens [1]
+      let $args         := $tokens [2]
+      let $static       := fn:replace( fn:replace( r:staticPath(), 
+        ":static",      r:staticDirectory() ),
+        ":remainder", fn:replace( $route, "^/", "" ) )
+      let $selectedRoute :=
+        if ( r:fileExists( $static ) )
+        then $static else
+      let $req          := fn:string-join( ( $method, $route ), " " )
+      let $mappings     := r:mappings ( $routesCfg )
+      let $errorHandler := $routesCfg /@useErrorHandler = 'Yes'
+      let $selected     := (
+        for $mapping in $mappings //mapping [ fn:matches( $req, @regexp ) ] 
+        let $regexp      := $mapping/@regexp
+        let $labels      := fn:tokenize( $mapping/@labels, $seqSeparator )
+        let $labelValues := fn:analyze-string( $req, $regexp ) 
+          //s:match/s:group/fn:string(.)
+        let $constraints := $mapping/constraints
+        let $privileges  := $mapping/privileges
+        let $lambdas     := $mapping/lambda
+        where
+          r:boundParameterConstraints( $labels, $labelValues, $constraints)
+          and r:privilegeConstraints( $privileges )
+          and r:lamdaConstraints( $labels, $labelValues, $lambdas )
+        return element { fn:node-name( $mapping ) } 
+          { attribute labelValues { fn:string-join( $labelValues, $seqSeparator ) },
+            $mapping/@*, $mapping/* } ) [1]
+      return
+        if ( $selected ) (: found a match, using the first :)
+        then 
+          if ( $errorHandler and $selected/@type = 'redirect' )
+          then fn:error( xs:QName( 'REWRITE-REDIRECT' ), '301', 
+            $selected/@url/fn:string() )
+          else
+            let $route       := $selected/@key
+            let $regexp      := $selected/@regexp
+            let $labels      := fn:tokenize( $selected/@labels, $seqSeparator )
+            let $labelValues := fn:tokenize( $selected/@labelValues, $seqSeparator )
+            let $dispatchTo  := 
+              if ( $selected/@value = "" ) (: dynamic route, couldn't calculate :)
+              then
+                let $r := fn:index-of($labels, 'resource')
+                let $a := fn:index-of($labels, 'action')
+                return r:resourceActionPath( $labelValues[$r], $labelValues[$a] )
+              else $selected/@value 
+            let $separator := 
+              if( fn:contains($dispatchTo, "?" ) )
+              then "&amp;" else "?"
+            let $params := fn:string-join( (
+              if ( $labelValues ) 
+              then
+                for $match at $p in $labelValues
+                let $label := $labels[$p]
+                where $label != 'resource' and $label != 'action'
+                return 
+                  fn:concat( $label, "=", xdmp:url-encode( $match ) )
+               else (), $args ), "&amp;" )
+            return fn:concat( $dispatchTo, 
+              if ($params) then fn:concat($separator, $params) else "")
+        else $static
+      return 
+      r:setCachedRoute( $md5, $selectedRoute )  } ;
 
 declare function r:boundParameterConstraints($keys, $values, $constraints) { 
   every $c in $constraints/* 
@@ -393,6 +402,17 @@ declare function r:xqyExtension()        { $xqyExtension      } ;
 declare function r:redirectResource()    { $redirectResource  } ;
 declare function r:aditional( $node ) { 
   ( $node/constraints, $node/privileges, $node/lambda ) } ;
+
+declare function r:cacheKey( $md5 ) {
+  fn:concat( $cacheNs, $md5 )
+};
+
+declare function r:cachedRoute( $md5 ) {
+  xdmp:get-server-field( r:cacheKey( $md5 ) ) } ;
+
+declare function r:setCachedRoute( $md5, $value ) {
+  xdmp:set-server-field(
+    r:cacheKey( $md5 ), $value ) } ;
 
 declare function r:castableAs( $value, $type ) {
   xdmp:castable-as( "http://www.w3.org/2001/XMLSchema", $type, $value ) } ;
