@@ -58,7 +58,7 @@ declare function h:negotiateContentType( $accept,
     for $sat in $orderedAcceptTypes
     let $match := (
       for $sct in $supportedContentTypes
-      where fn:matches( $sct, fn:replace( $sat, "\*", ".*" ) )
+      where fn:matches( $sct, fn:replace(fn:replace( $sat, "\*", ".*" ), "\+", "\\+" ) )
       return $sct ) [1]
     return $match, $defaultContentType ) [1] } ;
 
