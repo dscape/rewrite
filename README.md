@@ -1,33 +1,35 @@
 # rewrite
 `rewrite` is an implementation of [MarkLogic's URL Rewriter for HTTP Application Servers][11]. `rewrite` aims to provide an expressive language that allows you to specify REST applications. This is intended to make your routing logic simple and easy to maintain:
 
-      <routes>
-        <root> dashboard#show </root> 
-        <resource name="inbox"> <!-- no users named inbox --> 
-          <member action="sent"/> 
-        </resource> 
-        <resource name=":user"> 
-          <constraints>  
-            <user type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> 
-          </constraints> 
-          <member action="followers"/> <!-- no repo named followers --> 
-          <resource name=":repo"> 
-            <constraints>  
-              <repo match="^[a-z]([a-z]|[0-9]|_|-|\.)*$"/> 
-            </constraints> 
-            <member action="commit/:commit"> 
-              <constraints>  
-                <commit type="string" match="[a-zA-Z0-9]+"/> 
-              </constraints> 
-            </member> 
-            <member action="tree/:tag" /> 
-            <member action="forks" /> 
-            <member action="pulls" /> 
-            <member action="graphs/impact" /> 
-            <member action="graphs/language" /> 
-          </resource> 
-        </resource>
-      </routes>
+``` xml
+<routes>
+  <root> dashboard#show </root> 
+  <resource name="inbox"> <!-- no users named inbox --> 
+    <member action="sent"/> 
+  </resource> 
+  <resource name=":user"> 
+    <constraints>  
+      <user type="string" match="^[a-z]([a-z]|[0-9]|_|-)*$"/> 
+    </constraints> 
+    <member action="followers"/> <!-- no repo named followers --> 
+    <resource name=":repo"> 
+      <constraints>  
+        <repo match="^[a-z]([a-z]|[0-9]|_|-|\.)*$"/> 
+      </constraints> 
+      <member action="commit/:commit"> 
+        <constraints>  
+          <commit type="string" match="[a-zA-Z0-9]+"/> 
+        </constraints> 
+      </member> 
+      <member action="tree/:tag" /> 
+      <member action="forks" /> 
+      <member action="pulls" /> 
+      <member action="graphs/impact" /> 
+      <member action="graphs/language" /> 
+    </resource> 
+  </resource>
+</routes>
+```
 
 Routes are [matched in the order you specified][17] and they can be [nested][18]. They are dispatched dispatched to a resource XQuery file [providing the action as a request field][26]. 
 
@@ -43,19 +45,21 @@ In your HTTP Application Server configuration make `rewrite.xqy` the default rew
 
 Place the `lib` folder of `rewrite` in your application `root`. Still in the `root`  create a new file named `rewrite.xqy` with the following contents:
 
-     xquery version "1.0-ml" ;
-     
-     import module namespace r = "routes.xqy" at "/lib/routes.xqy" ;
-     
-     declare variable $routesCfg := 
-       <routes>
-         <root> users#list </root>
-         <get path="users/:id">
-           <to> users#show </to>
-         </get>
-       </routes> ;
-     
-     r:selectedRoute( $routesCfg )
+``` xquery
+xquery version "1.0-ml" ;
+
+import module namespace r = "routes.xqy" at "/lib/routes.xqy" ;
+
+declare variable $routesCfg := 
+  <routes>
+    <root> users#list </root>
+    <get path="users/:id">
+      <to> users#show </to>
+    </get>
+  </routes> ;
+
+r:selectedRoute( $routesCfg )
+```
 
 With the `rewrite` in place:
 
@@ -66,16 +70,18 @@ You can [customize the file path][19] and/or  [store configurations in a file][2
 
 Here's an example of how your `users.xqy` might look like:
 
-     xquery version "1.0-ml";
-     
-     import module namespace u = "user.xqy" at "/lib/user.xqy";
-     import module namespace h = "helper.xqy" at "/lib/helper.xqy";
-     
-     declare function local:list() { u:list() };
-     declare function local:get()  { u:get( h:id() ) } ;
-     
-     try          { xdmp:apply( h:function() ) } 
-     catch ( $e ) { h:error( $e ) }
+``` xquery
+xquery version "1.0-ml";
+
+import module namespace u = "user.xqy" at "/lib/user.xqy";
+import module namespace h = "helper.xqy" at "/lib/helper.xqy";
+
+declare function local:list() { u:list() };
+declare function local:get()  { u:get( h:id() ) } ;
+
+try          { xdmp:apply( h:function() ) } 
+catch ( $e ) { h:error( $e ) }
+```
 
 A centralized [error handler][14] can also be used removing the need for a `try catch` statement. Refer to the wiki section on [using an error handler][21] for instructions.
 
