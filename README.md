@@ -160,6 +160,14 @@ A centralized [error handler][14] can also be used removing the need for a `try 
       <a href="https://github.com/dscape/rewrite/wiki/Resource">Wiki</a>
     </td>
   </tr>
+  <tr>
+  	<td>Ignore</td>
+    <td>Exception</td>
+    <td>Instructs route mapping to be disabled for URLs matching a regular expression</td>
+    <td>
+      &nbsp;
+    </td>
+  </tr>
 </table>
 
 ## Supported Functionality
